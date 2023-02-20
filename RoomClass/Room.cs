@@ -63,6 +63,25 @@
             {
                 Penalty += OutOfBoundsDeterminer(FurnitureList[i]);
 
+                if (FurnitureList[i].NearWall >= 0)
+                    Penalty += NearWallPenalty(FurnitureList[i]);
+
+                for (int k = 0; k < Doors.GetLength(0); k++)
+                {
+                    if (Collision(Doors[i], FurnitureList[i]))
+                        Penalty += 10;
+                }
+
+                if (Windows is not null)
+                {
+                    if (!FurnitureList[i].IgnoreWindows)
+                        for (int n = 0; n < Doors.GetLength(0); n++)
+                        {
+                            if (Collision(Windows[i], FurnitureList[i]))
+                                Penalty += 10;
+                        }
+                }
+
                 for (int j = i + 1; j < FurnitureList.Count; j++)
                 {
                     if (Collision(FurnitureList[i], FurnitureList[j]))
@@ -73,7 +92,7 @@
 
         private int OutOfBoundsDeterminer(Furniture furniture)
         {
-            int Fine = 0;
+            int fine = 0;
 
             if (furniture.Center[1] < RoomLength && furniture.Center[0] < RoomWidth &&
                 furniture.Center[1] > 0 && furniture.Center[0] > 0)
@@ -82,7 +101,7 @@
                 {
                     if (furniture.Vertices[j, 0] > RoomWidth || furniture.Vertices[j, 1] > RoomLength)
                     {
-                        Fine += 10;
+                        fine += 10;
                         furniture.IsOutOfBounds = true;
                         break;
                     }
@@ -92,10 +111,10 @@
             else
             {
                 furniture.IsOutOfBounds = true;
-                return Fine += 10;
+                return fine += 10;
             }
 
-            return Fine;
+            return fine;
         }
 
         public static bool Collision(Furniture item1, Furniture item2)
@@ -106,12 +125,60 @@
 
                 if (DetermineCollision(item1.Vertices, point))
                 {
+                    item2.IsCollided = true;
                     item1.IsCollided = true;
                     return true;
                 }
             }
             item1.IsCollided = false;
+            item2.IsCollided = false;
             return false;
+        }
+
+        private int NearWallPenalty(Furniture furniture)
+        {
+            int fine = 0;
+            bool check = false;
+
+            for (int i = 0; i < furniture.Vertices.GetLength(0); i++)
+            {
+                if (furniture.Vertices[i, 1] <= (0 + furniture.NearWall))
+                {
+                    check = true;
+                    if (!(furniture.Rotation >= 260 && furniture.Rotation <= 280))
+                        fine += 5;
+                    break;
+                }
+                if (furniture.Vertices[i, 0] <= (0 + furniture.NearWall))
+                {
+                    check = true;
+                    if (!((furniture.Rotation >= 350 && furniture.Rotation < 360) ||
+                        (furniture.Rotation >= 0 && furniture.Rotation <= 10)))
+                        fine += 5;
+                    break;
+                }
+                if (furniture.Vertices[i, 1] >= (RoomLength - furniture.NearWall))
+                {
+                    check = true;
+                    if (!(furniture.Rotation >= 80 && furniture.Rotation <= 100))
+                        fine += 5;
+                    break;
+                }
+                if (furniture.Vertices[i, 0] >= (RoomWidth - furniture.NearWall))
+                {
+                    check = true;
+                    if (!(furniture.Rotation >= 170 && furniture.Rotation < 190))
+                        fine += 5;
+                    break;
+                }
+            }
+
+            if (!check)
+            {
+                fine += 10;
+            }
+
+            return fine;
         }
 
         private static bool DetermineCollision(double[,] vertices, double[] point)

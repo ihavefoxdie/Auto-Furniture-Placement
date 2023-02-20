@@ -9,6 +9,8 @@
         public int Length { get; private set; }
         public int Height { get; private set; }
         public string Zone { get; private set; }
+        public bool IgnoreWindows { get; private set; }
+        public int NearWall { get; private set; }
 
         public bool IsOutOfBounds { get; set; }
         public bool IsCollided { get; set; }
@@ -20,7 +22,7 @@
         #endregion
 
 
-        public Furniture(int id, int length, int height, string zone, int parent = -1)
+        public Furniture(int id, int length, int height, string zone, bool ignoreWindows, int nearWall = -1, int parent = -1)
         {
             ID = id;
             ParentID = parent;
@@ -28,7 +30,8 @@
             Height = height;
             Rotation = 0;
             Zone = zone;
-
+            IgnoreWindows = ignoreWindows;
+            NearWall = nearWall;
 
             Center = new double[2];
             Center[0] = (double)Length / 2;     //X
@@ -36,7 +39,7 @@
 
             Vertices = new double[4, 2];
             Vertices[0, 1] = Height;
-            Vertices[1, 0] = Length;    Vertices[1, 1] = Height;
+            Vertices[1, 0] = Length; Vertices[1, 1] = Height;
             Vertices[2, 0] = Length;
         }
 
@@ -71,7 +74,7 @@
 
 
         #region Rotation
-        public void Rotate(double angle)
+        public void Rotate(int angle)
         {
             double radians = angle * (Math.PI / 180);
 
@@ -79,7 +82,12 @@
             {
                 RotatingVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians);
             }
-            Rotation = angle;
+
+            Rotation += angle;
+            if (Rotation >= 360)
+                Rotation -= 360;
+            if (Rotation < 0)
+                Rotation += 360;
         }
 
         private void RotatingVertex(ref double x, ref double y, double radians)
