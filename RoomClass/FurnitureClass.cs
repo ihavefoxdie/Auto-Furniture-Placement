@@ -85,8 +85,8 @@
 
             for (int i = 0; i < Vertices.GetLength(0); i++)
             {
-                Vertices[i, 0] = centerDeltaX;
-                Vertices[i, 1] = centerDeltaY;
+                Vertices[i, 0] += centerDeltaX;
+                Vertices[i, 1] += centerDeltaY;
             }
 
            /* A[0] += centerDeltaX; A[1] += centerDeltaY; B[0] += centerDeltaX; B[1] += centerDeltaY;
