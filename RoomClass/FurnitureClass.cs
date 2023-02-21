@@ -84,9 +84,9 @@
             }
 
             Rotation += angle;
-            if (Rotation >= 360)
+            while (Rotation >= 360)
                 Rotation -= 360;
-            if (Rotation < 0)
+            while (Rotation < 0)
                 Rotation += 360;
         }
 
