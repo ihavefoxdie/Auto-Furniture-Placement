@@ -7,7 +7,7 @@
         public int Height { get; set; }
         public int Area { get; set; }
 
-        //TODO Максимальная длина и ширина среди набора мебели (для сжатия во время пожара)
+        //TODO Max Length and Width among the furniture set (for zone resizing)
 
         public Zone(List<Furniture> furnitures, string zoneName)
         {
