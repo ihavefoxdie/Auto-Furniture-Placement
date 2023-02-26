@@ -1,6 +1,6 @@
 ﻿namespace RoomClass
 {
-    public class Furniture
+    public class Furniture : IPolygon
     {
         public int ID { get; private set; }
         public int ParentID { get; set; }
