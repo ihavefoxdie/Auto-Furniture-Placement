@@ -4,9 +4,9 @@
     {
         public int Length { get; }
         public int Height { get; }
-        public double[] Center { get; }
-        public double[,] Vertices { get; }
+        public decimal[] Center { get; }
+        public decimal[,] Vertices { get; }
 
-        public void Move(double centerDeltaX, double centerDeltaY);
+        public void Move(decimal centerDeltaX, decimal centerDeltaY);
     }
 }

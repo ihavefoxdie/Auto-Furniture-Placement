@@ -7,8 +7,8 @@
         public List<Furniture> Furnitures { get; set; }
         public int Length { get; set; }
         public int Height { get; set; }
-        public double[] Center { get; private set; }
-        public double[,] Vertices { get; private set; }
+        public decimal[] Center { get; private set; }
+        public decimal[,] Vertices { get; private set; }
 
         public Zone(List<Furniture> furnitures, string zoneName)
         {
@@ -17,10 +17,10 @@
             Length = Furnitures.Select(p => p.Length + 2).Sum();
             Height = Furnitures.Select(p => p.Height + 2).Sum();
             Area = Math.Floor(Math.Sqrt(Length * Height));
-            Center = new double[2];
-            Center[0] = (double)Length / 2;     
-            Center[1] = (double)Height / 2;     
-            Vertices = new double[4, 2];
+            Center = new decimal[2];
+            Center[0] = (decimal)Length / 2;     
+            Center[1] = (decimal)Height / 2;     
+            Vertices = new decimal[4, 2];
 
             Vertices[0, 1] = Height;                             // ← ↑
 
@@ -53,7 +53,7 @@
             return list;
         }
 
-        public void Move(double centerDeltaX, double centerDeltaY)
+        public void Move(decimal centerDeltaX, decimal centerDeltaY)
         {
             Center[0] += centerDeltaX;
             Center[1] += centerDeltaY;

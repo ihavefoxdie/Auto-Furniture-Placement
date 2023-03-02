@@ -68,14 +68,14 @@
 
                 for (int k = 0; k < Doors.GetLength(0); k++)
                 {
-                    if (Collision(Doors[i], FurnitureList[i]))
+                    if (Collision(Doors[k], FurnitureList[i]))
                         Penalty += 10;
                 }
 
                 if (Windows is not null)
                 {
                     if (!FurnitureList[i].IgnoreWindows)
-                        for (int n = 0; n < Doors.GetLength(0); n++)
+                        for (int n = 0; n < Windows.GetLength(0); n++)
                         {
                             if (Collision(Windows[i], FurnitureList[i]))
                                 Penalty += 10;
@@ -89,6 +89,7 @@
                 }
             }
         }
+
 
         private int OutOfBoundsDeterminer(Furniture furniture)
         {
@@ -119,9 +120,10 @@
 
         public static bool Collision(Furniture item1, Furniture item2)
         {
+
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
             {
-                double[] point = new double[] { item2.Vertices[i, 0], item2.Vertices[i, 1] };
+                decimal[] point = new decimal[] { item2.Vertices[i, 0], item2.Vertices[i, 1] };
 
                 if (DetermineCollision(item1.Vertices, point))
                 {
@@ -130,6 +132,7 @@
                     return true;
                 }
             }
+
             item1.IsCollided = false;
             item2.IsCollided = false;
             return false;
@@ -181,7 +184,7 @@
             return fine;
         }
 
-        private static bool DetermineCollision(double[,] vertices, double[] point)
+        private static bool DetermineCollision(decimal[,] vertices, decimal[] point)
         {
             bool collision = false;
 

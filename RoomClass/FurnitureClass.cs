@@ -1,11 +1,13 @@
-﻿namespace RoomClass
+﻿
+
+namespace RoomClass
 {
     public class Furniture : IPolygon
     {
         public int ID { get; private set; }
         public int ParentID { get; set; }
 
-        public double Rotation { get; private set; }
+        public int Rotation { get; private set; }
         public int Length { get; private set; }
         public int Height { get; private set; }
         public string Zone { get; private set; }
@@ -17,8 +19,8 @@
 
 
         #region Arrays of coorditantes
-        public double[] Center { get; private set; }
-        public double[,] Vertices { get; private set; }
+        public decimal[] Center { get; private set; }
+        public decimal[,] Vertices { get; private set; }
         #endregion
 
 
@@ -33,19 +35,20 @@
             IgnoreWindows = ignoreWindows;
             NearWall = nearWall;
 
-            Center = new double[2];
-            Center[0] = (double)Length / 2;     //X
-            Center[1] = (double)Height / 2;     //Y
+            Center = new decimal[2];
+            Center[0] = (decimal)Length / 2;     //X
+            Center[1] = (decimal)Height / 2;     //Y
 
-            Vertices = new double[4, 2];
-            Vertices[0, 1] = Height;
-            Vertices[1, 0] = Length; Vertices[1, 1] = Height;
-            Vertices[2, 0] = Length;
+            Vertices = new decimal[4, 2];
+            Vertices[0, 1] = Height;                            //A
+            Vertices[1, 0] = Length; Vertices[1, 1] = Height;   //B
+            Vertices[2, 0] = Length;                            //C
+                                                                //D
         }
 
 
         #region Moving Furniture
-        public void Move(double centerDeltaX, double centerDeltaY)
+        public void Move(decimal centerDeltaX, decimal centerDeltaY)
         {
             Center[0] += centerDeltaX;
             Center[1] += centerDeltaY;
@@ -74,8 +77,11 @@
 
 
         #region Rotation
+
         public void Rotate(int angle)
         {
+            ResetCoords();
+
             double radians = angle * (Math.PI / 180);
 
             for (int i = 0; i < Vertices.GetLength(0); i++)
@@ -90,19 +96,43 @@
                 Rotation += 360;
         }
 
-        private void RotatingVertex(ref double x, ref double y, double radians)
+        private void ResetCoords()
+        {
+            Vertices[0, 0] = Center[0] - (decimal)Length / 2;
+            Vertices[0, 1] = Center[1] + (decimal)Height / 2;
+
+            Vertices[1, 0] = Center[0] + (decimal)Length / 2;
+            Vertices[1, 1] = Center[1] + (decimal)Height / 2;
+
+            Vertices[2, 0] = Center[0] + (decimal)Length / 2;
+            Vertices[2, 1] = Center[1] - (decimal)Height / 2;
+
+            Vertices[3, 0] = Center[0] - (decimal)Length / 2;
+            Vertices[3, 1] = Center[1] - (decimal)Height / 2;
+        }
+
+        private void RotatingVertex(ref decimal x, ref decimal y, double radians)
         {
             // Translation point to the origin
-            double tempX = x - Center[0];
-            double tempY = y - Center[1];
+            decimal tempX = x - Center[0];
+            decimal tempY = y - Center[1];
 
             // Rotation application
-            double rotatedX = tempX * Math.Cos(radians) - tempY * Math.Sin(radians);
-            double rotatedY = tempX * Math.Sin(radians) + tempY * Math.Cos(radians);
+            decimal rotatedX = tempX * (decimal)Math.Cos(radians) - tempY * (decimal)Math.Sin(radians);
+            decimal rotatedY = tempX * (decimal)Math.Sin(radians) + tempY * (decimal)Math.Cos(radians);
 
             // Translating back
             x = rotatedX + Center[0];
             y = rotatedY + Center[1];
+        }
+
+        public object Clone()
+        {
+            Furniture item = new Furniture(ID, Height, Length, Zone, IgnoreWindows, NearWall, ParentID);
+            item.Center = (decimal[])this.Center.Clone();
+            item.Vertices = (decimal[,])this.Vertices.Clone();
+            item.Rotation = this.Rotation;
+            return item;
         }
         #endregion
     }
