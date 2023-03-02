@@ -82,18 +82,19 @@ namespace RoomClass
         {
             ResetCoords();
 
-            double radians = angle * (Math.PI / 180);
+            Rotation += angle;
+            while (Rotation >= 360)
+                Rotation -= 360;
+            while (Rotation < 0)
+                Rotation += 360;
+
+            double radians = Rotation * (Math.PI / 180);
 
             for (int i = 0; i < Vertices.GetLength(0); i++)
             {
                 RotatingVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians);
             }
 
-            Rotation += angle;
-            while (Rotation >= 360)
-                Rotation -= 360;
-            while (Rotation < 0)
-                Rotation += 360;
         }
 
         private void ResetCoords()
