@@ -19,7 +19,7 @@ namespace RoomClass
                 Rooms.Add(room);
             }
         }
-
+        //TODO CROSSOVER AND MUTATION ALGORITHMS
         public Room Start()
         {
             while(KeepUp)
@@ -35,7 +35,7 @@ namespace RoomClass
             return null;
         }
 
-        private List<Room> SUS(int amountToKeep, List<Room> rooms)
+        private static List<Room> SUS(int amountToKeep, List<Room> rooms)
         {
             Random a = new();
 
@@ -52,7 +52,7 @@ namespace RoomClass
             return RWS(rooms, pointers);
         }
 
-        private List<Room> RWS(List<Room> rooms, List<int> pointers)
+        private static List<Room> RWS(List<Room> rooms, List<int> pointers)
         {
             List<Room> rooms2keep = new();
 

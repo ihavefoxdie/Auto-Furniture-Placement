@@ -57,6 +57,7 @@
                 throw new Exception("The room has no furniture!");
         }
 
+        //TODO Improve penalty evaluation by implementing method for more flexibility
         public void PenaltyEvaluation()
         {
             for (int i = 0; i < FurnitureList.Count; i++)

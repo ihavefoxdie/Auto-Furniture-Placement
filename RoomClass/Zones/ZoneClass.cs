@@ -5,7 +5,7 @@
         public string Name { get; set; }
         public double Area { get; set; }
         public List<Furniture> Furnitures { get; set; }
-        public int Length { get; set; }
+        public int Width { get; set; }
         public int Height { get; set; }
         public decimal[] Center { get; private set; }
         public decimal[,] Vertices { get; private set; }
@@ -14,19 +14,19 @@
         {
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.Zone == zoneName).ToList();
-            Length = Furnitures.Select(p => p.Length + 2).Sum();
+            Width = Furnitures.Select(p => p.Width + 2).Sum();
             Height = Furnitures.Select(p => p.Height + 2).Sum();
-            Area = Math.Floor(Math.Sqrt(Length * Height));
+            Area = Math.Floor(Math.Sqrt(Width * Height));
             Center = new decimal[2];
-            Center[0] = (decimal)Length / 2;     
+            Center[0] = (decimal)Width / 2;     
             Center[1] = (decimal)Height / 2;     
             Vertices = new decimal[4, 2];
 
             Vertices[0, 1] = Height;                             // ← ↑
 
-            Vertices[1, 0] = Length; Vertices[1, 1] = Height;    // → ↑
+            Vertices[1, 0] = Width; Vertices[1, 1] = Height;    // → ↑
 
-            Vertices[2, 0] = Length;                             // → ↓
+            Vertices[2, 0] = Width;                             // → ↓
         }
         
         //TODO Method can be used just once
