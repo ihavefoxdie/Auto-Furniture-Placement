@@ -49,8 +49,8 @@
                     y += iy;
                     e = e2;
                 }
-                Console.Clear();
-                Print(space);
+                /*Console.Clear();
+                Print(space);*/
             }
         }
     }

@@ -28,7 +28,7 @@ namespace RoomClass
                                                             //                  A
         public int ExtraWidth { get; private set; }         //Extra width for ClearanceArea
         public int ExtraHeight { get; private set; }        //Extra height for ClearanceArea
-        public string Zone { get; private set; }            //String value for zone that the furniture belongs to
+        public string Zone { get; private set; }            //String value for the zone this furniture object belongs to
         public bool IgnoreWindows { get; private set; }     //Determines whether the furniture object can be placed in front of a window
         public int NearWall { get; private set; }           //Determines whether the furniture object must be placed near wall and the distance between the two
         public bool Accessible { get; private set; }        //Determines whether the furniture object must be accessible
