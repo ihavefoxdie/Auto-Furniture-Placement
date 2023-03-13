@@ -10,6 +10,13 @@
         public double Penalty { get; private set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
+
+        public delegate void Raster(int x1, int y1, int x2, int y2, int[,] space, int color);
+
+        public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
+
+        
+
         public Room(int length, int width, Furniture[] doors, List<Furniture> items, bool windowed, Furniture[]? windows = null)
         {
             RoomLength = length;

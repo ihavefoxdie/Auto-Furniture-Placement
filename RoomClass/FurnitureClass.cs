@@ -5,8 +5,21 @@ namespace RoomClass
     public class Furniture : IPolygon
     {
         public int ID { get; private set; }                 //ID of the furniture object
-        public int ParentID { get; private set; }                   //ID of the parent furniture object
-
+        public int ParentID { get; private set; }           //ID of the parent furniture object
+        public string Name { get; private set; }
+        public string? ParentName
+        {
+            get
+            {
+                if(this.ParentName == null)
+                    return "empty";
+                return this.ParentName;
+            }
+            private set
+            {
+                this.ParentName = value;
+            }
+        }
         public int Rotation { get; private set; }           //Current rotation of the object in degrees
         public int Width { get; private set; }              //Object width     A_____B
         public int Height { get; private set; }             //Object height     D
@@ -31,10 +44,11 @@ namespace RoomClass
         #endregion
 
 
-        public Furniture(int id, int length, int height, string zone, bool ignoreWindows, int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1, bool accessable = false)
+        public Furniture(int id, string name, int length, int height, string zone, bool ignoreWindows, int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1, bool accessable = false, string? parentName = null)
         {
             ID = id;
             ParentID = parent;
+            Name = name;
             Width = length;
             Height = height;
             Rotation = 0;
@@ -89,7 +103,6 @@ namespace RoomClass
             {
                 RotatingVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians);
             }
-
         }
 
         //Resetting coordinates of the rectangle for rotation and value assignment in constructor.
@@ -136,7 +149,7 @@ namespace RoomClass
             y = rotatedY + Center[1];
         }
 
-        public object Clone()
+        /*public object Clone()
         {
             Furniture item = new(ID, Height, Width, Zone, IgnoreWindows, NearWall, ParentID)
             {
@@ -145,7 +158,7 @@ namespace RoomClass
                 Rotation = this.Rotation
             };
             return item;
-        }
+        }*/
         #endregion
     }
 }
