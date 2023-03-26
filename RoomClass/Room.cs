@@ -2,103 +2,23 @@
 
 namespace RoomClass
 {
-    public class Room
+    public sealed class Room
     {
-        public List<Furniture> FurnitureList { get; private set; }
-        private List<Furniture> Doors { get; set; }
-        private Furniture[]? Windows { get; set; }
-        public int[,] RoomArray { get; private set; }
+        public List<GeneralFurniture> FurnitureList { get; private set; }
+        private List<GeneralFurniture> Doors { get; set; }
+        private GeneralFurniture[]? Windows { get; set; }
+        public int[,] RoomArray { get; set; }
         public int RoomHeight { get; private set; }
         public int RoomWidth { get; private set; }
         public double Penalty { get; private set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
 
-        public delegate void Raster(int x1, int y1, int x2, int y2, int[,] space, int color);
-        public Raster? Rasterize { get; set; }
-
-        public void Rasterization()
-        {
-            if (Rasterize== null)
-            {
-                return;
-            }
-
-            int minimalVal = 0;
-            for (int i = 0; i < FurnitureList.Count; i++)
-            {
-                for (int j = 0; j < FurnitureList[i].Vertices.GetLength(0); j++)
-                {
-                    for (int k = 0; k < FurnitureList[i].Vertices.GetLength(1); k++)
-                    {
-                        if ((int)FurnitureList[i].Vertices[j, k] < 0 && (int)FurnitureList[i].Vertices[j, k] < minimalVal)
-                            minimalVal = (int)FurnitureList[i].Vertices[j, k];
-                    }
-                }
-            }
-
-            minimalVal = Math.Abs(minimalVal);
-
-
-
-            int maxVal = 0;
-            for (int i = 0; i < FurnitureList.Count; i++)
-            {
-                for (int j = 0; j < FurnitureList[i].Vertices.GetLength(0); j++)
-                {
-                    for (int k = 0; k < FurnitureList[i].Vertices.GetLength(1); k++)
-                    {
-                        if (((int)FurnitureList[i].Vertices[j, k] >= RoomWidth || (int)FurnitureList[i].Vertices[j, k] >= RoomHeight) && (int)FurnitureList[i].Vertices[j, k] > maxVal)
-                            maxVal = (int)FurnitureList[i].Vertices[j, k] + 1;
-                    }
-                }
-            }
-            if (maxVal > RoomWidth)
-                maxVal -= RoomWidth;
-            else if (maxVal > RoomHeight)
-                maxVal -= RoomHeight;
-            int addVal = minimalVal + maxVal;
-            int spaceWidth = RoomWidth + addVal; int spaceHeight = RoomHeight + addVal;
-            maxVal = Math.Max(spaceWidth, spaceHeight);
-
-            RoomArray = new int[maxVal, maxVal];
-            for (int i = 0; i < FurnitureList.Count; i++)
-            {
-                for (int j = 0; j < FurnitureList[i].Vertices.GetLength(0); j++)
-                {
-                    if (j < FurnitureList[i].Vertices.GetLength(0) - 1)
-                        Rasterize((int)FurnitureList[i].Vertices[j, 0] + minimalVal, (int)FurnitureList[i].Vertices[j, 1] + minimalVal, (int)FurnitureList[i].Vertices[j + 1, 0] + minimalVal, (int)FurnitureList[i].Vertices[j + 1, 1] + minimalVal, RoomArray, FurnitureList[i].ID);
-                    else
-                        Rasterize((int)FurnitureList[i].Vertices[j, 0] + minimalVal, (int)FurnitureList[i].Vertices[j, 1] + minimalVal, (int)FurnitureList[i].Vertices[0, 0] + minimalVal, (int)FurnitureList[i].Vertices[0, 1] + minimalVal, RoomArray, FurnitureList[i].ID);
-                }
-            }
-
-            for (int i = 0; i < Doors.Count; i++)
-            {
-                for (int j = 0; j < Doors[i].Vertices.GetLength(0); j++)
-                {
-                    if (j < Doors[i].Vertices.GetLength(0) - 1)
-                        Rasterize((int)Doors[i].Vertices[j, 0] + minimalVal, (int)Doors[i].Vertices[j, 1] + minimalVal, (int)Doors[i].Vertices[j + 1, 0] + minimalVal, (int)Doors[i].Vertices[j + 1, 1] + minimalVal, RoomArray, Doors[i].ID);
-                    else
-                        Rasterize((int)Doors[i].Vertices[j, 0] + minimalVal, (int)Doors[i].Vertices[j, 1] + minimalVal, (int)Doors[i].Vertices[0, 0] + minimalVal, (int)Doors[i].Vertices[0, 1] + minimalVal, RoomArray, Doors[i].ID);
-                }
-            }
-
-
-
-            Rasterize(minimalVal, minimalVal, RoomWidth + minimalVal, minimalVal, RoomArray, -1);
-            Rasterize(RoomWidth + minimalVal - 1, minimalVal, RoomWidth + minimalVal - 1, RoomHeight + minimalVal - 1, RoomArray, -1);
-            Rasterize(RoomWidth + minimalVal - 1, RoomHeight + minimalVal - 1, minimalVal, RoomHeight + minimalVal - 1, RoomArray, -1);
-            Rasterize(minimalVal, RoomHeight + minimalVal - 1, minimalVal, minimalVal, RoomArray, -1);
-
-        }
-
 
         public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
 
-        
 
-        public Room(int height, int width, List<Furniture> doors, List<Furniture> items, bool windowed, Furniture[]? windows = null)
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
         {
             RoomHeight = height;
             RoomWidth = width;
@@ -180,7 +100,7 @@ namespace RoomClass
         }
 
 
-        private int OutOfBoundsDeterminer(Furniture furniture)
+        private int OutOfBoundsDeterminer(GeneralFurniture furniture)
         {
             int fine = 0;
 
@@ -207,7 +127,7 @@ namespace RoomClass
             return fine;
         }
 
-        public static bool Collision(Furniture item1, Furniture item2)
+        public static bool Collision(GeneralFurniture item1, GeneralFurniture item2)
         {
 
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
@@ -227,7 +147,7 @@ namespace RoomClass
             return false;
         }
 
-        private int NearWallPenalty(Furniture furniture)
+        private int NearWallPenalty(GeneralFurniture furniture)
         {
             int fine = 0;
             bool check = false;

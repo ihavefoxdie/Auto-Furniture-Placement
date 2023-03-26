@@ -7,12 +7,15 @@
             int[] origRoomDim = new int[] { 160, 80 };
             int[] roomDim = new int[] { 160, 80 };
 
-            List<Furniture> furnitures = new()
+            List<GeneralFurniture> furnitures = new()
             {
-                new Furniture(1, "bed", 40, 32, "livingRoom", false),
-                new Furniture(2, "table", 40, 40, "kitchen", false, 2)
+                new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
+                new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
             };
-
+            for (int i = 0; i < furnitures.Count; i++)
+            {
+                furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
+            }
             furnitures[0].Move(-20, -16);
             furnitures[1].Move(-80, 80);
             //furnitures[0].Rotate(45);
@@ -34,7 +37,7 @@
             Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
             Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
 
-            List<Furniture> door = new()
+            List<GeneralFurniture> door = new()
             {
                 new(-1, "door", 15, 5, "ROOM", false, 0)
             };
@@ -42,18 +45,22 @@
 
             Room newRoom = new(40, 40, door, furnitures, _ = false)
             {
-                Rasterize = Rasterization.Line
+
             };
+
+
+            Rasterizer.Rasterize = PolygonRasterizer.Line;
+
             //newRoom.Rasterize()
 
 
-            newRoom.Rasterization();
+            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
 
-            Rasterization.Print(newRoom.RoomArray);
+            PolygonRasterizer.Print(newRoom.RoomArray);
 
-            
 
-            
+
+
 
             newRoom.FurnitureList[0].Rotate(31);
 
