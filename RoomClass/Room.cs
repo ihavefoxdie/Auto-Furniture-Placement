@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace RoomClass
+﻿namespace RoomClass
 {
     public sealed class Room
     {
@@ -16,6 +14,9 @@ namespace RoomClass
 
 
         public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
+        public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
+
+        public CollisionDeterminer? DetermineCollision { get; set; }
 
 
         public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
@@ -127,9 +128,10 @@ namespace RoomClass
             return fine;
         }
 
-        public static bool Collision(GeneralFurniture item1, GeneralFurniture item2)
+        public bool Collision(GeneralFurniture item1, GeneralFurniture item2)
         {
-
+            if (DetermineCollision == null)
+                return false;
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
             {
                 decimal[] point = new decimal[] { item2.Vertices[i, 0], item2.Vertices[i, 1] };
@@ -193,19 +195,6 @@ namespace RoomClass
             return fine;
         }
 
-        private static bool DetermineCollision(decimal[,] vertices, decimal[] point)
-        {
-            bool collision = false;
 
-            for (int i = 0, j = vertices.GetLength(0) - 1; i < vertices.GetLength(0); j = i++)
-            {
-                if (((vertices[i, 1] <= point[1] && point[1] < vertices[j, 1]) ||
-                    (vertices[j, 1] <= point[1] && point[1] < vertices[i, 1])) &&
-                    point[0] < (vertices[j, 0] - vertices[i, 0]) * (point[1] - vertices[i, 1]) /
-                    (vertices[j, 1] - vertices[i, 1]) + vertices[i, 0])
-                    collision = !collision;
-            }
-            return collision;
-        }
     }
 }

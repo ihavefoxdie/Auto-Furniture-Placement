@@ -33,10 +33,10 @@
         //TODO Method can be used just once
         public static List<Zone> InitializeZones(List<GeneralFurniture> furnitures)
         {
-            List<Zone> list = new List<Zone>();
+            List<Zone> list = new();
 
             // List contains distinct zones
-            List<string> unique = new List<string>();
+            List<string> unique = new();
 
             foreach (var item in furnitures)
             {

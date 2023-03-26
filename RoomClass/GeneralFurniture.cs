@@ -17,7 +17,6 @@ namespace RoomClass
             }
             private set
             {
-                this.ParentName = value;
             }
         }
         public int Rotation { get; private set; }           //Current rotation of the object in degrees

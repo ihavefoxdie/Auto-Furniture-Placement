@@ -64,7 +64,7 @@
 
             newRoom.FurnitureList[0].Rotate(31);
 
-            Console.WriteLine(Room.Collision(newRoom.FurnitureList[0], newRoom.FurnitureList[1]));
+            Console.WriteLine(newRoom.Collision(newRoom.FurnitureList[0], newRoom.FurnitureList[1]));
             newRoom.PenaltyEvaluation();
             Console.WriteLine(newRoom.FurnitureList[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureList[1].IsOutOfBounds);
             Console.WriteLine(newRoom.Penalty);

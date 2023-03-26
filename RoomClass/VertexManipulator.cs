@@ -22,5 +22,20 @@ namespace RoomClass
             x = rotatedX + centerX;
             y = rotatedY + centerY;
         }
+
+        public static bool DetermineCollision(decimal[,] vertices, decimal[] point)
+        {
+            bool collision = false;
+
+            for (int i = 0, j = vertices.GetLength(0) - 1; i < vertices.GetLength(0); j = i++)
+            {
+                if (((vertices[i, 1] <= point[1] && point[1] < vertices[j, 1]) ||
+                    (vertices[j, 1] <= point[1] && point[1] < vertices[i, 1])) &&
+                    point[0] < (vertices[j, 0] - vertices[i, 0]) * (point[1] - vertices[i, 1]) /
+                    (vertices[j, 1] - vertices[i, 1]) + vertices[i, 0])
+                    collision = !collision;
+            }
+            return collision;
+        }
     }
 }
