@@ -4,6 +4,7 @@ namespace Rooms
 {
     public sealed class Room
     {
+        #region General Properties
         public List<GeneralFurniture> FurnitureList { get; private set; }
         private List<GeneralFurniture> Doors { get; set; }
         private GeneralFurniture[]? Windows { get; set; }
@@ -13,14 +14,17 @@ namespace Rooms
         public double Penalty { get; private set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
+        #endregion
 
 
+        #region Delegates
         public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
         public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
-
         public CollisionDeterminer? DetermineCollision { get; set; }
+        #endregion
 
 
+        #region Constructor
         public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
         {
             RoomHeight = height;
@@ -67,6 +71,8 @@ namespace Rooms
             if (FurnitureList.Count == 0)
                 throw new Exception("The room has no furniture!");
         }*/
+        #endregion
+
 
         //TODO Improve penalty evaluation by implementing a better method for more flexibility
         public void PenaltyEvaluation()
@@ -193,10 +199,7 @@ namespace Rooms
             {
                 fine += 10;
             }
-
             return fine;
         }
-
-
     }
 }
