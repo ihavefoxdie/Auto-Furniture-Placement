@@ -22,16 +22,15 @@ namespace Testing
             {
                 furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
             }
-            furnitures[0].Move(-20, -16);
-            furnitures[1].Move(-80, 80);
+            furnitures[0].Move(0, 0);
+            furnitures[1].Move(10, 15);
             //furnitures[0].Rotate(45);
 
             Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
             Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
             Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
             Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
-            for (int i = 0; i < 1; i++)
-                furnitures[0].Rotate(2);
+            
 
             Console.WriteLine(furnitures[0].Rotation);
             int rotateFor = 360 - furnitures[0].Rotation;
@@ -51,7 +50,7 @@ namespace Testing
 
             Room newRoom = new(40, 40, door, furnitures, _ = false)
             {
-
+                DetermineCollision = VertexManipulator.DetermineCollision
             };
 
 
@@ -59,16 +58,16 @@ namespace Testing
 
             //newRoom.RasterizationMethod()
 
-
+            //newRoom.FurnitureList[0].Rotate(31);
             newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
 
+            
             LineDrawer.Print(newRoom.RoomArray);
 
 
 
 
 
-            newRoom.FurnitureList[0].Rotate(31);
 
             Console.WriteLine(newRoom.Collision(newRoom.FurnitureList[0], newRoom.FurnitureList[1]));
             newRoom.PenaltyEvaluation();

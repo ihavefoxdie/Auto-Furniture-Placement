@@ -8,13 +8,14 @@ namespace Furniture
         public int ID { get; private set; }                 //ID of the furniture object
         public int ParentID { get; private set; }           //ID of the parent furniture object
         public string Name { get; private set; }
+        private string? _parentName;
         public string? ParentName
         {
             get
             {
-                if(this.ParentName == null)
+                if(_parentName == null)
                     return "empty";
-                return this.ParentName;
+                return _parentName;
             }
             private set
             {
