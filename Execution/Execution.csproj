@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Furniture\Furniture.csproj" />
+    <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\Rasterization\Rasterization.csproj" />
+    <ProjectReference Include="..\RoomClass\RoomProject.csproj" />
+    <ProjectReference Include="..\VertexOperations\VertexOperations.csproj" />
+  </ItemGroup>
+
+</Project>

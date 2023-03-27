@@ -1,4 +1,4 @@
-﻿namespace RoomClass
+﻿namespace Interfaces
 {
     public interface IPolygon
     {

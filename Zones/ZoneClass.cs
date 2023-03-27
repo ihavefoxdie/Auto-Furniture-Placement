@@ -1,4 +1,7 @@
-﻿namespace RoomClass.Zones
+﻿using Interfaces;
+using Furniture;
+
+namespace Zones
 {
     public class Zone : IPolygon
     {

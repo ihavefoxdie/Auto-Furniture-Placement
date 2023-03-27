@@ -1,8 +1,6 @@
-using System;
-using System.Linq;
+using Rooms;
 
-
-namespace RoomClass
+namespace GeneticAlgorithm
 {
     public class GeneticAlgoritm
     {

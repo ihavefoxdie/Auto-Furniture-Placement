@@ -1,6 +1,6 @@
-﻿namespace RoomClass
+﻿namespace Rasterization
 {
-    public static class PolygonRasterizer
+    public static class LineDrawer
     {
         public static void Print(int[,] space)
         {

@@ -1,4 +1,6 @@
-﻿namespace RoomClass
+﻿using Furniture;
+
+namespace Rooms
 {
     public sealed class Room
     {
@@ -45,7 +47,7 @@
 
         }
 
-        /*public Room(int length, int width, Furniture[] doors, params Furniture[] items)
+        /*public Rooms(int length, int width, Furniture[] doors, params Furniture[] items)
         {
             RoomHeight = length;
             RoomWidth = width;

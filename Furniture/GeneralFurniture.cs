@@ -1,9 +1,10 @@
-﻿
+﻿using Interfaces;
 
-namespace RoomClass
+namespace Furniture
 {
     public class GeneralFurniture : IPolygon
     {
+        #region General Properties
         public int ID { get; private set; }                 //ID of the furniture object
         public int ParentID { get; private set; }           //ID of the parent furniture object
         public string Name { get; private set; }
@@ -28,15 +29,24 @@ namespace RoomClass
         public int ClearanceWidth { get; private set; }         //Extra width for ClearanceArea
         public int ClearanceHeight { get; private set; }        //Extra height for ClearanceArea
         public string Zone { get; private set; }            //String value for the zone this furniture object belongs to
+        #endregion
+
+
+        #region Flags
         public bool IgnoreWindows { get; private set; }     //Determines whether the furniture object can be placed in front of a window
         public int NearWall { get; private set; }           //Determines whether the furniture object must be placed near wall and the distance between the two
         public bool Accessible { get; private set; }        //Determines whether the furniture object must be accessible
 
         public bool IsOutOfBounds { get; set; }             //Is the furniture object currently out of bounds
         public bool IsCollided { get; set; }                //Is the furniture object currently collided with another
+        #endregion
 
+
+        #region Rotation Delegate
         public delegate void VertexRotation(ref decimal x, ref decimal y, double radians, int centerX, int centerY);
         public VertexRotation? RotateVertex { get; set; }
+        #endregion
+
 
         #region Arrays of coorditantes
         public decimal[] Center { get; private set; }               //Center coords of the object
@@ -45,6 +55,7 @@ namespace RoomClass
         #endregion
 
 
+        #region Contsructor
         public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows, int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1, bool accessable = false, string? parentName = null)
         {
             ID = id;
@@ -69,6 +80,7 @@ namespace RoomClass
             ResetCoords();                          //     |       |       the front is the side that must be accessable.
                                                     //     A_______B       Accessibility is determined with pathfinding algorithm.
         }
+        #endregion
 
 
         #region Moving Furniture
@@ -87,7 +99,6 @@ namespace RoomClass
 
 
         #region Rotation
-
         public void Rotate(int angle)
         {
             if (RotateVertex == null)

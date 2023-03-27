@@ -1,4 +1,10 @@
-﻿namespace RoomClass
+﻿using Interfaces;
+using Furniture;
+using Rooms;
+using Vertex;
+using Rasterization;
+
+namespace Testing
 {
     static class Program
     {
@@ -49,14 +55,14 @@
             };
 
 
-            Rasterizer.Rasterize = PolygonRasterizer.Line;
+            Rasterizer.RasterizationMethod = LineDrawer.Line;
 
-            //newRoom.Rasterize()
+            //newRoom.RasterizationMethod()
 
 
             newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
 
-            PolygonRasterizer.Print(newRoom.RoomArray);
+            LineDrawer.Print(newRoom.RoomArray);
 
 
 
