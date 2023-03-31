@@ -3,6 +3,7 @@ using Furniture;
 using Rooms;
 using Vertex;
 using Rasterization;
+using FactoryMethod;
 
 namespace Testing
 {
@@ -10,13 +11,20 @@ namespace Testing
     {
         static void Main()
         {
+            BedFactory bedFactory = new();
+            TableFactory tableFactory = new();
+            DoorFactory doorFactory = new();
+
             int[] origRoomDim = new int[] { 160, 80 };
             int[] roomDim = new int[] { 160, 80 };
 
             List<GeneralFurniture> furnitures = new()
             {
-                new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
-                new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
+                bedFactory.GetFurniture(),
+                tableFactory.GetFurniture()
+
+                //new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
+                //new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
             };
             for (int i = 0; i < furnitures.Count; i++)
             {
@@ -44,7 +52,8 @@ namespace Testing
 
             List<GeneralFurniture> door = new()
             {
-                new(-1, "door", 15, 5, "ROOM", false, 0)
+                doorFactory.GetFurniture()
+                //new(-1, "door", 15, 5, "ROOM", false, 0)
             };
             door[0].Move(20, 0);
 
