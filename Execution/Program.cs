@@ -21,7 +21,7 @@ namespace Testing
             List<GeneralFurniture> furnitures = new()
             {
                 bedFactory.GetFurniture(),
-                bedFactory.GetFurniture()
+                tableFactory.GetFurniture()
 
                 //new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
                 //new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
