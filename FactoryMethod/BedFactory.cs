@@ -23,6 +23,7 @@ namespace FactoryMethod
 
         }
 
+
         public override GeneralFurniture GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
             Bed bed = new(furnitureData,furnitureDataFlags);
