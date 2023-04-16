@@ -18,6 +18,16 @@ namespace Zones
             base.Resize(width, height);
             ExtendedWidth += width;
             ExtendedHeight += height;
+            Area = (double)(ExtendedWidth * ExtendedHeight);
         }
+
+        public Zone toZone()
+        {
+            Width = (int)ExtendedWidth;
+            Height = (int)ExtendedHeight;
+
+            return this;
+        }
+
     }
 }

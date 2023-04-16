@@ -23,6 +23,7 @@ namespace Zones
 
         public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
+            isStorage = false;
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.Zone == zoneName).ToList();
             Width = Furnitures.Select(p => p.Width).Sum();
@@ -39,6 +40,9 @@ namespace Zones
             Vertices[1, 0] = Width; Vertices[1, 1] = Height;    // → ↑
             Vertices[2, 0] = Width;                             // → ↓
 
+            if (DetermineZoneType()) isStorage = true;
+
+
         }
 
         public Zone(Zone prevZone)
@@ -50,7 +54,7 @@ namespace Zones
             Furnitures = prevZone.Furnitures;
             Width = prevZone.Width + 2;
             Height = prevZone.Height + 2;
-            Area = Width*Height;
+            Area = Width * Height;
             FurnitureArea = prevZone.FurnitureArea;
             Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
             Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);
@@ -104,6 +108,15 @@ namespace Zones
             Width += (int)deltaW;
             Height += (int)deltaH;
         }
+
+        private bool DetermineZoneType()
+        {
+            if (Name == "storage")
+                return true;
+            return false;
+
+        }
+
     }
 }
 

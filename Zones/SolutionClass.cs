@@ -8,7 +8,7 @@ namespace RoomClass.Zones
     internal class SolutionClass
     {
 
-        public List<Zone> Zones { get; set; }
+        public List<ExtendedZone> Zones { get; set; }
 
         public SolutionClass()
         {
