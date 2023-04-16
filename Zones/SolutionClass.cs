@@ -35,7 +35,7 @@ namespace RoomClass.Zones
         {
             for (int i = 0; i < zones.Count; i++)
             {
-                for (int j = 0; j < zones.Count; j++)
+                for (int j = i + 1; j < zones.Count; j++)
                 {
 
                     if (i != j)
@@ -56,7 +56,7 @@ namespace RoomClass.Zones
 
         }
 
-        public static decimal FindOverlapArea<T> (T zone1, T zone2) where T : IPolygon
+        public static decimal FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
         {
             /*
     x1, y1 - левая нижняя точка первого прямоугольника   - D
@@ -67,7 +67,7 @@ namespace RoomClass.Zones
 
 
             decimal left = Math.Max(zone1.Vertices[3, 0], zone2.Vertices[3, 0]);
-            decimal top = Math.Min(zone1.Vertices[1,1], zone2.Vertices[1, 1]);
+            decimal top = Math.Min(zone1.Vertices[1, 1], zone2.Vertices[1, 1]);
             decimal right = Math.Min(zone1.Vertices[1, 0], zone2.Vertices[1, 0]);
             decimal bottom = Math.Max(zone1.Vertices[3, 1], zone2.Vertices[3, 1]);
 

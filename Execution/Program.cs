@@ -4,6 +4,7 @@ using Rooms;
 using Vertex;
 using Rasterization;
 using FactoryMethod;
+using Zones;
 
 namespace Testing
 {

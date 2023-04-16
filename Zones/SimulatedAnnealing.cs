@@ -29,6 +29,7 @@
         {
             Random random = new();
 
+            #region Simulated Annealing
             while (TempDiff > 0.1 || TempDiff < 0)
             {
                 InitialSolution.Cost = CurrentSolution.Cost;
@@ -52,6 +53,7 @@
                 MaxStep = Math.Min(MaxStep * StepDecreaseRatio, MinStep);
                 TempDiff = InitialSolution.Cost - CurrentSolution.Cost;
             }
+            #endregion
 
             return CurrentSolution;
 
