@@ -3,7 +3,6 @@ using Interfaces;
 
 namespace Zones
 {
-    //TODO Method to determine storageFlag by zoneName. Include this method in ctor. Likely it will be switch
 
     public class Zone : IPolygon
     {
