@@ -1,9 +1,9 @@
-﻿using Interfaces;
+﻿using FactoryMethod;
 using Furniture;
+using Interfaces;
+using Rasterization;
 using Rooms;
 using Vertex;
-using Rasterization;
-using FactoryMethod;
 using Zones;
 
 namespace Testing
@@ -12,6 +12,7 @@ namespace Testing
     {
         static void Main()
         {
+
             BedFactory bedFactory = new();
             TableFactory tableFactory = new();
             DoorFactory doorFactory = new();
@@ -39,7 +40,7 @@ namespace Testing
             Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
             Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
             Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
-            
+
 
             Console.WriteLine(furnitures[0].Rotation);
             int rotateFor = 360 - furnitures[0].Rotation;
@@ -71,7 +72,7 @@ namespace Testing
             //newRoom.FurnitureList[0].Rotate(31);
             newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
 
-            
+
             LineDrawer.Print(newRoom.RoomArray);
 
 
@@ -83,6 +84,30 @@ namespace Testing
             newRoom.PenaltyEvaluation();
             Console.WriteLine(newRoom.FurnitureList[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureList[1].IsOutOfBounds);
             Console.WriteLine(newRoom.Penalty);
+
+
+            #region AnnealingTest
+
+            List<Zone> zones = Zone.InitializeZones(furnitures);
+            List<AnnealingZone> annealingZones = new List<AnnealingZone>(zones.Count);
+            foreach (var item in zones)
+            {
+                annealingZones.Add(new(item, 2));
+            }
+
+            foreach (var item in annealingZones)
+            {
+                item.Vertices[0, 0] = 10033123.231241M;
+            }
+
+            annealingZones.ElementAt(0).Resize(100, 100);
+            
+            #endregion
+
+
+
+            Console.ReadLine();
+
         }
     }
 }

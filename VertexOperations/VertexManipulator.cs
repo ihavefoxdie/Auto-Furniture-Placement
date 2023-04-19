@@ -31,5 +31,15 @@
             }
             return collision;
         }
+
+        public static void VertexReplacing(decimal[,] vertices, decimal deltaX, decimal deltaY)
+        {
+            for (int i = 0; i < vertices.GetLength(0); i++)
+            {
+                vertices[i, 0] += deltaX;
+                vertices[i, 1] += deltaY;
+            }
+        }
+
     }
 }

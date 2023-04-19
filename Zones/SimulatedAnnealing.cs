@@ -17,7 +17,44 @@
         public int NumTrials { get; set; } = 200;
         public int IterPerTemp { get; set; } = 100;
 
+        public SimulatedAnnealing()
+        {
 
+
+            Temperature = DetermineInitialTemp();
+
+        }
+
+        private double DetermineInitialTemp()
+        {
+            Random random = new Random();
+
+            //TODO Create a full ctor for SolutionClass
+            List<SolutionClass> solutions = new(200);
+
+            for (int i = 0; i < NumTrials; i++)
+            {
+
+
+
+
+            }
+
+            while (NumTrials > 0)
+            {
+                if (random.Next(10) < 7)
+                {
+
+                }
+
+                NumTrials--;
+            }
+
+
+            throw new NotImplementedException();
+
+
+        }
 
         public SolutionClass InitialSolution { get; set; }
         public SolutionClass CurrentSolution { get; set; }
@@ -41,7 +78,7 @@
                     {
                         CurrentSolution = NeighbourSolution;
                     }
-                    
+
                     else if (random.NextDouble() < Math.Exp(CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature)
                     {
                         CurrentSolution = NeighbourSolution;

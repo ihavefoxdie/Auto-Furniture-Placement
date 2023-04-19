@@ -51,12 +51,13 @@ namespace Zones
             Furnitures = prevZone.Furnitures;
             Width = prevZone.Width;
             Height = prevZone.Height;
-            Area = Width * Height;
+            Area = prevZone.Area;
             FurnitureArea = prevZone.FurnitureArea;
-            Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
-            Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);
+            Center = prevZone.Center;
+            Vertices= prevZone.Vertices;
+            //Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
+            //Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);
             isStorage = prevZone.isStorage;
-
         }
 
         //TODO InitializeZones() can be used just once
@@ -104,6 +105,7 @@ namespace Zones
         {
             Width = (int)Math.Floor(deltaW);
             Height = (int)Math.Floor(deltaH);
+            Area = Width * Height;
         }
 
         private bool DetermineZoneType()

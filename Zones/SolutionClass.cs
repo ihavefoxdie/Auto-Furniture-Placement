@@ -4,18 +4,19 @@ using Zones;
 namespace RoomClass.Zones
 {
 
-    //TODO Mandatory item is adding FindCost() in ctor
     internal class SolutionClass
     {
 
-        public List<ExtendedZone> Zones { get; set; }
+        public List<AnnealingZone> Zones { get; set; }
 
-        public SolutionClass()
+        public SolutionClass(List<AnnealingZone> zones)
         {
             Cost = 0;
         }
 
         public double Cost { get; set; }
+
+        
 
         public SolutionClass GenerateNeighbour(double maxStep)
         {
@@ -46,8 +47,6 @@ namespace RoomClass.Zones
 
                         //}
                     }
-
-
 
                 }
             }
