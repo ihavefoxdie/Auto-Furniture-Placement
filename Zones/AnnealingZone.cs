@@ -22,7 +22,7 @@ namespace Zones
             ExtendedWidth += width;
             ExtendedHeight += height;
             Area = (double)(ExtendedWidth * ExtendedHeight);
-            VertexManipulator.VertexReplacing(Vertices, width, height);
+            VertexManipulator.VertexExpanding(Vertices, width, height);
         }
 
         public Zone toZone()

@@ -1,5 +1,6 @@
 ﻿using Furniture;
 using Interfaces;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Zones
 {
@@ -38,7 +39,6 @@ namespace Zones
 
             if (DetermineZoneType())
                 isStorage = true;
-
 
         }
 
@@ -108,14 +108,7 @@ namespace Zones
             Area = Width * Height;
         }
 
-        private bool DetermineZoneType()
-        {
-            if (Name == "storage")
-                return true;
-            return false;
-
-        }
-
+        private bool DetermineZoneType() => Name.ToLower() == "storage" ? true: false;
     }
 }
 
