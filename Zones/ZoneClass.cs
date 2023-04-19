@@ -39,7 +39,8 @@ namespace Zones
             Vertices[1, 0] = Width; Vertices[1, 1] = Height;    // → ↑
             Vertices[2, 0] = Width;                             // → ↓
 
-            if (DetermineZoneType()) isStorage = true;
+            if (DetermineZoneType())
+                isStorage = true;
 
 
         }
@@ -104,8 +105,8 @@ namespace Zones
 
         public virtual void Resize(decimal deltaW, decimal deltaH)
         {
-            Width += (int)deltaW;
-            Height += (int)deltaH;
+            Width = (int)Math.Floor(deltaW);
+            Height = (int)Math.Floor(deltaH);
         }
 
         private bool DetermineZoneType()
