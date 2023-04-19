@@ -1,6 +1,7 @@
 ﻿using Furniture;
 using Interfaces;
 using System.Reflection.Metadata.Ecma335;
+using Vertex;
 
 namespace Zones
 {
@@ -33,9 +34,8 @@ namespace Zones
             Center[1] = (decimal)Height / 2;
 
             Vertices = new decimal[4, 2];
-            Vertices[0, 1] = Height;                             // ← ↑
-            Vertices[1, 0] = Width; Vertices[1, 1] = Height;    // → ↑
-            Vertices[2, 0] = Width;                             // → ↓
+            
+            VertexManipulator.VertexResetting(Vertices, Center, Width, Height);
 
             if (DetermineZoneType())
                 isStorage = true;
