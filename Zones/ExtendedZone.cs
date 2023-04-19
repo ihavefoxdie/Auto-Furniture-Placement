@@ -1,5 +1,8 @@
 ﻿using Furniture;
 
+//TODO Add new method to copy data from ExtendedZone -> ZoneClass after Simulated Annealing (likely by ID property)
+
+
 namespace Zones
 {
     public class ExtendedZone : Zone

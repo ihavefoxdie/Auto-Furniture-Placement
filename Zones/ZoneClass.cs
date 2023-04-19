@@ -3,19 +3,16 @@ using Interfaces;
 
 namespace Zones
 {
-
+    //TODO Determine how to create IDs for each zone
     public class Zone : IPolygon
     {
         public int ID { get; }
         public string Name { get; set; }
         public double Area { get; set; }
-
         public double FurnitureArea { get; set; }
-
         public List<GeneralFurniture> Furnitures { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-
         public decimal[] Center { get; private set; }
         public decimal[,] Vertices { get; private set; }
         public bool isStorage { get; private set; }
@@ -62,7 +59,7 @@ namespace Zones
 
         }
 
-        //TODO Method can be used just once
+        //TODO InitializeZones() can be used just once
         public static List<Zone> InitializeZones(List<GeneralFurniture> furnitures)
         {
             List<Zone> list = new();

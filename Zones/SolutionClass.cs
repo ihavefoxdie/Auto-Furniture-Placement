@@ -33,7 +33,7 @@ namespace RoomClass.Zones
 
         private double OverlappingPenalty(List<Zone> zones)
         {
-            for (int i = 0; i < zones.Count; i++)
+            for (int i = 0; i < zones.Count - 1; i++)
             {
                 for (int j = i + 1; j < zones.Count; j++)
                 {
