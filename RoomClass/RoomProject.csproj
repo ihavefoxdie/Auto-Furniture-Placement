@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Furniture\Furniture.csproj" />
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\Zones\Zones.csproj" />
   </ItemGroup>
 
 </Project>

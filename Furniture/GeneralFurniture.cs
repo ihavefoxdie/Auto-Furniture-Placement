@@ -31,7 +31,7 @@ namespace Furniture
                                                             //                  A       B
         public int ClearanceWidth { get; private set; }         //Extra width for ClearanceArea
         public int ClearanceHeight { get; private set; }        //Extra height for ClearanceArea
-        public string Zone { get; protected set; }            //String value for the zone this furniture object belongs to
+        public string ZoneName { get; protected set; }            //String value for the zone this furniture object belongs to
         #endregion
 
 
@@ -69,7 +69,7 @@ namespace Furniture
             Width = length;
             Height = height;
             Rotation = 0;
-            Zone = zone;
+            ZoneName = zone;
             IgnoreWindows = ignoreWindows;
             ClearanceWidth = extraLength;               //Extra width applied to the base width for clearance area boundries
             ClearanceHeight = extraHeight;              //Same as ClearanceWidth but applied for height
@@ -96,7 +96,7 @@ namespace Furniture
             Width = furnitureData.Length;
             Height = furnitureData.Height;
             Rotation = 0;
-            Zone = furnitureData.Zone;
+            ZoneName = furnitureData.Zone;
             IgnoreWindows = furnitureDataFlags.IgnoreWindows;
             ClearanceWidth = furnitureData.ExtraLength;     
             ClearanceHeight = furnitureData.ExtraHeight;    

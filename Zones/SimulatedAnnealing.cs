@@ -1,4 +1,6 @@
-﻿namespace RoomClass.Zones
+﻿using Zones;
+
+namespace RoomClass.Zones
 {
     //TODO Implement Singleton pattern for SimulatedAnnealing
 
@@ -17,9 +19,10 @@
         public int NumTrials { get; set; } = 200;
         public int IterPerTemp { get; set; } = 100;
 
-        public SimulatedAnnealing()
+        //TODO Create Initial solution instance inside ctor
+        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle)
         {
-
+            InitialSolution = new SolutionClass(annealingZones, aisle);
 
             Temperature = DetermineInitialTemp();
 

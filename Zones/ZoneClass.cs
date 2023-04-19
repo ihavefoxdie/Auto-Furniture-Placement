@@ -18,12 +18,14 @@ namespace Zones
         public decimal[] Center { get; private set; }
         public decimal[,] Vertices { get; private set; }
         public bool isStorage { get; private set; }
+        
 
         public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
             isStorage = false;
             Name = zoneName;
-            Furnitures = furnitures.Where(p => p.Zone == zoneName).ToList();
+            Furnitures = furnitures.Where(p => p.ZoneName == zoneName).ToList();
+            
             Width = Furnitures.Select(p => p.Width).Sum();
             Height = Furnitures.Select(p => p.Height).Sum();
             Area = Math.Sqrt(Width * Height);
@@ -46,6 +48,7 @@ namespace Zones
         {
             Center = new decimal[2];
             Vertices = new decimal[4, 2];
+            
 
             Name = prevZone.Name;
             Furnitures = prevZone.Furnitures;
@@ -61,28 +64,7 @@ namespace Zones
         }
 
         //TODO InitializeZones() can be used just once
-        public static List<Zone> InitializeZones(List<GeneralFurniture> furnitures)
-        {
-            List<Zone> list = new();
 
-            // List contains distinct zones
-            List<string> unique = new();
-
-            foreach (var item in furnitures)
-            {
-                unique.Add(item.Zone);
-            }
-
-            unique = unique.Distinct().ToList();
-
-            foreach (var item in unique)
-            {
-                Zone zone = new(furnitures, item);
-                list.Add(zone);
-            }
-
-            return list;
-        }
 
         public void Move(decimal centerDeltaX, decimal centerDeltaY)
         {

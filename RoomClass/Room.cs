@@ -1,4 +1,5 @@
 ﻿using Furniture;
+using Zones;
 
 namespace Rooms
 {
@@ -12,8 +13,8 @@ namespace Rooms
         public int RoomHeight { get; private set; }
         public int RoomWidth { get; private set; }
         public double Penalty { get; private set; }
-        //List<Zones> ZonesList { get; private set; } //DEW EET
-        public int Aisle { get; set; }
+        public List<Zone> ZoneList { get; private set; }
+        public int Aisle { get; private set; }
 
         public bool WindowsInRoom { get; private set; }
         #endregion
@@ -27,11 +28,12 @@ namespace Rooms
 
 
         #region Constructor
-        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, int aisle, GeneralFurniture[]? windows = null)
         {
             RoomHeight = height;
             RoomWidth = width;
             RoomArray = new int[width, height];
+            Aisle = aisle;
             FurnitureList = new();
             for (int i = 0; i < items.Count; i++)
             {
@@ -47,6 +49,7 @@ namespace Rooms
             Windows = windows;
             WindowsInRoom = true;
 
+            ZoneList = InitializeZones();
 
             if (FurnitureList.Count == 0)
                 throw new Exception("The room has no furniture!");
@@ -202,6 +205,29 @@ namespace Rooms
                 fine += 10;
             }
             return fine;
+        }
+
+        public List<Zone> InitializeZones()
+        {
+            List<Zone> list = new();
+
+            // List contains distinct zones
+            List<string> unique = new();
+
+            foreach (var item in FurnitureList)
+            {
+                unique.Add(item.ZoneName);
+            }
+
+            unique = unique.Distinct().ToList();
+
+            foreach (var item in unique)
+            {
+                Zone zone = new(FurnitureList, item);
+                list.Add(zone);
+            }
+
+            return list;
         }
     }
 }

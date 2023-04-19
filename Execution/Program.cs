@@ -59,10 +59,13 @@ namespace Testing
             };
             door[0].Move(20, 0);
 
-            Room newRoom = new(40, 40, door, furnitures, _ = false)
+            Room newRoom = new(40, 40, door, furnitures, _ = false, 1)
             {
                 DetermineCollision = VertexManipulator.DetermineCollision
             };
+
+            
+
 
 
             Rasterizer.RasterizationMethod = LineDrawer.Line;
@@ -86,13 +89,13 @@ namespace Testing
             Console.WriteLine(newRoom.Penalty);
 
 
-            #region AnnealingTest
+            #region AnnealingTesting
 
-            List<Zone> zones = Zone.InitializeZones(furnitures);
-            List<AnnealingZone> annealingZones = new List<AnnealingZone>(zones.Count);
-            foreach (var item in zones)
+            List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZoneList.Count);
+            
+            foreach (var item in newRoom.ZoneList)
             {
-                annealingZones.Add(new(item, 2));
+                annealingZones.Add(new(item));
             }
 
             foreach (var item in annealingZones)

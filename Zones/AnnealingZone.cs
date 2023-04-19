@@ -11,7 +11,7 @@ namespace Zones
         public decimal ExtendedWidth { get; set; }
         public decimal ExtendedHeight { get; set; }
 
-        public AnnealingZone(Zone zone, int aisle) : base(zone)
+        public AnnealingZone(Zone zone) : base(zone)
         {
             ExtendedWidth = zone.Width;
             ExtendedHeight = zone.Height;

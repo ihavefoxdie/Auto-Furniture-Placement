@@ -6,12 +6,13 @@ namespace RoomClass.Zones
 
     internal class SolutionClass
     {
-
         public List<AnnealingZone> Zones { get; set; }
 
-        public SolutionClass(List<AnnealingZone> zones)
+        public SolutionClass(List<AnnealingZone> zones, int aisle)
         {
             Cost = 0;
+
+            Cost = FindCost(aisle);
         }
 
         public double Cost { get; set; }
@@ -25,7 +26,7 @@ namespace RoomClass.Zones
 
         }
 
-        public double FindCost()
+        public double FindCost(int aisle)
         {
 
 
