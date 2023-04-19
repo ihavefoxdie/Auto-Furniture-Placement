@@ -10,10 +10,10 @@ namespace Zones
         public decimal ExtendedWidth { get; set; }
         public decimal ExtendedHeight { get; set; }
 
-        public ExtendedZone(Zone zone) : base(zone)
+        public ExtendedZone(Zone zone, int aisle) : base(zone)
         {
-            ExtendedWidth = zone.Width;
-            ExtendedHeight = zone.Height;
+            ExtendedWidth = zone.Width + aisle;
+            ExtendedHeight = zone.Height + aisle;
         }
 
         public override void Resize(decimal width, decimal height)

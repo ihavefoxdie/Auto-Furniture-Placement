@@ -13,6 +13,8 @@ namespace Rooms
         public int RoomWidth { get; private set; }
         public double Penalty { get; private set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
+        public int Aisle { get; set; }
+
         public bool WindowsInRoom { get; private set; }
         #endregion
 

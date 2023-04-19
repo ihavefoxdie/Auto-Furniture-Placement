@@ -49,8 +49,8 @@ namespace Zones
 
             Name = prevZone.Name;
             Furnitures = prevZone.Furnitures;
-            Width = prevZone.Width + 2;
-            Height = prevZone.Height + 2;
+            Width = prevZone.Width;
+            Height = prevZone.Height;
             Area = Width * Height;
             FurnitureArea = prevZone.FurnitureArea;
             Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
