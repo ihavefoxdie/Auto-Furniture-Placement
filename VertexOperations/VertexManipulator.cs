@@ -36,16 +36,16 @@
         public static void VertexExpanding(decimal[,] vertices, decimal deltaX, decimal deltaY)
         {
             vertices[0, 0] -= deltaX;
-            vertices[0, 1] -= deltaY;
+            vertices[0, 1] += deltaY;
 
             vertices[1, 0] += deltaX;
-            vertices[1, 1] -= deltaY;
+            vertices[1, 1] += deltaY;
 
             vertices[2, 0] += deltaX;
-            vertices[2, 1] += deltaY;
+            vertices[2, 1] -= deltaY;
 
             vertices[3, 0] -= deltaX;
-            vertices[3, 1] += deltaY;
+            vertices[3, 1] -= deltaY;
         }
 
         public static void VertexResetting(decimal[,] vertices, decimal[] Center, int Width, int Height)
