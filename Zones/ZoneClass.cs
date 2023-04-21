@@ -1,6 +1,5 @@
 ﻿using Furniture;
 using Interfaces;
-using System.Reflection.Metadata.Ecma335;
 using Vertex;
 
 namespace Zones
@@ -18,14 +17,14 @@ namespace Zones
         public decimal[] Center { get; private set; }
         public decimal[,] Vertices { get; private set; }
         public bool isStorage { get; private set; }
-        
+
 
         public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
             isStorage = false;
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.ZoneName == zoneName).ToList();
-            
+
             Width = Furnitures.Select(p => p.Width).Sum();
             Height = Furnitures.Select(p => p.Height).Sum();
             Area = Math.Sqrt(Width * Height);
@@ -36,7 +35,7 @@ namespace Zones
             Center[1] = (decimal)Height / 2;
 
             Vertices = new decimal[4, 2];
-            
+
             VertexManipulator.VertexResetting(Vertices, Center, Width, Height);
 
             if (DetermineZoneType())
@@ -48,7 +47,7 @@ namespace Zones
         {
             Center = new decimal[2];
             Vertices = new decimal[4, 2];
-            
+
 
             Name = prevZone.Name;
             Furnitures = prevZone.Furnitures;
@@ -57,7 +56,7 @@ namespace Zones
             Area = prevZone.Area;
             FurnitureArea = prevZone.FurnitureArea;
             Center = prevZone.Center;
-            Vertices= prevZone.Vertices;
+            Vertices = prevZone.Vertices;
             //Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
             //Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);
             isStorage = prevZone.isStorage;
@@ -90,7 +89,7 @@ namespace Zones
             Area = Width * Height;
         }
 
-        private bool DetermineZoneType() => Name.ToLower() == "storage" ? true: false;
+        private bool DetermineZoneType() => Name.ToLower() == "storage" ? true : false;
     }
 }
 

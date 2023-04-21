@@ -1,4 +1,5 @@
 ﻿using Interfaces;
+using Vertex;
 using Zones;
 
 namespace RoomClass.Zones
@@ -7,17 +8,15 @@ namespace RoomClass.Zones
     internal class SolutionClass
     {
         public List<AnnealingZone> Zones { get; set; }
+        public double Cost { get; set; }
+
 
         public SolutionClass(List<AnnealingZone> zones, int aisle)
         {
             Cost = 0;
-
             Cost = FindCost(aisle);
         }
 
-        public double Cost { get; set; }
-
-        
 
         public SolutionClass GenerateNeighbour(double maxStep)
         {
@@ -28,35 +27,31 @@ namespace RoomClass.Zones
 
         public double FindCost(int aisle)
         {
+            Cost += OverlappingPenalty();
 
 
             throw new NotImplementedException();
         }
 
-        private double OverlappingPenalty(List<Zone> zones)
+        private double OverlappingPenalty()
         {
-            for (int i = 0; i < zones.Count - 1; i++)
+            double area = 0;
+
+            for (int i = 0; i < Zones.Count - 1; i++)
             {
-                for (int j = i + 1; j < zones.Count; j++)
+                for (int j = i + 1; j < Zones.Count; j++)
                 {
-
-                    if (i != j)
+                    if (VertexManipulator.DetermineCollision(Zones[i].Vertices, Zones[j].Center))
                     {
-                        //if (Room.Collision(zones[i], zones[j]))
-                        //{
-
-
-                        //}
+                        area += FindOverlapArea(Zones[i], Zones[j]);
                     }
-
                 }
             }
 
-            throw new NotImplementedException();
-
+            return Math.Sqrt(area);
         }
 
-        public static decimal FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
+        private double FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
         {
             /*
     x1, y1 - левая нижняя точка первого прямоугольника   - D
@@ -77,7 +72,7 @@ namespace RoomClass.Zones
             if (width < 0 || height < 0)
                 return 0;
 
-            return width * height;
+            return (double)(width * height);
         }
     }
 }
