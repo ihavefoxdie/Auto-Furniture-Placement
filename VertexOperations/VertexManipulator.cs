@@ -32,7 +32,7 @@
             return collision;
         }
 
-        //TODO Doesn't work properly
+
         public static void VertexExpanding(decimal[,] vertices, decimal deltaX, decimal deltaY)
         {
             vertices[0, 0] -= deltaX;
@@ -47,6 +47,22 @@
             vertices[3, 0] -= deltaX;
             vertices[3, 1] -= deltaY;
         }
+
+        public static void VertexExpanding(decimal[,] vertices, int delta)
+        {
+            vertices[0, 0] -= delta;
+            vertices[0, 1] += delta;
+
+            vertices[1, 0] += delta;
+            vertices[1, 1] += delta;
+
+            vertices[2, 0] += delta;
+            vertices[2, 1] -= delta;
+
+            vertices[3, 0] -= delta;
+            vertices[3, 1] -= delta;
+        }
+
 
         public static void VertexResetting(decimal[,] vertices, decimal[] Center, int Width, int Height)
         {

@@ -23,7 +23,6 @@ namespace RoomClass.Zones
         public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle)
         {
             InitialSolution = new SolutionClass(annealingZones, aisle);
-
             Temperature = DetermineInitialTemp();
 
         }
