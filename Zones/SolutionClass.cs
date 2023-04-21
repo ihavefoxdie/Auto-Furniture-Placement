@@ -18,6 +18,7 @@ namespace RoomClass.Zones
             Aisle = aisle;
             Cost = FindCost();
 
+
         }
 
 
@@ -30,10 +31,11 @@ namespace RoomClass.Zones
 
         public double FindCost()
         {
-            Cost += OverlappingPenalty();
+            double cost = 0;
 
+            cost += OverlappingPenalty();
 
-            throw new NotImplementedException();
+            return cost;
         }
 
         private double OverlappingPenalty()
