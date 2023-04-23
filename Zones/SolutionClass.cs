@@ -89,10 +89,10 @@ namespace RoomClass.Zones
         private bool DeterminRectangleCollision(AnnealingZone rect1, AnnealingZone rect2)
         {
             if (
-                rect1.Center[0] < rect2.Center[0] + rect2.ExtendedWidth &&
-                rect1.Center[0] + rect1.ExtendedWidth > rect2.Center[0] &&
-                rect1.Center[1] < rect2.Center[1] + rect2.ExtendedHeight &&
-                rect1.ExtendedHeight + rect1.Center[1] > rect2.Center[1]
+                rect1.Center[0] - rect1.ExtendedWidth/2 < rect2.Center[0] + rect2.ExtendedWidth/2 &&
+                rect1.Center[0] + rect1.ExtendedWidth/2 > rect2.Center[0] - rect2.ExtendedWidth/2 &&
+                rect1.Center[1] - rect1.ExtendedHeight/2 < rect2.Center[1] + rect2.ExtendedHeight/2 &&
+                rect1.ExtendedHeight/2 + rect1.Center[1] > rect2.Center[1] - rect2.ExtendedHeight/2
               )
                 return true;
             return false;

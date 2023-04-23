@@ -1,4 +1,6 @@
-﻿namespace Vertex
+﻿using Interfaces;
+
+namespace Vertex
 {
     public static class VertexManipulator
     {
@@ -32,6 +34,17 @@
             return collision;
         }
 
+        public static bool DeterminRectangleCollision(IPolygon polygon1, IPolygon polygon2)
+        {
+            if (
+                polygon1.Center[0] - polygon1.Width / 2 < polygon2.Center[0] + polygon2.Width / 2 &&
+                polygon1.Center[0] + polygon1.Width / 2 > polygon2.Center[0] - polygon2.Width / 2 &&
+                polygon1.Center[1] - polygon1.Height / 2 < polygon2.Center[1] + polygon2.Height / 2 &&
+                polygon1.Height / 2 + polygon1.Center[1] > polygon2.Center[1] - polygon2.Height / 2
+              )
+                return true;
+            return false;
+        }
 
         public static void VertexExpanding(decimal[,] vertices, decimal deltaX, decimal deltaY)
         {
