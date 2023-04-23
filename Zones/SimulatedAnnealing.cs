@@ -1,4 +1,5 @@
 ﻿using Zones;
+using RoomClass;
 
 namespace RoomClass.Zones
 {
@@ -19,12 +20,17 @@ namespace RoomClass.Zones
         public int NumTrials { get; set; } = 200;
         public int IterPerTemp { get; set; } = 100;
 
-        //TODO Create Initial solution instance inside ctor
-        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle)
-        {
-            InitialSolution = new SolutionClass(annealingZones, aisle);
-            Temperature = DetermineInitialTemp();
+        public int RoomWidth { get; set; }
+        public int RoomHeight { get; set; }
 
+        //TODO Create Initial solution instance inside ctor
+        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle, int roomWidth, int roomHeight )
+        {
+            RoomHeight = roomHeight;
+            RoomWidth = roomWidth;
+
+            InitialSolution = new SolutionClass(annealingZones, aisle, RoomWidth, RoomHeight);
+            Temperature = DetermineInitialTemp();
         }
 
         private double DetermineInitialTemp()

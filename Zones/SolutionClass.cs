@@ -12,10 +12,16 @@ namespace RoomClass.Zones
         public int Aisle { get; set; }
         public double Cost { get; set; }
 
+        public int RoomWidth { get; set; }
+        public int RoomHeight { get; set; }
 
-        public SolutionClass(List<AnnealingZone> zones, int aisle)
+        public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight)
         {
             Aisle = aisle;
+            RoomWidth = roomWidth;
+            RoomHeight = roomHeight;
+
+
             Cost = FindCost();
 
 
@@ -34,6 +40,8 @@ namespace RoomClass.Zones
             double cost = 0;
 
             cost += OverlappingPenalty();
+            cost += FreeSpacePenalty();
+
 
             return cost;
         }
@@ -60,8 +68,19 @@ namespace RoomClass.Zones
             return Math.Sqrt(area);
         }
 
+        private double FreeSpacePenalty()
+        {
+            double area = 0;
+            foreach (var item in Zones)
+            {
+                item.Resize(Aisle, Aisle);
+                area += item.Area;
+                item.Resize(-Aisle, -Aisle);
+            }
+            return Math.Sqrt(RoomHeight * RoomWidth - area);
+        }
 
-
+         
         private double FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
         {
             /*
@@ -89,10 +108,10 @@ namespace RoomClass.Zones
         private bool DeterminRectangleCollision(AnnealingZone rect1, AnnealingZone rect2)
         {
             if (
-                rect1.Center[0] - rect1.ExtendedWidth/2 < rect2.Center[0] + rect2.ExtendedWidth/2 &&
-                rect1.Center[0] + rect1.ExtendedWidth/2 > rect2.Center[0] - rect2.ExtendedWidth/2 &&
-                rect1.Center[1] - rect1.ExtendedHeight/2 < rect2.Center[1] + rect2.ExtendedHeight/2 &&
-                rect1.ExtendedHeight/2 + rect1.Center[1] > rect2.Center[1] - rect2.ExtendedHeight/2
+                rect1.Center[0] - rect1.ExtendedWidth / 2 < rect2.Center[0] + rect2.ExtendedWidth / 2 &&
+                rect1.Center[0] + rect1.ExtendedWidth / 2 > rect2.Center[0] - rect2.ExtendedWidth / 2 &&
+                rect1.Center[1] - rect1.ExtendedHeight / 2 < rect2.Center[1] + rect2.ExtendedHeight / 2 &&
+                rect1.ExtendedHeight / 2 + rect1.Center[1] > rect2.Center[1] - rect2.ExtendedHeight / 2
               )
                 return true;
             return false;

@@ -17,12 +17,12 @@ namespace Zones
             ExtendedHeight = zone.Height;
         }
 
-        public override void Resize(decimal width, decimal height)
+        public override void Resize(decimal deltaWidth, decimal deltaHeight)
         {
-            ExtendedWidth += width;
-            ExtendedHeight += height;
+            ExtendedWidth += deltaWidth;
+            ExtendedHeight += deltaHeight;
             Area = (double)(ExtendedWidth * ExtendedHeight);
-            VertexManipulator.VertexExpanding(Vertices, width, height);
+            VertexManipulator.VertexExpanding(Vertices, deltaWidth, deltaHeight);
         }
 
         public Zone toZone()
