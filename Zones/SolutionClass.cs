@@ -99,6 +99,19 @@ namespace RoomClass.Zones
             return penalty;            
         }
 
+        private double SpaceRatioPenalty()
+        {
+            double penalty = 0;
+            double allFurnituresArea = Zones.Select(x => x.FurnitureArea).Sum();
+            double allZonesArea = Zones.Select(x => x.Area).Sum();
+
+            foreach (var item in Zones)
+            {
+                penalty += Math.Abs((item.FurnitureArea / allFurnituresArea) - (item.Area / allZonesArea));
+            }
+            return penalty;
+        }
+
 
 
          
