@@ -41,6 +41,8 @@ namespace RoomClass.Zones
 
             cost += OverlappingPenalty();
             cost += FreeSpacePenalty();
+            cost += ZoneShapePenalty();
+
 
 
             return cost;
@@ -79,6 +81,25 @@ namespace RoomClass.Zones
             }
             return Math.Sqrt(RoomHeight * RoomWidth - area);
         }
+
+        private double ZoneShapePenalty()
+        {
+            double penalty = 0;
+
+            foreach (var item in Zones)
+            {
+                if (item.ExtendedHeight >= item.ExtendedWidth * 3 || item.ExtendedWidth >= item.ExtendedHeight * 3)
+                {
+                    decimal maxDim = Math.Max(item.ExtendedWidth, item.ExtendedHeight);
+                    decimal minDim = Math.Min(item.ExtendedWidth, item.ExtendedHeight);
+
+                    penalty += (double)((maxDim - 3 * minDim) / 4);
+                }
+            }
+            return penalty;            
+        }
+
+
 
          
         private double FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
