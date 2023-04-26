@@ -12,8 +12,8 @@ namespace RoomClass.Zones
         public int Aisle { get; set; }
         public double Cost { get; set; }
 
-        public int RoomWidth { get; set; }
-        public int RoomHeight { get; set; }
+        public int RoomWidth { get; private set; }
+        public int RoomHeight { get; private set; }
 
         public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight)
         {
@@ -42,7 +42,8 @@ namespace RoomClass.Zones
             cost += OverlappingPenalty();
             cost += FreeSpacePenalty();
             cost += ZoneShapePenalty();
-
+            cost += SpaceRatioPenalty();
+            cost += ByWallPenalty();
 
 
             return cost;
@@ -96,7 +97,7 @@ namespace RoomClass.Zones
                     penalty += (double)((maxDim - 3 * minDim) / 4);
                 }
             }
-            return penalty;            
+            return penalty;
         }
 
         private double SpaceRatioPenalty()
@@ -112,9 +113,76 @@ namespace RoomClass.Zones
             return penalty;
         }
 
+        private double ByWallPenalty()
+        {
+            double penalty = 0;
+            List<double> wall = new List<double>();
+
+            foreach (var item in Zones)
+            {
+                wall.Clear();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    if (IsInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1]))
+                    {
+                        wall = FindDistances(item.Vertices);
+
+                    }
+
+                    else throw new Exception($"Zone goes beyond the Room[W:{RoomWidth}  H:{RoomHeight}]\n \tZoneId: {item.ID}\tVerticeNumber : {i}");
+                }
+
+                penalty += wall[0] + wall[1] + wall[2] / 2;
+            }
+
+            return penalty;
+        }
+
+        private bool IsInsideRoom(decimal x, decimal y)
+        {
+            if (x > RoomWidth || x < RoomWidth)
+                return false;
+
+            if (y > RoomHeight || y < RoomHeight)
+                return false;
+
+            return true;
+        }
+
+        private List<double> FindDistances(decimal[,] vertices)
+        {
+            List<double> result = new List<double>();
+            double distance = double.MaxValue;
+
+            for (int i = 0; i < 4; i++)
+            {
+                distance = double.MaxValue;
+
+                for (int j = 0; j < 2; j++)
+                {
+                    // X axis distance
+                    if ((double)(RoomWidth - vertices[i, 0]) < distance)
+                        distance = (double)(RoomWidth - vertices[i, 0]);
+
+                    if ((double)(vertices[i, 0]) < distance)
+                        distance = (double)(vertices[i, 0]);
+
+                    // Y axis distance
+                    if ((double)(RoomHeight - vertices[i, 1]) < distance)
+                        distance = (double)(RoomWidth - vertices[i, 1]);
+
+                    if ((double)(vertices[i, 1]) < distance)
+                        distance = (double)(vertices[i, 1]);
+                }
+                result.Add(distance);
+            }
+
+            result.Remove(result.Max());
+            return result;
+        }
 
 
-         
         private double FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
         {
             /*
