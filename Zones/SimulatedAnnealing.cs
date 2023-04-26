@@ -1,5 +1,5 @@
 ﻿using Zones;
-using RoomClass;
+using Furniture;
 
 namespace RoomClass.Zones
 {
@@ -22,14 +22,17 @@ namespace RoomClass.Zones
 
         public int RoomWidth { get; set; }
         public int RoomHeight { get; set; }
+        List<GeneralFurniture> Doors { get; set; }
 
         //TODO Create Initial solution instance inside ctor
-        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle, int roomWidth, int roomHeight )
+
+        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
         {
             RoomHeight = roomHeight;
             RoomWidth = roomWidth;
+            Doors = doors;
 
-            InitialSolution = new SolutionClass(annealingZones, aisle, RoomWidth, RoomHeight);
+            InitialSolution = new SolutionClass(annealingZones, aisle, RoomWidth, RoomHeight, doors);
             Temperature = DetermineInitialTemp();
         }
 

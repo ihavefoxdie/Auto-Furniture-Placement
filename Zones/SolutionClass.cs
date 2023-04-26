@@ -1,4 +1,5 @@
-﻿using Interfaces;
+﻿using Furniture;
+using Interfaces;
 using Vertex;
 using Zones;
 
@@ -9,21 +10,22 @@ namespace RoomClass.Zones
     internal class SolutionClass
     {
         public List<AnnealingZone> Zones { get; set; }
+        private List<GeneralFurniture> Doors { get; set; }
+
         public int Aisle { get; set; }
         public double Cost { get; set; }
 
         public int RoomWidth { get; private set; }
         public int RoomHeight { get; private set; }
 
-        public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight)
+        public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
         {
             Aisle = aisle;
             RoomWidth = roomWidth;
             RoomHeight = roomHeight;
-
+            Doors = doors;
 
             Cost = FindCost();
-
 
         }
 
@@ -44,7 +46,7 @@ namespace RoomClass.Zones
             cost += ZoneShapePenalty();
             cost += SpaceRatioPenalty();
             cost += ByWallPenalty();
-
+            cost += DoorSpacePenalty();
 
             return cost;
         }
@@ -138,6 +140,36 @@ namespace RoomClass.Zones
 
             return penalty;
         }
+
+        private double DoorSpacePenalty()
+        {
+
+            double overlapArea = 0;
+
+            foreach (var item in Doors)
+            {
+                VertexManipulator.VertexExpanding(item.Vertices, 0, Aisle);
+            }
+
+
+            foreach (var item in Zones)
+            {
+                foreach (var itemDoor in Doors)
+                {
+                    overlapArea += FindOverlapArea<IPolygon>(itemDoor, item);
+                }
+
+            }
+
+
+            foreach (var item in Doors)
+            {
+                VertexManipulator.VertexExpanding(item.Vertices, 0, -Aisle);
+            }
+
+            return Math.Sqrt(overlapArea);
+        }
+
 
         private bool IsInsideRoom(decimal x, decimal y)
         {
