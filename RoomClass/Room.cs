@@ -1,20 +1,35 @@
-﻿namespace RoomClass
+﻿using Furniture;
+
+namespace Rooms
 {
-    public class Room
+    public sealed class Room
     {
-        public List<Furniture> FurnitureList { get; private set; }
-        private Furniture[] Doors { get; set; }
-        private Furniture[]? Windows { get; set; }
-        public int RoomLength { get; private set; }
+        #region General Properties
+        public List<GeneralFurniture> FurnitureList { get; private set; }
+        private List<GeneralFurniture> Doors { get; set; }
+        private GeneralFurniture[]? Windows { get; set; }
+        public int[,] RoomArray { get; set; }
+        public int RoomHeight { get; private set; }
         public int RoomWidth { get; private set; }
         public double Penalty { get; private set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
-        public Room(int length, int width, Furniture[] doors, List<Furniture> items, bool windowed, Furniture[]? windows = null)
-        {
-            RoomLength = length;
-            RoomWidth = width;
+        #endregion
 
+
+        #region Delegates
+        public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
+        public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
+        public CollisionDeterminer? DetermineCollision { get; set; }
+        #endregion
+
+
+        #region Constructor
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
+        {
+            RoomHeight = height;
+            RoomWidth = width;
+            RoomArray = new int[width, height];
             FurnitureList = new();
             for (int i = 0; i < items.Count; i++)
             {
@@ -36,9 +51,9 @@
 
         }
 
-        public Room(int length, int width, Furniture[] doors, params Furniture[] items)
+        /*public Rooms(int length, int width, Furniture[] doors, params Furniture[] items)
         {
-            RoomLength = length;
+            RoomHeight = length;
             RoomWidth = width;
 
             FurnitureList = new();
@@ -55,9 +70,11 @@
 
             if (FurnitureList.Count == 0)
                 throw new Exception("The room has no furniture!");
-        }
+        }*/
+        #endregion
 
-        //TODO Improve penalty evaluation by implementing method for more flexibility
+
+        //TODO Improve penalty evaluation by implementing a better method for more flexibility
         public void PenaltyEvaluation()
         {
             for (int i = 0; i < FurnitureList.Count; i++)
@@ -67,7 +84,7 @@
                 if (FurnitureList[i].NearWall >= 0)
                     Penalty += NearWallPenalty(FurnitureList[i]);
 
-                for (int k = 0; k < Doors.GetLength(0); k++)
+                for (int k = 0; k < Doors.Count; k++)
                 {
                     if (Collision(Doors[k], FurnitureList[i]))
                         Penalty += 10;
@@ -92,16 +109,16 @@
         }
 
 
-        private int OutOfBoundsDeterminer(Furniture furniture)
+        private int OutOfBoundsDeterminer(GeneralFurniture furniture)
         {
             int fine = 0;
 
-            if (furniture.Center[1] < RoomLength && furniture.Center[0] < RoomWidth &&
+            if (furniture.Center[1] < RoomHeight && furniture.Center[0] < RoomWidth &&
                 furniture.Center[1] > 0 && furniture.Center[0] > 0)
             {
                 for (int j = 0; j < furniture.Vertices.GetLength(0); j++)
                 {
-                    if (furniture.Vertices[j, 0] > RoomWidth || furniture.Vertices[j, 1] > RoomLength)
+                    if (furniture.Vertices[j, 0] > RoomWidth || furniture.Vertices[j, 1] > RoomHeight)
                     {
                         fine += 10;
                         furniture.IsOutOfBounds = true;
@@ -119,9 +136,10 @@
             return fine;
         }
 
-        public static bool Collision(Furniture item1, Furniture item2)
+        public bool Collision(GeneralFurniture item1, GeneralFurniture item2)
         {
-
+            if (DetermineCollision == null)
+                return false;
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
             {
                 decimal[] point = new decimal[] { item2.Vertices[i, 0], item2.Vertices[i, 1] };
@@ -139,7 +157,7 @@
             return false;
         }
 
-        private int NearWallPenalty(Furniture furniture)
+        private int NearWallPenalty(GeneralFurniture furniture)
         {
             int fine = 0;
             bool check = false;
@@ -161,7 +179,7 @@
                         fine += 5;
                     break;
                 }
-                if (furniture.Vertices[i, 1] >= (RoomLength - furniture.NearWall))
+                if (furniture.Vertices[i, 1] >= (RoomHeight - furniture.NearWall))
                 {
                     check = true;
                     if (!(furniture.Rotation >= 80 && furniture.Rotation <= 100))
@@ -181,23 +199,7 @@
             {
                 fine += 10;
             }
-
             return fine;
-        }
-
-        private static bool DetermineCollision(decimal[,] vertices, decimal[] point)
-        {
-            bool collision = false;
-
-            for (int i = 0, j = vertices.GetLength(0) - 1; i < vertices.GetLength(0); j = i++)
-            {
-                if (((vertices[i, 1] <= point[1] && point[1] < vertices[j, 1]) ||
-                    (vertices[j, 1] <= point[1] && point[1] < vertices[i, 1])) &&
-                    point[0] < (vertices[j, 0] - vertices[i, 0]) * (point[1] - vertices[i, 1]) /
-                    (vertices[j, 1] - vertices[i, 1]) + vertices[i, 0])
-                    collision = !collision;
-            }
-            return collision;
         }
     }
 }

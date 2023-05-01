@@ -1,16 +1,20 @@
-﻿namespace RoomClass.Zones
+﻿using Interfaces;
+using Furniture;
+
+namespace Zones
 {
     public class Zone : IPolygon
     {
+        public int ID { get; }
         public string Name { get; set; }
         public double Area { get; set; }
-        public List<Furniture> Furnitures { get; set; }
+        public List<GeneralFurniture> Furnitures { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
         public decimal[] Center { get; private set; }
         public decimal[,] Vertices { get; private set; }
 
-        public Zone(List<Furniture> furnitures, string zoneName)
+        public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.Zone == zoneName).ToList();
@@ -30,12 +34,12 @@
         }
         
         //TODO Method can be used just once
-        public static List<Zone> InitializeZones(List<Furniture> furnitures)
+        public static List<Zone> InitializeZones(List<GeneralFurniture> furnitures)
         {
-            List<Zone> list = new List<Zone>();
+            List<Zone> list = new();
 
             // List contains distinct zones
-            List<string> unique = new List<string>();
+            List<string> unique = new();
 
             foreach (var item in furnitures)
             {
@@ -65,9 +69,12 @@
             }
         }
 
+        public void Rotate(int angle)
+        {
+            throw new NotImplementedException();
+        }
+
         //TODO Zone resizing method
     }
-
-
 }
 
