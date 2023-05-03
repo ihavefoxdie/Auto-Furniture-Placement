@@ -2,18 +2,18 @@
 
 namespace FactoryMethod
 {
-    public class TableFactory : FurnitureFactory
+    public class ArmchairFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(6, "table", 4, 4, "work");
+        private readonly FurnitureData _furnitureData = new(9, "armchair", 1, 1, "working");
         private readonly FurnitureDataFlags _furnitureDataFlags = new();
 
-        public TableFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
+        public ArmchairFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
             _furnitureData = furnitureData;
             _furnitureDataFlags = furnitureDataFlags;
         }
 
-        public TableFactory()
+        public ArmchairFactory()
         {
 
         }
@@ -21,14 +21,14 @@ namespace FactoryMethod
 
         public override GeneralFurniture GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            Table table = new(furnitureData, furnitureDataFlags);
-            return table;
+            Armchair armchair = new(furnitureData, furnitureDataFlags);
+            return armchair;
         }
 
         public override GeneralFurniture GetFurniture()
         {
-            Table table = new(_furnitureData, _furnitureDataFlags);
-            return table;
+            Armchair armchair = new(_furnitureData, _furnitureDataFlags);
+            return armchair;
         }
 
     }
