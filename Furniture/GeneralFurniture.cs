@@ -4,6 +4,8 @@ using System.Xml.Linq;
 
 namespace Furniture
 {
+    //TODO: Refer to the "TODO" from the IPolygon
+    //TODO: Since we have incorporated FurnitureData, we should implement it as a module within this class. It should take a bit of refactoring, but that would for the best.
     public abstract class GeneralFurniture : IPolygon
     {
         #region General Properties
@@ -25,7 +27,7 @@ namespace Furniture
         }
         public int Rotation { get; private set; }           //Current rotation of the object in degrees
         public int Width { get; protected set; }              //Object width     A_____B      D_____C
-        public int Height { get; protected set; }             //Object height     D       С
+        public int Height { get; protected set; }           //Object height     D       С
                                                             //                  |       |
                                                             //                  |       |
                                                             //                  A       B
@@ -152,6 +154,7 @@ namespace Furniture
             for (int i = 0; i < Vertices.GetLength(0); i++)
             {
                 RotateVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians, (int)Center[0], (int)Center[1]);
+                RotateVertex(ref ClearanceArea[i, 0], ref ClearanceArea[i, 1], radians, (int)Center[0], (int)Center[1]);
             }
         }
 

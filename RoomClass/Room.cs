@@ -1,8 +1,9 @@
 ﻿using Furniture;
+using Interfaces;
 
 namespace Rooms
 {
-    public sealed class Room
+    public sealed class Room : IPolygonContainer
     {
         #region General Properties
         public List<GeneralFurniture> FurnitureList { get; private set; }
@@ -11,7 +12,7 @@ namespace Rooms
         public int[,] RoomArray { get; set; }
         public int RoomHeight { get; private set; }
         public int RoomWidth { get; private set; }
-        public double Penalty { get; private set; }
+        public double Penalty { get; set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
         #endregion

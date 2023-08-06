@@ -1,5 +1,6 @@
 ﻿namespace Interfaces
 {
+    //TODO: We should probably make movement and rotation be handled by something else, not by the IPolygon objects themselves.
     public interface IPolygon
     {
         public int ID { get; }

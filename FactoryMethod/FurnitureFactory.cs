@@ -2,6 +2,7 @@
 
 namespace FactoryMethod
 {
+    //TODO: Discuss if we could make our factory a little cleared and more readable.
     public abstract class FurnitureFactory
     {
 

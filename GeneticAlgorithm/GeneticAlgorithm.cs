@@ -1,45 +1,46 @@
+using Interfaces;
 using Rooms;
 
 namespace GeneticAlgorithm
 {
     public class GeneticAlgoritm
     {
-        public List<Room> Rooms {get; private set;}
+        public List<IPolygonContainer> Container {get; private set;}
         private bool KeepUp {get; set;}
         public int Generation {get; private set;}
 
-        public GeneticAlgoritm(Room room)
+        public GeneticAlgoritm(IPolygonContainer container)
         {
-            Rooms = new();
+            Container = new();
             KeepUp = true;
             for (int i = 0; i < 6; i++)
             {
-                Rooms.Add(room);
+                Container.Add(container);
             }
         }
         //TODO CROSSOVER AND MUTATION ALGORITHMS
-        public Room Start()
+        public IPolygonContainer? Start()
         {
             while(KeepUp)
             {
-                Rooms = Rooms.OrderBy(room => room.Penalty).ToList();
+                Container = Container.OrderBy(container => container.Penalty).ToList();
 
-                int transfer = (70*Rooms.Count)/100;
+                int transfer = (70*Container.Count)/100;
 
-                List<Room> newRoomSet = SUS(transfer, Rooms);
+                List<IPolygonContainer> newContainersSet = SUS(transfer, Container);
 
-                transfer = Rooms.Count - transfer;
+                transfer = Container.Count - transfer;
             }
             return null;
         }
 
-        private static List<Room> SUS(int amountToKeep, List<Room> rooms)
+        private static List<IPolygonContainer> SUS(int amountToKeep, List<IPolygonContainer> containers)
         {
             Random a = new();
 
             double totalPenalty = 0;
-            for (int i = 0; i < rooms.Count; i++)
-                totalPenalty+= rooms[i].Penalty;
+            for (int i = 0; i < containers.Count; i++)
+                totalPenalty+= containers[i].Penalty;
             
             int distance = (int)(totalPenalty/amountToKeep);
 
@@ -47,12 +48,12 @@ namespace GeneticAlgorithm
             for (int i = 0; i < amountToKeep; i++)
                 pointers.Add(a.Next(distance) + i*distance);
             
-            return RWS(rooms, pointers);
+            return RWS(containers, pointers);
         }
 
-        private static List<Room> RWS(List<Room> rooms, List<int> pointers)
+        private static List<IPolygonContainer> RWS(List<IPolygonContainer> containers, List<int> pointers)
         {
-            List<Room> rooms2keep = new();
+            List<IPolygonContainer> containersToKeep = new();
 
             for (int i = 0; i < pointers.Count; i++)
             {
@@ -61,12 +62,12 @@ namespace GeneticAlgorithm
                 while (sum < pointers[i])
                 {
                     selector++;
-                    sum += rooms[selector].Penalty;
+                    sum += containers[selector].Penalty;
                 }
-                rooms2keep.Add(rooms[selector]);   
+                containersToKeep.Add(containers[selector]);   
             }
 
-            return rooms2keep;
+            return containersToKeep;
         }
     }
 }

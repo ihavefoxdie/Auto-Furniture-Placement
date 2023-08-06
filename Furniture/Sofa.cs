@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Furniture
 {
-    internal class Sofa : GeneralFurniture
+    public class Sofa : GeneralFurniture
     {
 
         public Sofa(int id, string name, int length, int height, string zone, bool ignoreWindows, int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1, bool accessable = false, string? parentName = null) : base(id, name, length, height, zone, ignoreWindows, extraLength, extraHeight, nearWall, parent, accessable, parentName)
