@@ -1,23 +1,24 @@
 ﻿using Interfaces;
-using System.Security.AccessControl;
-using System.Xml.Linq;
 
 namespace Furniture
 {
     //TODO: Refer to the "TODO" from the IPolygon
-    //TODO: Since we have incorporated FurnitureData, we should implement it as a module within this class. It should take a bit of refactoring, but that would for the best.
     public abstract class GeneralFurniture : IPolygon
     {
         #region General Properties
-        public int ID { get; protected set; }                 //ID of the furniture object
-        public int ParentID { get; private set; }           //ID of the parent furniture object
-        public string Name { get; protected set; }
-        private string? _parentName;
+        readonly FurnitureData _data;
+        readonly FurnitureDataFlags _flags;
+
+
+        public int ID { get { return _data.Id; } }                             //ID of the furniture object
+        public int ParentID { get { return _flags.Parent; } }                  //ID of the parent furniture object
+        public string Name { get { return _data.Name; } }
+        string? _parentName;
         public string? ParentName
         {
             get
             {
-                if(_parentName == null)
+                if (_parentName == null)
                     return "empty";
                 return _parentName;
             }
@@ -25,25 +26,19 @@ namespace Furniture
             {
             }
         }
-        public int Rotation { get; private set; }           //Current rotation of the object in degrees
-        public int Width { get; protected set; }              //Object width     A_____B      D_____C
-        public int Height { get; protected set; }           //Object height     D       С
-                                                            //                  |       |
-                                                            //                  |       |
-                                                            //                  A       B
-        public int ClearanceWidth { get; private set; }         //Extra width for ClearanceArea
-        public int ClearanceHeight { get; private set; }        //Extra height for ClearanceArea
-        public string Zone { get; protected set; }            //String value for the zone this furniture object belongs to
-        #endregion
-
-
-        #region Flags
-        public bool IgnoreWindows { get; protected set; }     //Determines whether the furniture object can be placed in front of a window
-        public int NearWall { get; protected set; }           //Determines whether the furniture object must be placed near wall and the distance between the two
-        public bool Accessible { get; protected set; }        //Determines whether the furniture object must be accessible
-
-        public bool IsOutOfBounds { get; set; }             //Is the furniture object currently out of bounds
-        public bool IsCollided { get; set; }                //Is the furniture object currently collided with another
+        public int Rotation { get; private set; }                               //Current rotation of the object in degrees
+        public int Width { get { return _data.Width; } }                        //Object width     A_____B      D_____C
+        public int Height { get { return _data.Height; } }                      //Object height     D       С
+                                                                                //                  |       |
+                                                                                //                  |       |
+                                                                                //                  A       B
+        public int ClearanceWidth { get { return _data.ExtraWidth; } }          //Extra width for ClearanceArea
+        public int ClearanceHeight { get { return _data.ExtraHeight; } }        //Extra height for ClearanceArea
+        public string Zone { get { return _data.Zone; } }                       //String value for the zone this furniture object belongs to
+        public int NearWall { get { return _flags.NearWall; } }
+        public bool IgnoreWindows { get { return _flags.IgnoreWindows; } }
+        public bool IsOutOfBounds { get; set; }
+        public bool IsCollided { get; set; }
         #endregion
 
 
@@ -60,23 +55,14 @@ namespace Furniture
         #endregion
 
 
-        #region Contsructor
+        #region Contsructors
         public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows,
                                 int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1,
-                                bool accessable = false, string? parentName = null)
+                                bool accessible = false, string? parentName = null)
         {
-            ID = id;
-            ParentID = parent;
-            Name = name;
-            Width = length;
-            Height = height;
+            _data = new(id, name, length, height, zone, extraLength, extraHeight);
+            _flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
-            Zone = zone;
-            IgnoreWindows = ignoreWindows;
-            ClearanceWidth = extraLength;               //Extra width applied to the base width for clearance area boundries
-            ClearanceHeight = extraHeight;              //Same as ClearanceWidth but applied for height
-            NearWall = nearWall;                    //Maximum distance allowed between a wall and the furniture object (-1 is set to ignore this charactiristic)
-            Accessible = accessable;
 
             Center = new decimal[2];                //Center of furniture object
             Center[0] = (decimal)Width / 2;         //X
@@ -84,40 +70,29 @@ namespace Furniture
 
             ClearanceArea = new decimal[4, 2];      //     D_______C       where CB is front (i.e. 0 degrees rotation).
             Vertices = new decimal[4, 2];           //     |       |       If Accessible property is set to true
-            ResetCoords();                          //     |       |       the front is the side that must be accessable.
+            ResetCoords();                          //     |       |       the front is the side that must be accessible.
                                                     //     A_______B       Accessibility is determined with pathfinding algorithm.
         }
 
         public GeneralFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            string? parentName = null;
-
-            ID = furnitureData.Id;
-            ParentID = furnitureDataFlags.Parent;
-            Name = furnitureData.Name;
-            Width = furnitureData.Length;
-            Height = furnitureData.Height;
+            _data = furnitureData;
+            _flags = furnitureDataFlags;
             Rotation = 0;
-            Zone = furnitureData.Zone;
-            IgnoreWindows = furnitureDataFlags.IgnoreWindows;
-            ClearanceWidth = furnitureData.ExtraLength;     
-            ClearanceHeight = furnitureData.ExtraHeight;    
-            NearWall = furnitureDataFlags.NearWall;         
-            Accessible = furnitureDataFlags.Accessible;
 
-            Center = new decimal[2];              
-            Center[0] = (decimal)Width / 2;       
-            Center[1] = (decimal)Height / 2;      
 
-            ClearanceArea = new decimal[4, 2];    
-            Vertices = new decimal[4, 2];         
-            ResetCoords();                                                                          
+            Center = new decimal[2];
+            Center[0] = (decimal)Width / 2;
+            Center[1] = (decimal)Height / 2;
+
+            ClearanceArea = new decimal[4, 2];
+            Vertices = new decimal[4, 2];
+            ResetCoords();
         }
-
-
         #endregion
 
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         #region Moving Furniture
@@ -135,7 +110,9 @@ namespace Furniture
         #endregion
 
 
-        #region Rotation
+
+
+        #region Rotating Furniture
         public void Rotate(int angle)
         {
             if (RotateVertex == null)
@@ -186,18 +163,6 @@ namespace Furniture
             ClearanceArea[3, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
             ClearanceArea[3, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
         }
-
-
-        /*public object Clone()
-        {
-            Furniture item = new(ID, Height, Width, Zone, IgnoreWindows, NearWall, ParentID)
-            {
-                Center = (decimal[])this.Center.Clone(),
-                Vertices = (decimal[,])this.Vertices.Clone(),
-                Rotation = this.Rotation
-            };
-            return item;
-        }*/
         #endregion
     }
 }

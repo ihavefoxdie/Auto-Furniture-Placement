@@ -3,7 +3,7 @@
     public class FurnitureDataFlags
     {
         public bool IgnoreWindows { get; protected set; }
-        public int NearWall { get; protected set; }
+        public int NearWall { get; protected set; }                 //Maximum distance allowed between a wall and the furniture object (-1 is set to ignore this charactiristic)
         public int Parent { get; }
         public bool Accessible { get; protected set; }
 

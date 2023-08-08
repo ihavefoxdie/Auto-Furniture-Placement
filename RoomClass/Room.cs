@@ -70,7 +70,7 @@ namespace Rooms
             ContainerWidth = width;
 
             FurnitureList = new();
-            for (int i = 0; i < items.Length; i++)
+            for (int i = 0; i < items.Width; i++)
             {
                 if (items[i] is not null)
                     FurnitureList.Add(items[i]);
