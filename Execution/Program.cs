@@ -68,7 +68,7 @@ namespace Testing
             //newRoom.RasterizationMethod()
 
             //newRoom.FurnitureList[0].Rotate(31);
-            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
+            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
 
             
             LineDrawer.Print(newRoom.RoomArray);

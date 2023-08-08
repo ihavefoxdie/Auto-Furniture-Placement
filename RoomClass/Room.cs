@@ -3,6 +3,8 @@ using Interfaces;
 
 namespace Rooms
 {
+    //TODO: Integration with Zones class once (semi?)finished.
+    //TODO: Should this class handle rotation and movement of IPolygon objects (i.e. GeneralFurniture)? Discuss.
     public sealed class Room : IPolygonContainer
     {
         #region General Properties
@@ -21,8 +23,8 @@ namespace Rooms
         private List<GeneralFurniture> Doors { get; set; }
         private GeneralFurniture[]? Windows { get; set; }
         public int[,] RoomArray { get; set; }
-        public int RoomHeight { get; private set; }
-        public int RoomWidth { get; private set; }
+        public int ContainerHeight { get; private set; }
+        public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
         //List<Zones> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
@@ -39,8 +41,8 @@ namespace Rooms
         #region Constructor
         public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
         {
-            RoomHeight = height;
-            RoomWidth = width;
+            ContainerHeight = height;
+            ContainerWidth = width;
             RoomArray = new int[width, height];
             FurnitureList = new();
             for (int i = 0; i < items.Count; i++)
@@ -64,8 +66,8 @@ namespace Rooms
 
         /*public Rooms(int length, int width, Furniture[] doors, params Furniture[] items)
         {
-            RoomHeight = length;
-            RoomWidth = width;
+            ContainerHeight = length;
+            ContainerWidth = width;
 
             FurnitureList = new();
             for (int i = 0; i < items.Length; i++)
@@ -124,12 +126,12 @@ namespace Rooms
         {
             int fine = 0;
 
-            if (furniture.Center[1] < RoomHeight && furniture.Center[0] < RoomWidth &&
+            if (furniture.Center[1] < ContainerHeight && furniture.Center[0] < ContainerWidth &&
                 furniture.Center[1] > 0 && furniture.Center[0] > 0)
             {
                 for (int j = 0; j < furniture.Vertices.GetLength(0); j++)
                 {
-                    if (furniture.Vertices[j, 0] > RoomWidth || furniture.Vertices[j, 1] > RoomHeight)
+                    if (furniture.Vertices[j, 0] > ContainerWidth || furniture.Vertices[j, 1] > ContainerHeight)
                     {
                         fine += 10;
                         furniture.IsOutOfBounds = true;
@@ -190,14 +192,14 @@ namespace Rooms
                         fine += 5;
                     break;
                 }
-                if (furniture.Vertices[i, 1] >= (RoomHeight - furniture.NearWall))
+                if (furniture.Vertices[i, 1] >= (ContainerHeight - furniture.NearWall))
                 {
                     check = true;
                     if (!(furniture.Rotation >= 80 && furniture.Rotation <= 100))
                         fine += 5;
                     break;
                 }
-                if (furniture.Vertices[i, 0] >= (RoomWidth - furniture.NearWall))
+                if (furniture.Vertices[i, 0] >= (ContainerWidth - furniture.NearWall))
                 {
                     check = true;
                     if (!(furniture.Rotation >= 170 && furniture.Rotation < 190))
