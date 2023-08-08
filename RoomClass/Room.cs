@@ -6,6 +6,17 @@ namespace Rooms
     public sealed class Room : IPolygonContainer
     {
         #region General Properties
+        public List<IPolygon> Polygons {
+            get
+            {
+                List<IPolygon> _list = new();
+                foreach(IPolygon polygon in FurnitureList) {
+                    _list.Add(polygon);
+                }
+                return _list;
+            }
+        }
+        
         public List<GeneralFurniture> FurnitureList { get; private set; }
         private List<GeneralFurniture> Doors { get; set; }
         private GeneralFurniture[]? Windows { get; set; }
@@ -37,7 +48,6 @@ namespace Rooms
                 if (items[i] is not null)
                     FurnitureList.Add(items[i]);
             }
-
             if (doors is null)
                 throw new ArgumentNullException(nameof(doors), "The doors array is null!");
             Doors = doors;
