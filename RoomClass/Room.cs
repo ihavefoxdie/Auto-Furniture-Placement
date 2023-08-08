@@ -35,6 +35,11 @@ namespace Rooms
         public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
         public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
         public CollisionDeterminer? DetermineCollision { get; set; }
+
+        #region Rotation Delegate
+        public delegate void VertexRotation(ref decimal x, ref decimal y, double radians, int centerX, int centerY);
+        public VertexRotation? RotateVertex { get; set; }
+        #endregion
         #endregion
 
 
@@ -214,5 +219,47 @@ namespace Rooms
             }
             return fine;
         }
+
+
+        #region Moving Furniture
+        public void Move(GeneralFurniture item, decimal centerDeltaX, decimal centerDeltaY)
+        {
+            item.Center[0] += centerDeltaX;
+            item.Center[1] += centerDeltaY;
+
+            for (int i = 0; i < item.Vertices.GetLength(0); i++)
+            {
+                item.Vertices[i, 0] += centerDeltaX;
+                item.Vertices[i, 1] += centerDeltaY;
+            }
+        }
+        #endregion
+
+
+
+
+        #region Rotating Furniture
+        public void Rotate(GeneralFurniture item, int angle)
+        {
+            if (RotateVertex == null)
+                return;
+
+            item.ResetCoords();
+
+            item.Rotation += angle;
+            while (item.Rotation >= 360)
+                item.Rotation -= 360;
+            while (item.Rotation < 0)
+                item.Rotation += 360;
+
+            double radians = item.Rotation * (Math.PI / 180);
+
+            for (int i = 0; i < item.Vertices.GetLength(0); i++)
+            {
+                RotateVertex(ref item.Vertices[i, 0], ref item.Vertices[i, 1], radians, (int)item.Center[0], (int)item.Center[1]);
+                RotateVertex(ref item.ClearanceArea[i, 0], ref item.ClearanceArea[i, 1], radians, (int)item.Center[0], (int)item.Center[1]);
+            }
+        }
+        #endregion
     }
 }

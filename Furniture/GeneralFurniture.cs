@@ -2,7 +2,6 @@
 
 namespace Furniture
 {
-    //TODO: Refer to the "TODO" from the IPolygon
     public abstract class GeneralFurniture : IPolygon
     {
         #region General Properties
@@ -26,7 +25,7 @@ namespace Furniture
             {
             }
         }
-        public int Rotation { get; private set; }                               //Current rotation of the object in degrees
+        public int Rotation { get; set; }                               //Current rotation of the object in degrees
         public int Width { get { return _data.Width; } }                        //Object width     A_____B      D_____C
         public int Height { get { return _data.Height; } }                      //Object height     D       С
                                                                                 //                  |       |
@@ -42,10 +41,7 @@ namespace Furniture
         #endregion
 
 
-        #region Rotation Delegate
-        public delegate void VertexRotation(ref decimal x, ref decimal y, double radians, int centerX, int centerY);
-        public VertexRotation? RotateVertex { get; set; }
-        #endregion
+
 
 
         #region Arrays of coorditantes
@@ -95,48 +91,8 @@ namespace Furniture
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-        #region Moving Furniture
-        public virtual void Move(decimal centerDeltaX, decimal centerDeltaY)
-        {
-            Center[0] += centerDeltaX;
-            Center[1] += centerDeltaY;
-
-            for (int i = 0; i < Vertices.GetLength(0); i++)
-            {
-                Vertices[i, 0] += centerDeltaX;
-                Vertices[i, 1] += centerDeltaY;
-            }
-        }
-        #endregion
-
-
-
-
-        #region Rotating Furniture
-        public void Rotate(int angle)
-        {
-            if (RotateVertex == null)
-                return;
-
-            ResetCoords();
-
-            Rotation += angle;
-            while (Rotation >= 360)
-                Rotation -= 360;
-            while (Rotation < 0)
-                Rotation += 360;
-
-            double radians = Rotation * (Math.PI / 180);
-
-            for (int i = 0; i < Vertices.GetLength(0); i++)
-            {
-                RotateVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians, (int)Center[0], (int)Center[1]);
-                RotateVertex(ref ClearanceArea[i, 0], ref ClearanceArea[i, 1], radians, (int)Center[0], (int)Center[1]);
-            }
-        }
-
         //Resetting coordinates of the rectangle for rotation and value assignment in constructor.
-        private void ResetCoords()
+        public void ResetCoords()
         {
             Vertices[0, 0] = Center[0] - (decimal)Width / 2;       //A
             Vertices[0, 1] = Center[1] + (decimal)Height / 2;
@@ -163,6 +119,5 @@ namespace Furniture
             ClearanceArea[3, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
             ClearanceArea[3, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
         }
-        #endregion
     }
 }
