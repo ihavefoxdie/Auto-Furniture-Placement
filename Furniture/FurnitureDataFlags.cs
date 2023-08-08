@@ -15,6 +15,5 @@
             Parent = parent;
             Accessible = accessible;
         }
-
     }
 }

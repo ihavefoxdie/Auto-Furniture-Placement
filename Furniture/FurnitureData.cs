@@ -1,7 +1,7 @@
 ﻿namespace Furniture
 {
-    // TODO To think about ctor of FurnitureData and FurnitureDataFlags (at least id property uniqueness, like increment and so on)
-    // In order to contract ctor params of GeneralFurniture
+    /*TODO To think about ctor of FurnitureData and FurnitureDataFlags (at least id property uniqueness, like increment and so on)
+    In order to contract ctor params of GeneralFurniture*/
 
     public class FurnitureData
     {
