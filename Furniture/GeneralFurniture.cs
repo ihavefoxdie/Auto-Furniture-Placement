@@ -7,12 +7,12 @@ namespace Furniture
         #region General Properties
         readonly FurnitureData _data;
         readonly FurnitureDataFlags _flags;
+        string? _parentName;
 
 
         public int ID { get { return _data.Id; } }                             //ID of the furniture object
         public int ParentID { get { return _flags.Parent; } }                  //ID of the parent furniture object
         public string Name { get { return _data.Name; } }
-        string? _parentName;
         public string? ParentName
         {
             get
@@ -25,7 +25,7 @@ namespace Furniture
             {
             }
         }
-        public int Rotation { get; set; }                               //Current rotation of the object in degrees
+        public int Rotation { get; set; }                                       //Current rotation of the object in degrees
         public int Width { get { return _data.Width; } }                        //Object width     A_____B      D_____C
         public int Height { get { return _data.Height; } }                      //Object height     D       С
                                                                                 //                  |       |
@@ -39,9 +39,6 @@ namespace Furniture
         public bool IsOutOfBounds { get; set; }
         public bool IsCollided { get; set; }
         #endregion
-
-
-
 
 
         #region Arrays of coorditantes
@@ -59,11 +56,9 @@ namespace Furniture
             _data = new(id, name, length, height, zone, extraLength, extraHeight);
             _flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
-
             Center = new decimal[2];                //Center of furniture object
             Center[0] = (decimal)Width / 2;         //X
             Center[1] = (decimal)Height / 2;        //Y
-
             ClearanceArea = new decimal[4, 2];      //     D_______C       where CB is front (i.e. 0 degrees rotation).
             Vertices = new decimal[4, 2];           //     |       |       If Accessible property is set to true
             ResetCoords();                          //     |       |       the front is the side that must be accessible.
@@ -75,7 +70,6 @@ namespace Furniture
             _data = furnitureData;
             _flags = furnitureDataFlags;
             Rotation = 0;
-
 
             Center = new decimal[2];
             Center[0] = (decimal)Width / 2;

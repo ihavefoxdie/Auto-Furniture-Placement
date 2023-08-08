@@ -36,10 +36,8 @@ namespace Rooms
         public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
         public CollisionDeterminer? DetermineCollision { get; set; }
 
-        #region Rotation Delegate
         public delegate void VertexRotation(ref decimal x, ref decimal y, double radians, int centerX, int centerY);
         public VertexRotation? RotateVertex { get; set; }
-        #endregion
         #endregion
 
 
@@ -68,27 +66,6 @@ namespace Rooms
                 throw new Exception("The room has no furniture!");
 
         }
-
-        /*public Rooms(int length, int width, Furniture[] doors, params Furniture[] items)
-        {
-            ContainerHeight = length;
-            ContainerWidth = width;
-
-            FurnitureList = new();
-            for (int i = 0; i < items.Width; i++)
-            {
-                if (items[i] is not null)
-                    FurnitureList.Add(items[i]);
-            }
-
-            if (doors is null)
-                throw new ArgumentNullException(nameof(doors), "The door array is null!");
-            Doors = doors;
-            WindowsInRoom = false;
-
-            if (FurnitureList.Count == 0)
-                throw new Exception("The room has no furniture!");
-        }*/
         #endregion
 
 
