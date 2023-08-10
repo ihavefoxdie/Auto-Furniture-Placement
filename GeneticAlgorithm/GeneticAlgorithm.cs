@@ -5,17 +5,17 @@ namespace GeneticAlgorithm
 {
     public class GeneticAlgoritm
     {
-        public List<IPolygonContainer> Container {get; private set;}
+        public List<IPolygonContainer> Population {get; private set;}
         private bool KeepUp {get; set;}
         public int Generation {get; private set;}
 
         public GeneticAlgoritm(IPolygonContainer container)
         {
-            Container = new();
+            Population = new();
             KeepUp = true;
             for (int i = 0; i < 6; i++)
             {
-                Container.Add(container);
+                Population.Add(container);
             }
         }
         //TODO CROSSOVER AND MUTATION ALGORITHMS
@@ -23,13 +23,13 @@ namespace GeneticAlgorithm
         {
             while(KeepUp)
             {
-                Container = Container.OrderBy(container => container.Penalty).ToList();
+                Population = Population.OrderBy(container => container.Penalty).ToList();
 
-                int transfer = (70*Container.Count)/100;
+                int transfer = (70*Population.Count)/100;
 
-                List<IPolygonContainer> newContainersSet = SUS(transfer, Container);
+                List<IPolygonContainer> newContainersSet = SUS(transfer, Population);
 
-                transfer = Container.Count - transfer;
+                transfer = Population.Count - transfer;
             }
             return null;
         }

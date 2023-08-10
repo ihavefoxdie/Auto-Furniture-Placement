@@ -5,37 +5,17 @@ namespace Furniture
     public abstract class GeneralFurniture : IPolygon
     {
         #region General Properties
-        readonly FurnitureData _data;
-        readonly FurnitureDataFlags _flags;
-        string? _parentName;
+        public readonly FurnitureData Data;
+        public readonly FurnitureDataFlags Flags;
 
 
-        public int ID { get { return _data.Id; } }                             //ID of the furniture object
-        public int ParentID { get { return _flags.Parent; } }                  //ID of the parent furniture object
-        public string Name { get { return _data.Name; } }
-        public string? ParentName
-        {
-            get
-            {
-                if (_parentName == null)
-                    return "empty";
-                return _parentName;
-            }
-            private set
-            {
-            }
-        }
+        public int ID { get { return Data.ID; } }                              //ID of the furniture object
         public int Rotation { get; set; }                                       //Current rotation of the object in degrees
-        public int Width { get { return _data.Width; } }                        //Object width     A_____B      D_____C
-        public int Height { get { return _data.Height; } }                      //Object height     D       С
+        public int Width { get { return Data.Width; } }                        //Object width     A_____B      D_____C
+        public int Height { get { return Data.Height; } }                      //Object height     D       С
                                                                                 //                  |       |
                                                                                 //                  |       |
                                                                                 //                  A       B
-        public int ClearanceWidth { get { return _data.ExtraWidth; } }          //Extra width for ClearanceArea
-        public int ClearanceHeight { get { return _data.ExtraHeight; } }        //Extra height for ClearanceArea
-        public string Zone { get { return _data.Zone; } }                       //String value for the zone this furniture object belongs to
-        public int NearWall { get { return _flags.NearWall; } }
-        public bool IgnoreWindows { get { return _flags.IgnoreWindows; } }
         public bool IsOutOfBounds { get; set; }
         public bool IsCollided { get; set; }
         #endregion
@@ -50,11 +30,11 @@ namespace Furniture
 
         #region Contsructors
         public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows,
-                                int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1,
+                                int extraLength = 0, int extraHeight = 0, int nearWall = -1, bool parent = false,
                                 bool accessible = false, string? parentName = null)
         {
-            _data = new(id, name, length, height, zone, extraLength, extraHeight);
-            _flags = new(ignoreWindows, nearWall, parent, accessible);
+            Data = new(id, name, length, height, zone, extraLength, extraHeight);
+            Flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
             Center = new decimal[2];                //Center of furniture object
             Center[0] = (decimal)Width / 2;         //X
@@ -67,8 +47,8 @@ namespace Furniture
 
         public GeneralFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            _data = furnitureData;
-            _flags = furnitureDataFlags;
+            Data = furnitureData;
+            Flags = furnitureDataFlags;
             Rotation = 0;
 
             Center = new decimal[2];
@@ -82,7 +62,7 @@ namespace Furniture
         #endregion
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
         //Resetting coordinates of the rectangle for rotation and value assignment in constructor.
@@ -101,17 +81,17 @@ namespace Furniture
             Vertices[3, 1] = Center[1] - (decimal)Height / 2;
 
 
-            ClearanceArea[0, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[0, 1] = Center[1] + (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[0, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[0, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[1, 0] = Center[0] + (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[1, 1] = Center[1] + (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[1, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[1, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[2, 0] = Center[0] + (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[2, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[2, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[2, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[3, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[3, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[3, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[3, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
         }
     }
 }

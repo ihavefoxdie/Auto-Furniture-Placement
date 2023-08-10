@@ -17,7 +17,7 @@ namespace Zones
         public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
             Name = zoneName;
-            Furnitures = furnitures.Where(p => p.Zone == zoneName).ToList();
+            Furnitures = furnitures.Where(p => p.Data.Zone == zoneName).ToList();
             Width = Furnitures.Select(p => p.Width + 2).Sum();
             Height = Furnitures.Select(p => p.Height + 2).Sum();
             Area = Math.Floor(Math.Sqrt(Width * Height));
@@ -43,7 +43,7 @@ namespace Zones
 
             foreach (var item in furnitures)
             {
-                unique.Add(item.Zone);
+                unique.Add(item.Data.Zone);
             }
 
             unique = unique.Distinct().ToList();
