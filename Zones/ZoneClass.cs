@@ -23,7 +23,7 @@ namespace Zones
         {
             isStorage = false;
             Name = zoneName;
-            Furnitures = furnitures.Where(p => p.ZoneName == zoneName).ToList();
+            Furnitures = furnitures.Where(p => p.Data.Zone == zoneName).ToList();
 
             Width = Furnitures.Select(p => p.Width).Sum();
             Height = Furnitures.Select(p => p.Height).Sum();

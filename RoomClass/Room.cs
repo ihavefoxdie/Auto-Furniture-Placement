@@ -1,5 +1,6 @@
 ﻿using Furniture;
 using Interfaces;
+using Zones;
 
 namespace Rooms
 {
@@ -28,8 +29,10 @@ namespace Rooms
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
-        //List<Zones> ZonesList { get; private set; } //DEW EET
+        public List<Zone> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
+
+        public int Aisle { get; private set;}
         #endregion
 
 
@@ -64,7 +67,7 @@ namespace Rooms
             Windows = windows;
             WindowsInRoom = true;
 
-            ZoneList = InitializeZones();
+            ZonesList = InitializeZones();
 
             if (FurnitureList.Count == 0)
                 throw new Exception("The room has no furniture!");
@@ -328,7 +331,7 @@ namespace Rooms
 
             foreach (var item in FurnitureList)
             {
-                unique.Add(item.ZoneName);
+                unique.Add(item.Data.Zone);
             }
 
             unique = unique.Distinct().ToList();
