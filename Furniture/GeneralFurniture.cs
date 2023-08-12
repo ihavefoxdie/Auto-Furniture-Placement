@@ -1,53 +1,23 @@
 ﻿using Interfaces;
-using System.Security.AccessControl;
-using System.Xml.Linq;
 
 namespace Furniture
 {
     public abstract class GeneralFurniture : IPolygon
     {
         #region General Properties
-        public int ID { get; protected set; }                 //ID of the furniture object
-        public int ParentID { get; private set; }           //ID of the parent furniture object
-        public string Name { get; protected set; }
-        private string? _parentName;
-        public string? ParentName
-        {
-            get
-            {
-                if(_parentName == null)
-                    return "empty";
-                return _parentName;
-            }
-            private set
-            {
-            }
-        }
-        public int Rotation { get; private set; }           //Current rotation of the object in degrees
-        public int Width { get; protected set; }              //Object width     A_____B      D_____C
-        public int Height { get; protected set; }             //Object height     D       С
-                                                            //                  |       |
-                                                            //                  |       |
-                                                            //                  A       B
-        public int ClearanceWidth { get; private set; }         //Extra width for ClearanceArea
-        public int ClearanceHeight { get; private set; }        //Extra height for ClearanceArea
-        public string ZoneName { get; protected set; }            //String value for the zone this furniture object belongs to
-        #endregion
+        public readonly FurnitureData Data;
+        public readonly FurnitureDataFlags Flags;
 
 
-        #region Flags
-        public bool IgnoreWindows { get; protected set; }     //Determines whether the furniture object can be placed in front of a window
-        public int NearWall { get; protected set; }           //Determines whether the furniture object must be placed near wall and the distance between the two
-        public bool Accessible { get; protected set; }        //Determines whether the furniture object must be accessible
-
-        public bool IsOutOfBounds { get; set; }             //Is the furniture object currently out of bounds
-        public bool IsCollided { get; set; }                //Is the furniture object currently collided with another
-        #endregion
-
-
-        #region Rotation Delegate
-        public delegate void VertexRotation(ref decimal x, ref decimal y, double radians, int centerX, int centerY);
-        public VertexRotation? RotateVertex { get; set; }
+        public int ID { get { return Data.ID; } }                              //ID of the furniture object
+        public int Rotation { get; set; }                                       //Current rotation of the object in degrees
+        public int Width { get { return Data.Width; } }                        //Object width     A_____B      D_____C
+        public int Height { get { return Data.Height; } }                      //Object height     D       С
+                                                                                //                  |       |
+                                                                                //                  |       |
+                                                                                //                  A       B
+        public bool IsOutOfBounds { get; set; }
+        public bool IsCollided { get; set; }
         #endregion
 
 
@@ -58,105 +28,45 @@ namespace Furniture
         #endregion
 
 
-        #region Contsructor
+        #region Contsructors
         public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows,
-                                int extraLength = 0, int extraHeight = 0, int nearWall = -1, int parent = -1,
-                                bool accessable = false, string? parentName = null)
+                                int extraLength = 0, int extraHeight = 0, int nearWall = -1, bool parent = false,
+                                bool accessible = false, string? parentName = null)
         {
-            ID = id;
-            ParentID = parent;
-            Name = name;
-            Width = length;
-            Height = height;
+            Data = new(id, name, length, height, zone, extraLength, extraHeight);
+            Flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
-            ZoneName = zone;
-            IgnoreWindows = ignoreWindows;
-            ClearanceWidth = extraLength;               //Extra width applied to the base width for clearance area boundries
-            ClearanceHeight = extraHeight;              //Same as ClearanceWidth but applied for height
-            NearWall = nearWall;                    //Maximum distance allowed between a wall and the furniture object (-1 is set to ignore this charactiristic)
-            Accessible = accessable;
-
             Center = new decimal[2];                //Center of furniture object
             Center[0] = (decimal)Width / 2;         //X
             Center[1] = (decimal)Height / 2;        //Y
-
             ClearanceArea = new decimal[4, 2];      //     D_______C       where CB is front (i.e. 0 degrees rotation).
             Vertices = new decimal[4, 2];           //     |       |       If Accessible property is set to true
-            ResetCoords();                          //     |       |       the front is the side that must be accessable.
+            ResetCoords();                          //     |       |       the front is the side that must be accessible.
                                                     //     A_______B       Accessibility is determined with pathfinding algorithm.
         }
 
         public GeneralFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            string? parentName = null;
-
-            ID = furnitureData.Id;
-            ParentID = furnitureDataFlags.Parent;
-            Name = furnitureData.Name;
-            Width = furnitureData.Length;
-            Height = furnitureData.Height;
+            Data = furnitureData;
+            Flags = furnitureDataFlags;
             Rotation = 0;
-            ZoneName = furnitureData.Zone;
-            IgnoreWindows = furnitureDataFlags.IgnoreWindows;
-            ClearanceWidth = furnitureData.ExtraLength;     
-            ClearanceHeight = furnitureData.ExtraHeight;    
-            NearWall = furnitureDataFlags.NearWall;         
-            Accessible = furnitureDataFlags.Accessible;
 
-            Center = new decimal[2];              
-            Center[0] = (decimal)Width / 2;       
-            Center[1] = (decimal)Height / 2;      
+            Center = new decimal[2];
+            Center[0] = (decimal)Width / 2;
+            Center[1] = (decimal)Height / 2;
 
-            ClearanceArea = new decimal[4, 2];    
-            Vertices = new decimal[4, 2];         
-            ResetCoords();                                                                          
-        }
-
-
-        #endregion
-
-
-
-
-        #region Moving Furniture
-        public virtual void Move(decimal centerDeltaX, decimal centerDeltaY)
-        {
-            Center[0] += centerDeltaX;
-            Center[1] += centerDeltaY;
-
-            for (int i = 0; i < Vertices.GetLength(0); i++)
-            {
-                Vertices[i, 0] += centerDeltaX;
-                Vertices[i, 1] += centerDeltaY;
-            }
-        }
-        #endregion
-
-
-        #region Rotation
-        public void Rotate(int angle)
-        {
-            if (RotateVertex == null)
-                return;
-
+            ClearanceArea = new decimal[4, 2];
+            Vertices = new decimal[4, 2];
             ResetCoords();
-
-            Rotation += angle;
-            while (Rotation >= 360)
-                Rotation -= 360;
-            while (Rotation < 0)
-                Rotation += 360;
-
-            double radians = Rotation * (Math.PI / 180);
-
-            for (int i = 0; i < Vertices.GetLength(0); i++)
-            {
-                RotateVertex(ref Vertices[i, 0], ref Vertices[i, 1], radians, (int)Center[0], (int)Center[1]);
-            }
         }
+        #endregion
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
         //Resetting coordinates of the rectangle for rotation and value assignment in constructor.
-        private void ResetCoords()
+        public void ResetCoords()
         {
             Vertices[0, 0] = Center[0] - (decimal)Width / 2;       //A
             Vertices[0, 1] = Center[1] + (decimal)Height / 2;
@@ -171,30 +81,17 @@ namespace Furniture
             Vertices[3, 1] = Center[1] - (decimal)Height / 2;
 
 
-            ClearanceArea[0, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[0, 1] = Center[1] + (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[0, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[0, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[1, 0] = Center[0] + (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[1, 1] = Center[1] + (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[1, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[1, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[2, 0] = Center[0] + (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[2, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[2, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[2, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
 
-            ClearanceArea[3, 0] = Center[0] - (decimal)(Width + ClearanceWidth) / 2;
-            ClearanceArea[3, 1] = Center[1] - (decimal)(Height + ClearanceHeight) / 2;
+            ClearanceArea[3, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
+            ClearanceArea[3, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
         }
-
-
-        /*public object Clone()
-        {
-            Furniture item = new(ID, Height, Width, Zone, IgnoreWindows, NearWall, ParentID)
-            {
-                Center = (decimal[])this.Center.Clone(),
-                Vertices = (decimal[,])this.Vertices.Clone(),
-                Rotation = this.Rotation
-            };
-            return item;
-        }*/
-        #endregion
     }
 }

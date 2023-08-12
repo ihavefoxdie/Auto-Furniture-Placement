@@ -28,12 +28,12 @@ namespace Testing
                 //new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
                 //new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
             };
-            for (int i = 0; i < furnitures.Count; i++)
+            /*for (int i = 0; i < furnitures.Count; i++)
             {
                 furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
             }
             furnitures[0].Move(0, 0);
-            furnitures[1].Move(10, 15);
+            furnitures[1].Move(10, 15);*/
             //furnitures[0].Rotate(45);
 
             Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
@@ -57,7 +57,7 @@ namespace Testing
                 doorFactory.GetFurniture()
                 //new(-1, "door", 15, 5, "ROOM", false, 0)
             };
-            door[0].Move(20, 0);
+            //door[0].Move(20, 0);
 
             Room newRoom = new(40, 40, door, furnitures, _ = false, 1)
             {
@@ -73,7 +73,7 @@ namespace Testing
             //newRoom.RasterizationMethod()
 
             //newRoom.FurnitureList[0].Rotate(31);
-            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.RoomWidth, newRoom.RoomWidth);
+            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
 
 
             LineDrawer.Print(newRoom.RoomArray);
