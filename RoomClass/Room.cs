@@ -32,7 +32,7 @@ namespace Rooms
         public List<Zone> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
 
-        public int Aisle { get; private set;}
+        public int Aisle { get; private set; }
         #endregion
 
 
@@ -338,7 +338,7 @@ namespace Rooms
 
             foreach (var item in unique)
             {
-                Zone zone = new(FurnitureList, item);
+                Zone zone = new(FurnitureList.Where(furniture => furniture.Data.Zone.Equals(item)).ToList(), item);
                 list.Add(zone);
             }
 

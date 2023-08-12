@@ -62,8 +62,6 @@ namespace Zones
             isStorage = prevZone.isStorage;
         }
 
-        //TODO InitializeZones() can be used just once
-
 
         public void Move(decimal centerDeltaX, decimal centerDeltaY)
         {

@@ -24,9 +24,8 @@ namespace RoomClass.Zones
             RoomWidth = roomWidth;
             RoomHeight = roomHeight;
             Doors = doors;
-
+            Zones = zones;
             Cost = FindCost();
-
         }
 
 
