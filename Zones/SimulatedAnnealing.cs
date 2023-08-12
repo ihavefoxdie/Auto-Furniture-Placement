@@ -46,6 +46,7 @@ namespace RoomClass.Zones
             for (int i = 0; i < NumTrials; i++)
             {
 
+                //TODO Complete initial temprature determination 
 
 
 

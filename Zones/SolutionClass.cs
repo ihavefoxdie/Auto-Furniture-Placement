@@ -31,8 +31,96 @@ namespace RoomClass.Zones
 
         public SolutionClass GenerateNeighbour(double maxStep)
         {
+            Random random = new Random();
+            int randomZoneNumber = random.Next(Zones.Count);
+            //Take a random zone
+            //TODO To make sure about deep copy here
+            var neigbourZone = new AnnealingZone(Zones[randomZoneNumber]);
 
-            throw new NotImplementedException();
+            //Do a random action (moving or resizing)
+
+            //resizing
+            if (RandomBoolean())
+            {
+                //TODO Evade collision between zone and room for each of (resizing or moving)
+                //resizing options
+                switch (random.Next(5))
+                {
+                    
+                    case 0:
+                        neigbourZone.Resize((decimal)maxStep, (decimal)maxStep);
+                        break;
+
+                    case 1:
+                        neigbourZone.Resize(0, (decimal)maxStep);
+                        break;
+
+                    case 2:
+                        neigbourZone.Resize((decimal)maxStep, 0);
+                        break;
+
+                    case 3:
+                        neigbourZone.Resize(-(decimal)maxStep, -(decimal)maxStep);
+                        break;
+
+                    case 4:
+                        neigbourZone.Resize(0, -(decimal)maxStep);
+                        break;
+
+                    case 5:
+                        neigbourZone.Resize(-(decimal)maxStep, 0);
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+
+            else
+            {
+                //moving options
+                switch (random.Next(5))
+                {
+
+                    case 0:
+                        neigbourZone.Center[0] += (decimal)maxStep;
+                        break;
+
+                    case 1:
+                        neigbourZone.Center[1] += (decimal)maxStep;
+                        break;
+
+                    case 2:
+                        neigbourZone.Center[0] += (decimal)maxStep;
+                        neigbourZone.Center[1] += (decimal)maxStep;
+                        break;
+
+                    case 3:
+                        neigbourZone.Center[0] -= (decimal)maxStep;
+                        break;
+
+                    case 4:
+                        neigbourZone.Center[1] -= (decimal)maxStep;
+                        break;
+
+                    case 5:
+                        neigbourZone.Center[0] -= (decimal)maxStep;
+                        neigbourZone.Center[1] -= (decimal)maxStep;
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+
+            VertexManipulator.VertexResetting(neigbourZone.Vertices, neigbourZone.Center, neigbourZone.Width, neigbourZone.Height);
+
+            var deepZonesCopy = Zones.ToList();
+            deepZonesCopy[randomZoneNumber] = neigbourZone;
+
+            return new SolutionClass(deepZonesCopy, Aisle, RoomWidth, RoomHeight, Doors);
 
         }
 
@@ -247,6 +335,16 @@ namespace RoomClass.Zones
                 rect1.ExtendedHeight / 2 + rect1.Center[1] > rect2.Center[1] - rect2.ExtendedHeight / 2
               )
                 return true;
+            return false;
+        }
+
+        private bool RandomBoolean()
+        {
+            Random random = new();
+            if (random.Next(1) > 0)
+            {
+                return true;
+            }
             return false;
         }
 
