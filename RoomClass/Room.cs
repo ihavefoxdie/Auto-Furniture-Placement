@@ -338,7 +338,7 @@ namespace Rooms
 
             foreach (var item in unique)
             {
-                Zone zone = new(FurnitureList.Where(furniture => furniture.Data.Zone.Equals(item)).ToList(), item);
+                Zone zone = new(FurnitureList, item);
                 list.Add(zone);
             }
 
