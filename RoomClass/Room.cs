@@ -120,6 +120,13 @@ namespace Rooms
                     furnitureToMutate.RemoveAt(value);
                     continue;
                 }
+                if (new Random().Next(2) != 0)
+                {
+                    int value = selector.Next(furnitureToMutate.Count);
+                    MoveToParent(furnitureToMutate.ElementAt(value));
+                    furnitureToMutate.RemoveAt(value);
+                    continue;
+                }
             }
         }
 
