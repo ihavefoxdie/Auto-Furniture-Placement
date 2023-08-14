@@ -55,10 +55,9 @@ namespace Zones
             Height = prevZone.Height;
             Area = prevZone.Area;
             FurnitureArea = prevZone.FurnitureArea;
-            Center = prevZone.Center;
-            Vertices = prevZone.Vertices;
-            //Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
-            //Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);
+            Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
+            Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);  
+
             isStorage = prevZone.isStorage;
         }
 

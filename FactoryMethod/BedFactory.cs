@@ -9,7 +9,7 @@ namespace FactoryMethod
 {
     public class BedFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(2, "bed", 6, 2, "rest");
+        private readonly FurnitureData _furnitureData = new(7, "bed", 4, 3, "bed");
         private readonly FurnitureDataFlags _furnitureDataFlags = new();
 
         public BedFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)

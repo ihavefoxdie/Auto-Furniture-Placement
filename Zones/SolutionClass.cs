@@ -7,7 +7,7 @@ using Zones;
 namespace RoomClass.Zones
 {
 
-    internal class SolutionClass
+    public class SolutionClass
     {
         public List<AnnealingZone> Zones { get; set; }
         private List<GeneralFurniture> Doors { get; set; }
@@ -17,6 +17,7 @@ namespace RoomClass.Zones
 
         public int RoomWidth { get; private set; }
         public int RoomHeight { get; private set; }
+
 
         public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
         {
@@ -35,90 +36,25 @@ namespace RoomClass.Zones
             int randomZoneNumber = random.Next(Zones.Count);
             //Take a random zone
             //TODO To make sure about deep copy here
-            var neigbourZone = new AnnealingZone(Zones[randomZoneNumber]);
-
-            //Do a random action (moving or resizing)
-
-            //resizing
-            if (RandomBoolean())
-            {
-                //TODO Evade collision between zone and room for each of (resizing or moving)
-                //resizing options
-                switch (random.Next(5))
-                {
-                    
-                    case 0:
-                        neigbourZone.Resize((decimal)maxStep, (decimal)maxStep);
-                        break;
-
-                    case 1:
-                        neigbourZone.Resize(0, (decimal)maxStep);
-                        break;
-
-                    case 2:
-                        neigbourZone.Resize((decimal)maxStep, 0);
-                        break;
-
-                    case 3:
-                        neigbourZone.Resize(-(decimal)maxStep, -(decimal)maxStep);
-                        break;
-
-                    case 4:
-                        neigbourZone.Resize(0, -(decimal)maxStep);
-                        break;
-
-                    case 5:
-                        neigbourZone.Resize(-(decimal)maxStep, 0);
-                        break;
-
-                    default:
-                        break;
-                }
-
-            }
-
-            else
-            {
-                //moving options
-                switch (random.Next(5))
-                {
-
-                    case 0:
-                        neigbourZone.Center[0] += (decimal)maxStep;
-                        break;
-
-                    case 1:
-                        neigbourZone.Center[1] += (decimal)maxStep;
-                        break;
-
-                    case 2:
-                        neigbourZone.Center[0] += (decimal)maxStep;
-                        neigbourZone.Center[1] += (decimal)maxStep;
-                        break;
-
-                    case 3:
-                        neigbourZone.Center[0] -= (decimal)maxStep;
-                        break;
-
-                    case 4:
-                        neigbourZone.Center[1] -= (decimal)maxStep;
-                        break;
-
-                    case 5:
-                        neigbourZone.Center[0] -= (decimal)maxStep;
-                        neigbourZone.Center[1] -= (decimal)maxStep;
-                        break;
-
-                    default:
-                        break;
-                }
-
-            }
-
-            VertexManipulator.VertexResetting(neigbourZone.Vertices, neigbourZone.Center, neigbourZone.Width, neigbourZone.Height);
-
+            AnnealingZone neighbourZone;
             var deepZonesCopy = Zones.ToList();
-            deepZonesCopy[randomZoneNumber] = neigbourZone;
+
+            for (int i = random.Next(1, Zones.Count); i > 0; i--)
+            {
+                while (true)
+                {
+                    neighbourZone = new AnnealingZone(Zones[randomZoneNumber]);
+                    RandomizeZone(neighbourZone, (decimal)maxStep);
+                    VertexManipulator.VertexResetting(neighbourZone.Vertices, neighbourZone.Center, neighbourZone.Width, neighbourZone.Height);
+                    if (IsZoneInsideRoom(neighbourZone))
+                    {
+                        deepZonesCopy[randomZoneNumber] = neighbourZone;
+                        break;
+                    }
+                    randomZoneNumber = random.Next(Zones.Count);
+                }
+            }
+            //Do a random action (moving or resizing)
 
             return new SolutionClass(deepZonesCopy, Aisle, RoomWidth, RoomHeight, Doors);
 
@@ -213,13 +149,12 @@ namespace RoomClass.Zones
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (IsInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1]))
+                    if (IsVertexInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1]))
                     {
                         wall = FindDistances(item.Vertices);
-
                     }
 
-                    else throw new Exception($"Zone goes beyond the Room[W:{RoomWidth}  H:{RoomHeight}]\n \tZoneId: {item.ID}\tVerticeNumber : {i}");
+                    else throw new Exception($"Zone goes beyond the Room[W:{RoomWidth}  H:{RoomHeight}]\n \tZoneId: {item.Name}\tVerticeNumber : {i}");
                 }
 
                 penalty += wall[0] + wall[1] + wall[2] / 2;
@@ -258,14 +193,24 @@ namespace RoomClass.Zones
         }
 
 
-        private bool IsInsideRoom(decimal x, decimal y)
+        private bool IsVertexInsideRoom(decimal x, decimal y)
         {
-            if (x > RoomWidth || x < RoomWidth)
+            if (x > RoomWidth || x < 0)
                 return false;
 
-            if (y > RoomHeight || y < RoomHeight)
+            if (y > RoomHeight || y < 0)
                 return false;
 
+            return true;
+        }
+
+        private bool IsZoneInsideRoom(IPolygon zone)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1]))
+                    return false;
+            }
             return true;
         }
 
@@ -346,6 +291,96 @@ namespace RoomClass.Zones
                 return true;
             }
             return false;
+        }
+
+        private void RandomizeZone(AnnealingZone randomZone, decimal maxStep)
+        {
+            Random random = new();
+
+            if (RandomBoolean())
+            {
+                //TODO Evade collision between zone and room for each of (resizing or moving)
+                //resizing options
+
+                if (randomZone.isStorage == true)
+                {
+                    RandomizeZone(randomZone, maxStep);
+                    return;
+                }
+
+                switch (random.Next(5))
+                {
+
+                    case 0:
+                        randomZone.Resize((decimal)maxStep, (decimal)maxStep);
+                        break;
+
+                    case 1:
+                        randomZone.Resize(0, (decimal)maxStep);
+                        break;
+
+                    case 2:
+                        randomZone.Resize((decimal)maxStep, 0);
+                        break;
+
+                    case 3:
+                        randomZone.Resize(-(decimal)maxStep, -(decimal)maxStep);
+                        break;
+
+                    case 4:
+                        randomZone.Resize(0, -(decimal)maxStep);
+                        break;
+
+                    case 5:
+                        randomZone.Resize(-(decimal)maxStep, 0);
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+
+            else
+            {
+                //moving options
+
+                switch (random.Next(5))
+                {
+
+                    case 0:
+                        randomZone.Center[0] += (decimal)maxStep;
+                        break;
+
+                    case 1:
+                        randomZone.Center[1] += (decimal)maxStep;
+                        break;
+
+                    case 2:
+                        randomZone.Center[0] += (decimal)maxStep;
+                        randomZone.Center[1] += (decimal)maxStep;
+                        break;
+
+                    case 3:
+                        randomZone.Center[0] -= (decimal)maxStep;
+                        break;
+
+                    case 4:
+                        randomZone.Center[1] -= (decimal)maxStep;
+                        break;
+
+                    case 5:
+                        randomZone.Center[0] -= (decimal)maxStep;
+                        randomZone.Center[1] -= (decimal)maxStep;
+                        break;
+
+                    default:
+                        break;
+                }
+
+            }
+
+
         }
 
     }

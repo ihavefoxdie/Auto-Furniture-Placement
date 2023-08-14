@@ -23,7 +23,7 @@ namespace Rooms
         }
 
         public List<GeneralFurniture> FurnitureList { get; private set; }
-        private List<GeneralFurniture> Doors { get; set; }
+        public List<GeneralFurniture> Doors { get; set; }
         private GeneralFurniture[]? Windows { get; set; }
         public int[,] RoomArray { get; set; }
         public int ContainerHeight { get; private set; }
@@ -67,7 +67,6 @@ namespace Rooms
             Windows = windows;
             WindowsInRoom = true;
 
-            ZonesList = InitializeZones();
 
             if (FurnitureList.Count == 0)
                 throw new Exception("The room has no furniture!");
@@ -322,7 +321,7 @@ namespace Rooms
             return fine;
         }
 
-        public List<Zone> InitializeZones()
+        public void InitializeZones()
         {
             List<Zone> list = new();
 
@@ -342,7 +341,7 @@ namespace Rooms
                 list.Add(zone);
             }
 
-            return list;
+            ZonesList = list;
         }
 
 

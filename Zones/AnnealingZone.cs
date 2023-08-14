@@ -8,11 +8,14 @@ namespace Zones
 {
     public class AnnealingZone : Zone
     {
+        private Zone _parentZone;
+        //ExtendedWidth and Height is dedicated to work with non integral numbers
         public decimal ExtendedWidth { get; set; }
         public decimal ExtendedHeight { get; set; }
 
         public AnnealingZone(Zone zone) : base(zone)
         {
+            _parentZone = zone;
             ExtendedWidth = zone.Width;
             ExtendedHeight = zone.Height;
         }

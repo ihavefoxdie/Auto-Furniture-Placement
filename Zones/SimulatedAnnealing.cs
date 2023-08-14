@@ -1,76 +1,71 @@
-﻿using Zones;
-using Furniture;
+﻿using Furniture;
+using Zones;
 
 namespace RoomClass.Zones
 {
     //TODO Implement Singleton pattern for SimulatedAnnealing
 
-    internal class SimulatedAnnealing
+    public class SimulatedAnnealing
     {
         // T = MaxDiff * 1.2
         public double Temperature { get; set; }
         public double TempDiff { get; set; }
         public double MaxDiff { get; set; }
         public double MinStep { get; set; }
-
-        //TODO MaxStep = room_min_dimension/2
         public double MaxStep { get; set; }
         public double StepDecreaseRatio { get; set; } = 0.95;
         public double TempDecreaseRatio { get; set; } = 0.9;
-        public int NumTrials { get; set; } = 200;
+        public int NumTrials { get; set; } = 500;
         public int IterPerTemp { get; set; } = 100;
 
         public int RoomWidth { get; set; }
         public int RoomHeight { get; set; }
-        List<GeneralFurniture> Doors { get; set; }
+        private List<GeneralFurniture> Doors { get; set; }
+        private List<AnnealingZone> AnnealingZones { get; set; }
+        public SolutionClass InitialSolution { get; set; }
+        public SolutionClass CurrentSolution { get; set; }
+        public SolutionClass NeighbourSolution { get; set; }
 
         //TODO Create Initial solution instance inside ctor
 
-        public SimulatedAnnealing(List<AnnealingZone> annealingZones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
+        public SimulatedAnnealing(List<Zone> zones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
         {
             RoomHeight = roomHeight;
             RoomWidth = roomWidth;
             Doors = doors;
 
-            InitialSolution = new SolutionClass(annealingZones, aisle, RoomWidth, RoomHeight, doors);
+            MaxStep = int.Min(roomHeight, roomWidth) / 2;
+            AnnealingZones = new List<AnnealingZone>(zones.Count);
+
+            foreach (Zone zone in zones)
+            {
+                AnnealingZones.Add(new AnnealingZone(zone));
+            }
+
+            InitialSolution = new SolutionClass(AnnealingZones, aisle, RoomWidth, RoomHeight, doors);
+            
             Temperature = DetermineInitialTemp();
         }
 
         private double DetermineInitialTemp()
         {
-            Random random = new Random();
-
-            //TODO Create a full ctor for SolutionClass
-            List<SolutionClass> solutions = new(200);
+            List<SolutionClass> solutions = new(NumTrials);
 
             for (int i = 0; i < NumTrials; i++)
             {
-
-                //TODO Complete initial temprature determination 
-
-
-
+                solutions.Add(InitialSolution.GenerateNeighbour(MaxStep));
             }
 
-            while (NumTrials > 0)
+            List<SolutionClass> randomSolutions = new(NumTrials);
+
+            foreach (var item in solutions)
             {
-                if (random.Next(10) < 7)
-                {
-
-                }
-
-                NumTrials--;
+                randomSolutions.Add(item.GenerateNeighbour(MaxStep));
             }
 
-
-            throw new NotImplementedException();
-
-
+            return (randomSolutions.Max(s => s.Cost) - randomSolutions.Min(s => s.Cost)) * 1.2;
         }
 
-        public SolutionClass InitialSolution { get; set; }
-        public SolutionClass CurrentSolution { get; set; }
-        public SolutionClass NeighbourSolution { get; set; }
 
 
 
