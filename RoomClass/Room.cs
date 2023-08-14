@@ -90,18 +90,35 @@ namespace Rooms
                     int value = selector.Next(furnitureToMutate.Count);
                     Scatter(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
+                    continue;
                 }
                 if (new Random().Next(2) != 0)
                 {
                     int value = selector.Next(furnitureToMutate.Count);
                     RandomRotation(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
+                    continue;
                 }
                 if (new Random().Next(2) != 0)
                 {
                     int value = selector.Next(furnitureToMutate.Count);
                     WallAlignment(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
+                    continue;
+                }
+                if (new Random().Next(2) != 0)
+                {
+                    int value = selector.Next(furnitureToMutate.Count);
+                    MoveObjectToObject(furnitureToMutate.ElementAt(value));
+                    furnitureToMutate.RemoveAt(value);
+                    continue;
+                }
+                if (new Random().Next(2) != 0)
+                {
+                    int value = selector.Next(furnitureToMutate.Count);
+                    Alighnment(furnitureToMutate.ElementAt(value));
+                    furnitureToMutate.RemoveAt(value);
+                    continue;
                 }
             }
         }
@@ -186,6 +203,67 @@ namespace Rooms
             {
                 Move(item, ContainerHeight - item.Center[1] - item.Height / 2, 0);
             }
+        }
+
+        private void MoveObjectToObject(GeneralFurniture item)
+        {
+            int index = 0;
+            double minDistance = -1;
+
+            for (int i = 0; i < FurnitureList.Count; i++)
+            {
+                if (FurnitureList[i] != item)
+                {
+                    double distance = Math.Sqrt(Math.Pow((double)(item.Center[0] - FurnitureList[i].Center[0]), 2) +
+                       Math.Pow((double)(item.Center[1] - FurnitureList[i].Center[1]), 2));
+
+                    if (minDistance == -1 || distance < minDistance)
+                    {
+                        minDistance = distance;
+                        index = i;
+                    }
+                }
+            }
+
+            decimal pointToMoveToX = FurnitureList[index].Center[0] + (decimal)Math.Cos(FurnitureList[index].Rotation) * FurnitureList[index].Width;
+            decimal pointToMoveToY = FurnitureList[index].Center[1] + (decimal)Math.Sin(FurnitureList[index].Rotation) * FurnitureList[index].Width;
+            Move(item, -(item.Center[0] - pointToMoveToX), -(item.Center[1] - pointToMoveToY));
+        }
+
+        private void MoveToParent(GeneralFurniture item)
+        {
+            if (item.Data.ParentID == -1)
+                return;
+
+            int index = -1;
+
+            for (int i = 0; i < FurnitureList.Count; i++)
+            {
+                if (FurnitureList[i].ID == item.Data.ParentID)
+                    index = i;
+            }
+
+            if (index == -1)
+                return;
+
+            decimal pointToMoveToX = FurnitureList[index].Center[0] + (decimal)Math.Cos(FurnitureList[index].Rotation) * FurnitureList[index].Width;
+            decimal pointToMoveToY = FurnitureList[index].Center[1] + (decimal)Math.Sin(FurnitureList[index].Rotation) * FurnitureList[index].Width;
+            Move(item, -(item.Center[0] - pointToMoveToX), -(item.Center[1] - pointToMoveToY));
+            Rotate(item, FurnitureList[index].Rotation - item.Rotation);
+        }
+
+        private void Alighnment(GeneralFurniture item)
+        {
+            GeneralFurniture alighnTo;
+            while (true)
+            {
+                alighnTo = FurnitureList[new Random().Next(FurnitureList.Count)];
+
+                if (alighnTo != item)
+                    break;
+            }
+
+            Rotate(item, alighnTo.Rotation - item.Rotation);
         }
 
         //TODO Improve penalty evaluation by implementing a better method for more flexibility

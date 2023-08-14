@@ -11,11 +11,11 @@ namespace Furniture
 
         public int ID { get { return Data.ID; } }                              //ID of the furniture object
         public int Rotation { get; set; }                                       //Current rotation of the object in degrees
-        public int Width { get { return Data.Width; } }                        //Object width     A_____B      D_____C
+        public int Width { get { return Data.Width; } }                        //Object width      A_______B      D_______C
         public int Height { get { return Data.Height; } }                      //Object height     D       С
-                                                                                //                  |       |
-                                                                                //                  |       |
-                                                                                //                  A       B
+                                                                               //                  |       |
+                                                                               //                  |       |
+                                                                               //                  A       B
         public bool IsOutOfBounds { get; set; }
         public bool IsCollided { get; set; }
         #endregion
