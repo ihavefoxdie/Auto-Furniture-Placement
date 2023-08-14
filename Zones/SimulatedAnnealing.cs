@@ -63,6 +63,9 @@ namespace RoomClass.Zones
                 randomSolutions.Add(item.GenerateNeighbour(MaxStep));
             }
 
+            var minCost = randomSolutions.Min(s => s.Cost);
+            InitialSolution = randomSolutions.Find(s => s.Cost == minCost);
+
             return (randomSolutions.Max(s => s.Cost) - randomSolutions.Min(s => s.Cost)) * 1.2;
         }
 

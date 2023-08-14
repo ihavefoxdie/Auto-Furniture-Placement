@@ -1,7 +1,5 @@
 ﻿using FactoryMethod;
 using Furniture;
-using Interfaces;
-using Rasterization;
 using RoomClass.Zones;
 using Rooms;
 using Vertex;
@@ -13,6 +11,15 @@ namespace Testing
     {
         static void Main()
         {
+            void PrintZoneInfo<T>(List<T> zonesList) where T : Zone
+            {
+                foreach (var item in zonesList)
+                {
+                    Console.WriteLine($"{item.Name} W:{item.Width} H:{item.Height} C: [x:{item.Center[0]} y:{item.Center[1]}]");
+                }
+            }
+
+
             //TODO Creating object have to use only FurnitureFactory
             FurnitureFactory furnitureFactory = new BedFactory();
 
@@ -110,17 +117,22 @@ namespace Testing
             #region AnnealingTesting
 
             newRoom.InitializeZones();
+            PrintZoneInfo(newRoom.ZonesList);
             List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZonesList.Count);
             SimulatedAnnealing simulatedAnnealing = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
+            Console.WriteLine();
+            PrintZoneInfo(simulatedAnnealing.InitialSolution.Zones);
+            
+            foreach (var item in simulatedAnnealing.InitialSolution.Zones)
+            {
+                item.toZone();
+            }
 
+            Console.WriteLine();
 
+            PrintZoneInfo(newRoom.ZonesList);
 
             #endregion
-
-
-
-            Console.ReadLine();
-
         }
     }
 }

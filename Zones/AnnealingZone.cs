@@ -20,6 +20,13 @@ namespace Zones
             ExtendedHeight = zone.Height;
         }
 
+        public AnnealingZone(AnnealingZone zone) : base(zone)
+        {
+            _parentZone = zone._parentZone;
+            ExtendedWidth = zone.Width;
+            ExtendedHeight = zone.Height;
+        }
+
         public override void Resize(decimal deltaWidth, decimal deltaHeight)
         {
             ExtendedWidth += deltaWidth;
@@ -30,8 +37,12 @@ namespace Zones
 
         public Zone toZone()
         {
+            _parentZone.Center = Center;
+            _parentZone.Height = (int)ExtendedHeight;
+            _parentZone.Width = (int)ExtendedWidth;
+            _parentZone.Vertices = Vertices;
 
-            throw new NotImplementedException();
+            return _parentZone;
         }
 
     }

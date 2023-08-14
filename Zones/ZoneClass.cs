@@ -14,8 +14,8 @@ namespace Zones
         public List<GeneralFurniture> Furnitures { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public decimal[] Center { get; private set; }
-        public decimal[,] Vertices { get; private set; }
+        public decimal[] Center { get; set; }
+        public decimal[,] Vertices { get; set; }
         public bool isStorage { get; private set; }
 
 
