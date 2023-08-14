@@ -34,7 +34,7 @@ namespace RoomClass.Zones
             RoomWidth = roomWidth;
             Doors = doors;
 
-            MaxStep = int.Min(roomHeight, roomWidth) / 2;
+            MaxStep = 5.5;
             AnnealingZones = new List<AnnealingZone>(zones.Count);
 
             foreach (Zone zone in zones)

@@ -117,9 +117,12 @@ namespace Testing
             #region AnnealingTesting
 
             newRoom.InitializeZones();
+
             PrintZoneInfo(newRoom.ZonesList);
+
             List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZonesList.Count);
             SimulatedAnnealing simulatedAnnealing = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
+            
             Console.WriteLine();
             PrintZoneInfo(simulatedAnnealing.InitialSolution.Zones);
             

@@ -286,7 +286,7 @@ namespace RoomClass.Zones
         private bool RandomBoolean()
         {
             Random random = new();
-            if (random.Next(1) > 0)
+            if (random.Next(2) > 0)
             {
                 return true;
             }
@@ -308,7 +308,7 @@ namespace RoomClass.Zones
                     return;
                 }
 
-                switch (random.Next(5))
+                switch (random.Next(6))
                 {
 
                     case 0:
@@ -345,7 +345,7 @@ namespace RoomClass.Zones
             {
                 //moving options
 
-                switch (random.Next(5))
+                switch (random.Next(6))
                 {
 
                     case 0:
