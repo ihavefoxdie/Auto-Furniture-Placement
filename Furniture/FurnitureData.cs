@@ -3,7 +3,7 @@
     /*TODO To think about ctor of FurnitureData and FurnitureDataFlags (at least id property uniqueness, like increment and so on)
     In order to contract ctor params of GeneralFurniture*/
 
-    public class FurnitureData
+    public class FurnitureData : ICloneable
     {
         public int ID { get; set; }                 //ID of the furniture object
         public string Name { get; set; }
@@ -26,6 +26,13 @@
             ExtraWidth = extraLength;
             ExtraHeight = extraHeight;
             ParentID = parentID;
+        }
+
+        public object Clone()
+        {
+            FurnitureData data = new (this.ID, this.Name, this.Width, this.Height, this.Zone, this.ExtraWidth, this.ExtraHeight, this.ParentID);
+            data.Parent = this.Parent;
+            return data;
         }
     }
 }

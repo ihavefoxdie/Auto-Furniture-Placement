@@ -1,16 +1,17 @@
 ﻿using Interfaces;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Furniture
 {
-    public abstract class GeneralFurniture : IPolygon
+    public abstract class GeneralFurniture : IPolygon, ICloneable
     {
         #region General Properties
-        public readonly FurnitureData Data;
-        public readonly FurnitureDataFlags Flags;
+        public FurnitureData Data { get; set; }
+        public FurnitureDataFlags Flags { get; set; }
 
 
         public int ID { get { return Data.ID; } }                              //ID of the furniture object
-        public int Rotation { get; set; }                                       //Current rotation of the object in degrees
+        public int Rotation { get; set; }                                      //Current rotation of the object in degrees
         public int Width { get { return Data.Width; } }                        //Object width      A_______B      D_______C
         public int Height { get { return Data.Height; } }                      //Object height     D       С
                                                                                //                  |       |
@@ -37,8 +38,8 @@ namespace Furniture
             Flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
             Center = new decimal[2];                //Center of furniture object
-            Center[0] = (decimal)Width / 2;         //X
-            Center[1] = (decimal)Height / 2;        //Y
+            Center[0] = (decimal)Width / 2;         //  X
+            Center[1] = (decimal)Height / 2;        //  Y
             ClearanceArea = new decimal[4, 2];      //     D_______C       where CB is front (i.e. 0 degrees rotation).
             Vertices = new decimal[4, 2];           //     |       |       If Accessible property is set to true
             ResetCoords();                          //     |       |       the front is the side that must be accessible.
@@ -92,6 +93,15 @@ namespace Furniture
 
             ClearanceArea[3, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
             ClearanceArea[3, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
+        }
+
+        public object Clone()
+        {
+            GeneralFurniture obj = (GeneralFurniture)MemberwiseClone();
+            obj.Data = (FurnitureData)Data.Clone();
+            obj.Flags = (FurnitureDataFlags)Flags.Clone();
+
+            return obj;
         }
     }
 }

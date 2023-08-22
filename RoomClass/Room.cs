@@ -5,7 +5,7 @@ namespace Rooms
 {
     //TODO: Integration with Zones class once (semi?)finished.
     //TODO: Should this class handle rotation and movement of IPolygon objects (i.e. GeneralFurniture)? Discuss.
-    public sealed class Room : IPolygonContainer
+    public sealed class Room : IPolygonGenesContainer
     {
         #region General Properties
         public List<IPolygon> Polygons
@@ -23,7 +23,7 @@ namespace Rooms
 
         public List<GeneralFurniture> FurnitureList { get; private set; }
         private List<GeneralFurniture> Doors { get; set; }
-        private GeneralFurniture[]? Windows { get; set; }
+        private List<GeneralFurniture>? Windows { get; set; }
         public int[,] RoomArray { get; set; }
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
@@ -34,7 +34,7 @@ namespace Rooms
 
 
         #region Delegates
-        public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
+        //public delegate void PathFinder(int[,] space, int entryCoordX, int entryCoordY, int desitnationX, int destinationY);
         public delegate bool CollisionDeterminer(decimal[,] vertices, decimal[] point);
         public CollisionDeterminer? DetermineCollision { get; set; }
 
@@ -44,7 +44,7 @@ namespace Rooms
 
 
         #region Constructor
-        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, GeneralFurniture[]? windows = null)
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, List<GeneralFurniture>? windows = null)
         {
             ContainerHeight = height;
             ContainerWidth = width;
@@ -128,6 +128,43 @@ namespace Rooms
                     continue;
                 }
             }
+        }
+
+        public IPolygonGenesContainer Crossover(IPolygonGenesContainer parent)
+        {
+            if (parent is not Room roomParent)
+            {
+                return parent;
+            }
+            Room room = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom);
+
+            for (int i = 0; i < this.FurnitureList.Count; i++)
+            {
+                if (i % 2 == 0)
+                    room.FurnitureList.Add((GeneralFurniture)this.FurnitureList[i].Clone());
+                else
+                    room.FurnitureList.Add((GeneralFurniture)roomParent.FurnitureList[i].Clone());
+            }
+
+            for (int i = 0; i < this.Doors.Count; i++)
+            {
+                room.Doors.Add((GeneralFurniture)this.Doors[i].Clone());
+            }
+
+            if (Windows != null)
+            {
+                room.Windows = new();
+                for (int i = 0; i < this.Windows.Count; i++)
+                {
+                    room.Windows.Add((GeneralFurniture)this.Windows[i].Clone());
+                }
+            }
+
+            room.DetermineCollision = this.DetermineCollision;
+            room.RotateVertex = this.RotateVertex;
+            room.PenaltyEvaluation();
+
+            return room;
         }
 
         private void Scatter(GeneralFurniture item)
@@ -290,7 +327,7 @@ namespace Rooms
                 if (Windows is not null)
                 {
                     if (!FurnitureList[i].Flags.IgnoreWindows)
-                        for (int n = 0; n < Windows.GetLength(0); n++)
+                        for (int n = 0; n < Windows.Count; n++)
                         {
                             if (Collision(Windows[i], FurnitureList[i]))
                                 Penalty += 10;
@@ -403,6 +440,7 @@ namespace Rooms
         }
 
 
+
         #region Moving Furniture
         public void Move(GeneralFurniture item, decimal centerDeltaX, decimal centerDeltaY)
         {
@@ -416,9 +454,6 @@ namespace Rooms
             }
         }
         #endregion
-
-
-
 
         #region Rotating Furniture
         public void Rotate(GeneralFurniture item, int angle)
@@ -442,6 +477,7 @@ namespace Rooms
                 RotateVertex(ref item.ClearanceArea[i, 0], ref item.ClearanceArea[i, 1], radians, (int)item.Center[0], (int)item.Center[1]);
             }
         }
+
         #endregion
     }
 }
