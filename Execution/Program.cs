@@ -67,8 +67,8 @@ namespace Testing
 
             //newRoom.RasterizationMethod()
 
-            //newRoom.FurnitureList[0].Rotate(31);
-            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
+            //newRoom.FurnitureArray[0].Rotate(31);
+            newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureArray.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
 
             
             LineDrawer.Print(newRoom.RoomArray);
@@ -78,9 +78,9 @@ namespace Testing
 
 
 
-            Console.WriteLine(newRoom.Collision(newRoom.FurnitureList[0], newRoom.FurnitureList[1]));
+            Console.WriteLine(newRoom.Collision(newRoom.FurnitureArray[0], newRoom.FurnitureArray[1]));
             newRoom.PenaltyEvaluation();
-            Console.WriteLine(newRoom.FurnitureList[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureList[1].IsOutOfBounds);
+            Console.WriteLine(newRoom.FurnitureArray[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureArray[1].IsOutOfBounds);
             Console.WriteLine(newRoom.Penalty);
         }
     }

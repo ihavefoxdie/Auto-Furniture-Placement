@@ -32,7 +32,7 @@ namespace Furniture
         #region Contsructors
         public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows,
                                 int extraLength = 0, int extraHeight = 0, int nearWall = -1, bool parent = false,
-                                bool accessible = false, string? parentName = null)
+                                bool accessible = false)
         {
             Data = new(id, name, length, height, zone, extraLength, extraHeight);
             Flags = new(ignoreWindows, nearWall, parent, accessible);

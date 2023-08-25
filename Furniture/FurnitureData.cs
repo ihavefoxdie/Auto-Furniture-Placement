@@ -13,7 +13,8 @@
         public int ExtraWidth { get; }              //Extra width applied to the base width for clearance area boundries
         public int ExtraHeight { get; }             //Same as ExtraWidth but applied for height
         public int ParentID { get; private set; }   //ID of the parent furniture object
-        public GeneralFurniture? Parent { get; set; }
+        public int? ChildIndex { get; set; }
+        public int? ParentIndex { get; set; }
 
         public FurnitureData(int id, string name, int length, int height, string zone, int extraLength = 0, int extraHeight = 0, int parentID = -1)
         {
@@ -31,7 +32,8 @@
         public object Clone()
         {
             FurnitureData data = new (this.ID, this.Name, this.Width, this.Height, this.Zone, this.ExtraWidth, this.ExtraHeight, this.ParentID);
-            data.Parent = this.Parent;
+            data.ParentIndex = this.ParentIndex;
+            data.ChildIndex = this.ChildIndex;
             return data;
         }
     }
