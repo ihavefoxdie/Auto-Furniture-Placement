@@ -80,17 +80,17 @@ namespace Vertex
         public static void VertexResetting(decimal[,] vertices, decimal[] Center, int Width, int Height)
         {
 
-            vertices[0, 0] = Center[0] - (decimal)Width / 2;       //A
-            vertices[0, 1] = Center[1] + (decimal)Height / 2;
+            vertices[2, 0] = Center[0] - (decimal)Width / 2;       //A
+            vertices[2, 1] = Center[1] + (decimal)Height / 2;
 
-            vertices[1, 0] = Center[0] + (decimal)Width / 2;       //B
-            vertices[1, 1] = Center[1] + (decimal)Height / 2;
+            vertices[3, 0] = Center[0] + (decimal)Width / 2;       //B
+            vertices[3, 1] = Center[1] + (decimal)Height / 2;
 
-            vertices[2, 0] = Center[0] + (decimal)Width / 2;       //C
-            vertices[2, 1] = Center[1] - (decimal)Height / 2;
+            vertices[0, 0] = Center[0] + (decimal)Width / 2;       //C
+            vertices[0, 1] = Center[1] - (decimal)Height / 2;
 
-            vertices[3, 0] = Center[0] - (decimal)Width / 2;       //D
-            vertices[3, 1] = Center[1] - (decimal)Height / 2;
+            vertices[1, 0] = Center[0] - (decimal)Width / 2;       //D
+            vertices[1, 1] = Center[1] - (decimal)Height / 2;
         }
 
     }

@@ -2,6 +2,9 @@
 using Furniture;
 using RoomClass.Zones;
 using Rooms;
+using System.Diagnostics;
+using System.Drawing;
+using System.Xml;
 using Vertex;
 using Zones;
 
@@ -19,6 +22,63 @@ namespace Testing
                 }
             }
 
+            void DrawZones<T>(Room room, List<T> zones, string name) where T : Zone 
+            {
+                //Drawing
+                // Initialize a Bitmap class object
+                Bitmap bitmap = new Bitmap(room.ContainerWidth + 10, room.ContainerHeight + 10, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+
+                // Create graphics class instance
+                Graphics graphics = Graphics.FromImage(bitmap);
+
+                // Create a brush while specifying its color
+                Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Purple));
+
+                // Create a pen
+                Pen pen = new Pen(brush);
+
+                graphics.DrawRectangle(pen, new Rectangle(0, 0, room.ContainerWidth, room.ContainerHeight));
+
+
+
+                // Draw rectangle
+                foreach (var item in zones)
+                {
+                    switch (item.Name)
+                    {
+                        case "storage":
+                            pen.Color = Color.Black;
+                            break;
+                        case "rest":
+                            pen.Color = Color.Yellow;
+                            break;
+                        case "bed":
+                            pen.Color = Color.Blue;
+                            break;
+                        case "working":
+                            pen.Color = Color.Red;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    graphics.DrawRectangle(pen, new Rectangle((int)item.Vertices[1, 0], (int)item.Vertices[1, 1], item.Width, item.Height));
+                }
+
+                // Save output drawing
+                bitmap.Save($"{name}.png");
+
+            }
+
+            void OpenDrawingZones(string fileName)
+            {
+                var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+                Process photoViewer = new Process();
+                photoViewer.StartInfo.UseShellExecute = true;
+                photoViewer.StartInfo.FileName = fileName;
+                photoViewer.Start();
+
+            }
 
             //TODO Creating object have to use only FurnitureFactory
             FurnitureFactory furnitureFactory = new BedFactory();
@@ -122,18 +182,43 @@ namespace Testing
 
             List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZonesList.Count);
             SimulatedAnnealing simulatedAnnealing = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
-            
-            Console.WriteLine();
-            PrintZoneInfo(simulatedAnnealing.InitialSolution.Zones);
-            
-            foreach (var item in simulatedAnnealing.InitialSolution.Zones)
+
+            DrawZones(newRoom, simulatedAnnealing.InitialSolution.Zones, "InitialSolution");
+            OpenDrawingZones("InitialSolution.png");
+
+            simulatedAnnealing.Launch(simulatedAnnealing.InitialSolution);
+
+            foreach (var item in simulatedAnnealing.CurrentSolution.Zones)
             {
                 item.toZone();
             }
 
-            Console.WriteLine();
+            SimulatedAnnealing simulatedAnnealing2 = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
+            
+            simulatedAnnealing2.Launch(simulatedAnnealing2.InitialSolution);
+            foreach (var item in simulatedAnnealing2.CurrentSolution.Zones)
+            {
+                item.toZone();
+            }
 
-            PrintZoneInfo(newRoom.ZonesList);
+
+            DrawZones(newRoom, newRoom.ZonesList, "CurrentSolution");
+
+            OpenDrawingZones("CurrentSolution.png");
+            OpenDrawingZones("AnnealingGraph.png");
+
+
+            //Console.WriteLine();
+            //PrintZoneInfo(simulatedAnnealing.InitialSolution.Zones);
+
+            //foreach (var item in simulatedAnnealing.InitialSolution.Zones)
+            //{
+            //    item.toZone();
+            //}
+
+            //Console.WriteLine();
+
+            //PrintZoneInfo(newRoom.ZonesList);
 
             #endregion
         }

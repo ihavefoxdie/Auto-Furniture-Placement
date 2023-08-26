@@ -32,7 +32,7 @@ namespace Zones
             ExtendedWidth += deltaWidth;
             ExtendedHeight += deltaHeight;
             Area = (double)(ExtendedWidth * ExtendedHeight);
-            VertexManipulator.VertexExpanding(Vertices, deltaWidth, deltaHeight);
+            VertexManipulator.VertexResetting(Vertices, Center, (int)ExtendedWidth, (int)ExtendedHeight);
         }
 
         public Zone toZone()
@@ -40,8 +40,8 @@ namespace Zones
             _parentZone.Center = Center;
             _parentZone.Height = (int)ExtendedHeight;
             _parentZone.Width = (int)ExtendedWidth;
-            _parentZone.Vertices = Vertices;
-
+            _parentZone.Area = Area;
+            VertexManipulator.VertexResetting(_parentZone.Vertices, _parentZone.Center, _parentZone.Width, _parentZone.Height);
             return _parentZone;
         }
 

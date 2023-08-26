@@ -26,7 +26,52 @@ namespace RoomClass.Zones
             RoomHeight = roomHeight;
             Doors = doors;
             Zones = zones;
+
+            foreach (var zone in Zones)
+            {
+                zone.Center[0] = RoomWidth / 2;
+                zone.Center[1] = RoomHeight / 2;
+                VertexManipulator.VertexResetting(zone.Vertices, zone.Center, zone.Width, zone.Height);
+            }
+
             Cost = FindCost();
+        }
+
+        public void PrepareSolutionForSA()
+        {
+            Random random = new();
+            AnnealingZone annealingZone = null;
+            List<AnnealingZone> zones = new List<AnnealingZone>(Zones);
+            decimal[] offset = new decimal[2];
+
+            // ←↑
+            annealingZone = zones[random.Next(zones.Count)];
+            offset[0] = annealingZone.Vertices[1, 0];
+            offset[1] = annealingZone.Vertices[1, 1];
+            annealingZone.Move(-offset[0], -offset[1]);
+            zones.Remove(annealingZone);
+
+            // ↑→
+            annealingZone = zones[random.Next(zones.Count)];
+            offset[0] = RoomWidth - annealingZone.Vertices[0, 0];
+            offset[1] = annealingZone.Vertices[0, 1];
+            annealingZone.Move(offset[0], -offset[1]);
+            zones.Remove(annealingZone);
+
+            // ↓←
+            annealingZone = zones[random.Next(zones.Count)];
+            offset[0] = annealingZone.Vertices[2, 0];
+            offset[1] = RoomHeight - annealingZone.Vertices[2, 1];
+            annealingZone.Move(-offset[0], offset[1]);
+            zones.Remove(annealingZone);
+
+            // ↓→
+            annealingZone = zones[random.Next(zones.Count)];
+            offset[0] = RoomWidth - annealingZone.Vertices[3, 0];
+            offset[1] = RoomHeight - annealingZone.Vertices[3, 1];
+            annealingZone.Move(offset[0], offset[1]);
+            zones.Remove(annealingZone);
+
         }
 
 
@@ -45,7 +90,6 @@ namespace RoomClass.Zones
                 {
                     neighbourZone = new AnnealingZone(Zones[randomZoneNumber]);
                     RandomizeZone(neighbourZone, (decimal)maxStep);
-                    VertexManipulator.VertexResetting(neighbourZone.Vertices, neighbourZone.Center, neighbourZone.Width, neighbourZone.Height);
                     if (IsZoneInsideRoom(neighbourZone))
                     {
                         deepZonesCopy[randomZoneNumber] = neighbourZone;
@@ -93,7 +137,7 @@ namespace RoomClass.Zones
                 }
             }
 
-            return Math.Sqrt(area);
+            return Math.Pow(area, 3);
         }
 
         private double FreeSpacePenalty()
@@ -105,7 +149,7 @@ namespace RoomClass.Zones
                 area += item.Area;
                 item.Resize(-Aisle, -Aisle);
             }
-            return Math.Sqrt(RoomHeight * RoomWidth - area);
+            return RoomHeight * RoomWidth - area * 40;
         }
 
         private double ZoneShapePenalty()
@@ -377,6 +421,8 @@ namespace RoomClass.Zones
                     default:
                         break;
                 }
+
+                VertexManipulator.VertexResetting(randomZone.Vertices, randomZone.Center, (int)randomZone.ExtendedWidth, (int)randomZone.ExtendedHeight);
 
             }
 
