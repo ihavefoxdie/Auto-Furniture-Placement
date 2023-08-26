@@ -301,10 +301,10 @@ namespace RoomClass.Zones
             */
 
 
-            decimal left = Math.Max(zone1.Vertices[3, 0], zone2.Vertices[3, 0]);
-            decimal top = Math.Min(zone1.Vertices[1, 1], zone2.Vertices[1, 1]);
-            decimal right = Math.Min(zone1.Vertices[1, 0], zone2.Vertices[1, 0]);
-            decimal bottom = Math.Max(zone1.Vertices[3, 1], zone2.Vertices[3, 1]);
+            decimal left = Math.Max(zone1.Vertices[1, 0], zone2.Vertices[1, 0]);
+            decimal top = Math.Min(zone1.Vertices[3, 1], zone2.Vertices[3, 1]);
+            decimal right = Math.Min(zone1.Vertices[3, 0], zone2.Vertices[3, 0]);
+            decimal bottom = Math.Max(zone1.Vertices[1, 1], zone2.Vertices[1, 1]);
 
             decimal width = right - left;
             decimal height = top - bottom;
