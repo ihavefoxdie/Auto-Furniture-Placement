@@ -193,13 +193,13 @@ namespace Testing
                 item.toZone();
             }
 
-            SimulatedAnnealing simulatedAnnealing2 = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
+            //SimulatedAnnealing simulatedAnnealing2 = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
             
-            simulatedAnnealing2.Launch(simulatedAnnealing2.InitialSolution);
-            foreach (var item in simulatedAnnealing2.CurrentSolution.Zones)
-            {
-                item.toZone();
-            }
+            //simulatedAnnealing2.Launch(simulatedAnnealing2.InitialSolution);
+            //foreach (var item in simulatedAnnealing2.CurrentSolution.Zones)
+            //{
+            //    item.toZone();
+            //}
 
 
             DrawZones(newRoom, newRoom.ZonesList, "CurrentSolution");

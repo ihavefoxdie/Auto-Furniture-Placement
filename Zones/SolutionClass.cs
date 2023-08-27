@@ -27,12 +27,12 @@ namespace RoomClass.Zones
             Doors = doors;
             Zones = zones;
 
-            foreach (var zone in Zones)
-            {
-                zone.Center[0] = RoomWidth / 2;
-                zone.Center[1] = RoomHeight / 2;
-                VertexManipulator.VertexResetting(zone.Vertices, zone.Center, zone.Width, zone.Height);
-            }
+            //foreach (var zone in zones)
+            //{
+            //    zone.Center[0] = RoomWidth / 2;
+            //    zone.Center[1] = RoomHeight / 2;
+            //    VertexManipulator.VertexResetting(zone.Vertices, zone.Center, zone.Width, zone.Height);
+            //}
 
             Cost = FindCost();
         }
@@ -75,32 +75,32 @@ namespace RoomClass.Zones
         }
 
 
-        public SolutionClass GenerateNeighbour(double maxStep)
+        public static SolutionClass GenerateNeighbour(double maxStep, SolutionClass initialSolution)
         {
             Random random = new Random();
-            int randomZoneNumber = random.Next(Zones.Count);
+            int randomZoneNumber = random.Next(initialSolution.Zones.Count);
             //Take a random zone
             //TODO To make sure about deep copy here
             AnnealingZone neighbourZone;
-            var deepZonesCopy = Zones.ToList();
+            List<AnnealingZone> deepZonesCopy = new (initialSolution.Zones.ToList());
 
-            for (int i = random.Next(1, Zones.Count); i > 0; i--)
+            for (int i = random.Next(1, initialSolution.Zones.Count); i > 0; i--)
             {
                 while (true)
                 {
-                    neighbourZone = new AnnealingZone(Zones[randomZoneNumber]);
+                    neighbourZone = new AnnealingZone(initialSolution.Zones[randomZoneNumber]);
                     RandomizeZone(neighbourZone, (decimal)maxStep);
-                    if (IsZoneInsideRoom(neighbourZone))
+                    if (IsZoneInsideRoom(neighbourZone, initialSolution.RoomWidth, initialSolution.RoomHeight))
                     {
                         deepZonesCopy[randomZoneNumber] = neighbourZone;
                         break;
                     }
-                    randomZoneNumber = random.Next(Zones.Count);
+                    randomZoneNumber = random.Next(initialSolution.Zones.Count);
                 }
             }
             //Do a random action (moving or resizing)
 
-            return new SolutionClass(deepZonesCopy, Aisle, RoomWidth, RoomHeight, Doors);
+            return new SolutionClass(deepZonesCopy, initialSolution.Aisle, initialSolution.RoomWidth, initialSolution.RoomHeight, initialSolution.Doors);
 
         }
 
@@ -137,7 +137,7 @@ namespace RoomClass.Zones
                 }
             }
 
-            return Math.Pow(area, 3);
+            return Math.Sqrt(area);
         }
 
         private double FreeSpacePenalty()
@@ -149,7 +149,7 @@ namespace RoomClass.Zones
                 area += item.Area;
                 item.Resize(-Aisle, -Aisle);
             }
-            return RoomHeight * RoomWidth - area * 40;
+            return Math.Sqrt(RoomHeight * RoomWidth - area);
         }
 
         private double ZoneShapePenalty()
@@ -193,7 +193,7 @@ namespace RoomClass.Zones
 
                 for (int i = 0; i < 4; i++)
                 {
-                    if (IsVertexInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1]))
+                    if (IsVertexInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1], RoomWidth, RoomHeight))
                     {
                         wall = FindDistances(item.Vertices);
                     }
@@ -237,22 +237,22 @@ namespace RoomClass.Zones
         }
 
 
-        private bool IsVertexInsideRoom(decimal x, decimal y)
+        private static bool IsVertexInsideRoom(decimal x, decimal y, int roomWidth, int roomHeight)
         {
-            if (x > RoomWidth || x < 0)
+            if (x > roomWidth || x < 0)
                 return false;
 
-            if (y > RoomHeight || y < 0)
+            if (y > roomHeight || y < 0)
                 return false;
 
             return true;
         }
 
-        private bool IsZoneInsideRoom(IPolygon zone)
+        private static bool IsZoneInsideRoom(IPolygon zone, int roomWidth, int roomHeight)
         {
             for (int i = 0; i < 4; i++)
             {
-                if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1]))
+                if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1], roomWidth, roomHeight))
                     return false;
             }
             return true;
@@ -327,7 +327,7 @@ namespace RoomClass.Zones
             return false;
         }
 
-        private bool RandomBoolean()
+        private static bool RandomBoolean()
         {
             Random random = new();
             if (random.Next(2) > 0)
@@ -337,7 +337,7 @@ namespace RoomClass.Zones
             return false;
         }
 
-        private void RandomizeZone(AnnealingZone randomZone, decimal maxStep)
+        private static void RandomizeZone(AnnealingZone randomZone, decimal maxStep)
         {
             Random random = new();
 

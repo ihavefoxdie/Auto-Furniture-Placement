@@ -35,8 +35,7 @@ namespace RoomClass.Zones
             RoomWidth = roomWidth;
             Doors = doors;
 
-            //MaxStep = int.Min(roomHeight, roomWidth) / 2;
-            MaxStep = 10;
+            MaxStep = int.Min(roomHeight, roomWidth) / 2;
             AnnealingZones = new List<AnnealingZone>(zones.Count);
 
             foreach (Zone zone in zones)
@@ -47,8 +46,7 @@ namespace RoomClass.Zones
             InitialSolution = new SolutionClass(AnnealingZones, aisle, RoomWidth, RoomHeight, doors);
             InitialSolution.PrepareSolutionForSA();
 
-            //Temperature = DetermineInitialTemp();
-            Temperature = 200;
+            Temperature = DetermineInitialTemp();
 
         }
 
@@ -58,19 +56,17 @@ namespace RoomClass.Zones
 
             for (int i = 0; i < NumTrials; i++)
             {
-                solutions.Add(InitialSolution.GenerateNeighbour(MaxStep));
+                solutions.Add(SolutionClass.GenerateNeighbour(MaxStep, InitialSolution));
             }
 
             List<SolutionClass> randomSolutions = new(NumTrials);
 
             foreach (var item in solutions)
             {
-                randomSolutions.Add(item.GenerateNeighbour(MaxStep));
+                randomSolutions.Add(SolutionClass.GenerateNeighbour(MaxStep, item));
             }
 
-            InitialSolution = solutions[6];
-            //return (randomSolutions.Max(s => s.Cost) - randomSolutions.Min(s => s.Cost)) * 1.2;
-            return 500;
+            return (randomSolutions.Max(s => s.Cost) - randomSolutions.Min(s => s.Cost)) * 1.2;
         }
 
         private void PrintGraph(double[] xAxis, double[] yAxis, string name)
@@ -111,7 +107,7 @@ namespace RoomClass.Zones
                 for (int i = 0; i < IterPerTemp; i++)
                 {
                     cost.Add(CurrentSolution.Cost);
-                    NeighbourSolution = CurrentSolution.GenerateNeighbour(MaxStep);
+                    NeighbourSolution = SolutionClass.GenerateNeighbour(MaxStep, CurrentSolution);
                     probability = Math.Exp((CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature);
                     Console.WriteLine("DIFF : " + $"{CurrentSolution.Cost - NeighbourSolution.Cost}");
                     Console.WriteLine(probability);
