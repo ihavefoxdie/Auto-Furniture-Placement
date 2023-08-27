@@ -7,5 +7,6 @@
         public int Height { get; }
         public decimal[] Center { get; }
         public decimal[,] Vertices { get; }
+        public string Name { get; }
     }
 }

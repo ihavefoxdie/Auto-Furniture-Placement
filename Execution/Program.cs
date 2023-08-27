@@ -4,6 +4,7 @@ using Rooms;
 using Vertex;
 using Rasterization;
 using FactoryMethod;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Testing
 {
@@ -15,7 +16,13 @@ namespace Testing
             TableFactory tableFactory = new();
             DoorFactory doorFactory = new();
 
-            int[] origRoomDim = new int[] { 160, 80 };
+            List<IPolygon> rectangles = new List<IPolygon>();
+
+
+
+            rectangles.Add(bedFactory.GetFurniture());
+
+            /*int[] origRoomDim = new int[] { 160, 80 };
             int[] roomDim = new int[] { 160, 80 };
 
             List<GeneralFurniture> furnitures = new()
@@ -26,12 +33,12 @@ namespace Testing
                 //new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
                 //new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
             };
-            /*for (int i = 0; i < furnitures.Count; i++)
+            *//*for (int i = 0; i < furnitures.Count; i++)
             {
                 furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
             }
             furnitures[0].Move(0, 0);
-            furnitures[1].Move(10, 15);*/
+            furnitures[1].Move(10, 15);*//*
             //furnitures[0].Rotate(45);
 
             Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
@@ -81,7 +88,7 @@ namespace Testing
             Console.WriteLine(newRoom.Collision(newRoom.FurnitureArray[0], newRoom.FurnitureArray[1]));
             newRoom.PenaltyEvaluation();
             Console.WriteLine(newRoom.FurnitureArray[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureArray[1].IsOutOfBounds);
-            Console.WriteLine(newRoom.Penalty);
+            Console.WriteLine(newRoom.Penalty);*/
         }
     }
 }

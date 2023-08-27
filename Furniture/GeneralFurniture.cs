@@ -10,6 +10,7 @@ namespace Furniture
         public FurnitureDataFlags Flags { get; set; }
 
 
+        public string Name { get { return Data.Name; } }
         public int ID { get { return Data.ID; } }                              //ID of the furniture object
         public int Rotation { get; set; }                                      //Current rotation of the object in degrees
         public int Width { get { return Data.Width; } }                        //Object width      A_______B      D_______C
