@@ -82,7 +82,7 @@ namespace RoomClass.Zones
             //Take a random zone
             //TODO To make sure about deep copy here
             AnnealingZone neighbourZone;
-            List<AnnealingZone> deepZonesCopy = new (initialSolution.Zones.ToList());
+            List<AnnealingZone> deepZonesCopy = new(initialSolution.Zones.ToList());
 
             for (int i = random.Next(1, initialSolution.Zones.Count); i > 0; i--)
             {
@@ -145,9 +145,9 @@ namespace RoomClass.Zones
             double area = 0;
             foreach (var item in Zones)
             {
-                item.Resize(Aisle, Aisle);
+                item.Resize(Aisle * 2, Aisle * 2);
                 area += item.Area;
-                item.Resize(-Aisle, -Aisle);
+                item.Resize(-Aisle * 2, -Aisle * 2);
             }
             return Math.Sqrt(RoomHeight * RoomWidth - area);
         }
