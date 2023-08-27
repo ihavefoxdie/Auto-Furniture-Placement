@@ -90,7 +90,7 @@ namespace RoomClass.Zones
                 {
                     neighbourZone = new AnnealingZone(initialSolution.Zones[randomZoneNumber]);
                     RandomizeZone(neighbourZone, (decimal)maxStep);
-                    if (IsZoneInsideRoom(neighbourZone, initialSolution.RoomWidth, initialSolution.RoomHeight))
+                    if (VertexManipulator.IsPolygonInsideRoom(neighbourZone, initialSolution.RoomWidth, initialSolution.RoomHeight))
                     {
                         deepZonesCopy[randomZoneNumber] = neighbourZone;
                         break;
@@ -234,26 +234,26 @@ namespace RoomClass.Zones
         }
 
 
-        private static bool IsVertexInsideRoom(decimal x, decimal y, int roomWidth, int roomHeight)
-        {
-            if (x > roomWidth || x < 0)
-                return false;
+        //private static bool IsVertexInsideRoom(decimal x, decimal y, int roomWidth, int roomHeight)
+        //{
+        //    if (x > roomWidth || x < 0)
+        //        return false;
 
-            if (y > roomHeight || y < 0)
-                return false;
+        //    if (y > roomHeight || y < 0)
+        //        return false;
 
-            return true;
-        }
+        //    return true;
+        //}
 
-        private static bool IsZoneInsideRoom(IPolygon zone, int roomWidth, int roomHeight)
-        {
-            for (int i = 0; i < 4; i++)
-            {
-                if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1], roomWidth, roomHeight))
-                    return false;
-            }
-            return true;
-        }
+        //private static bool IsZoneInsideRoom(IPolygon zone, int roomWidth, int roomHeight)
+        //{
+        //    for (int i = 0; i < 4; i++)
+        //    {
+        //        if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1], roomWidth, roomHeight))
+        //            return false;
+        //    }
+        //    return true;
+        //}
 
         private List<double> FindDistances(decimal[,] vertices)
         {

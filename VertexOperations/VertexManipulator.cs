@@ -93,5 +93,26 @@ namespace Vertex
             vertices[1, 1] = Center[1] - (decimal)Height / 2;
         }
 
+        public static bool IsPolygonInsideRoom(IPolygon zone, int roomWidth, int roomHeight)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                if (!IsVertexInsideRoom(zone.Vertices[i, 0], zone.Vertices[i, 1], roomWidth, roomHeight))
+                    return false;
+            }
+            return true;
+        }
+
+        private static bool IsVertexInsideRoom(decimal x, decimal y, int roomWidth, int roomHeight)
+        {
+            if (x > roomWidth || x < 0)
+                return false;
+
+            if (y > roomHeight || y < 0)
+                return false;
+
+            return true;
+        }
+
     }
 }
