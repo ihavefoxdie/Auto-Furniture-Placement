@@ -185,23 +185,20 @@ namespace RoomClass.Zones
         private double ByWallPenalty()
         {
             double penalty = 0;
-            List<double> wall = new List<double>();
+            List<double> distances = new List<double>();
 
             foreach (var item in Zones)
             {
-                wall.Clear();
+                distances.Clear();
+                distances = FindDistances(item.Vertices);
 
-                for (int i = 0; i < 4; i++)
-                {
-                    if (IsVertexInsideRoom(item.Vertices[i, 0], item.Vertices[i, 1], RoomWidth, RoomHeight))
-                    {
-                        wall = FindDistances(item.Vertices);
-                    }
 
-                    else throw new Exception($"Zone goes beyond the Room[W:{RoomWidth}  H:{RoomHeight}]\n \tZoneId: {item.Name}\tVerticeNumber : {i}");
-                }
+                penalty += distances.Min();
+                distances.Remove(distances.Min());
+                penalty += distances.Min();
+                distances.Remove(distances.Min());
+                penalty += distances.Min() / 2;
 
-                penalty += wall[0] + wall[1] + wall[2] / 2;
             }
 
             return penalty;
@@ -261,32 +258,39 @@ namespace RoomClass.Zones
         private List<double> FindDistances(decimal[,] vertices)
         {
             List<double> result = new List<double>();
-            double distance = double.MaxValue;
+            double distanceX;
+            double distanceY;
 
             for (int i = 0; i < 4; i++)
             {
-                distance = double.MaxValue;
+                distanceX = double.MaxValue;
+                distanceY = double.MaxValue;
 
-                for (int j = 0; j < 2; j++)
-                {
-                    // X axis distance
-                    if ((double)(RoomWidth - vertices[i, 0]) < distance)
-                        distance = (double)(RoomWidth - vertices[i, 0]);
+                // An offset to find the distance to the closest corner
 
-                    if ((double)(vertices[i, 0]) < distance)
-                        distance = (double)(vertices[i, 0]);
+                if ((double)(RoomWidth - vertices[i, 0]) < distanceX)
+                    distanceX = (double)(RoomWidth - vertices[i, 0]);
 
-                    // Y axis distance
-                    if ((double)(RoomHeight - vertices[i, 1]) < distance)
-                        distance = (double)(RoomWidth - vertices[i, 1]);
+                // choosing the closest wall
+                if ((double)(vertices[i, 0]) < distanceX)
+                    distanceX = (double)(vertices[i, 0]);
 
-                    if ((double)(vertices[i, 1]) < distance)
-                        distance = (double)(vertices[i, 1]);
-                }
-                result.Add(distance);
+                // distance to the right or left wall
+                result.Add(distanceX);
+
+                if ((double)(RoomHeight - vertices[i, 1]) < distanceY)
+                    distanceY = (double)(RoomWidth - vertices[i, 1]);
+
+                if ((double)(vertices[i, 1]) < distanceY)
+                    distanceY = (double)(vertices[i, 1]);
+
+                // distance to the upper or bottom wall
+                result.Add(distanceY);
+
+                //Pifagor's Theorem
+                result.Add(Math.Sqrt(Math.Pow(distanceX, 2) + Math.Pow(distanceY, 2)));
             }
 
-            result.Remove(result.Max());
             return result;
         }
 
