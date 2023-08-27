@@ -158,7 +158,7 @@ namespace RoomClass.Zones
 
             foreach (var item in Zones)
             {
-                if (item.ExtendedHeight >= item.ExtendedWidth * 3 || item.ExtendedWidth >= item.ExtendedHeight * 3)
+                if (item.ExtendedHeight > item.ExtendedWidth * 3 || item.ExtendedWidth > item.ExtendedHeight * 3)
                 {
                     decimal maxDim = Math.Max(item.ExtendedWidth, item.ExtendedHeight);
                     decimal minDim = Math.Min(item.ExtendedWidth, item.ExtendedHeight);
