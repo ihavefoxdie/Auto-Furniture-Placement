@@ -1,4 +1,6 @@
 using Interfaces;
+using System.Reflection.Metadata.Ecma335;
+
 namespace GeneticAlgorithm;
 
 public class GeneticAlgoritm
@@ -23,6 +25,7 @@ public class GeneticAlgoritm
         {
             Population[i].PenaltyEvaluation();
         }
+        int count = 0;
         while (KeepUp)
         {
             Population = Population.OrderBy(container => container.Penalty).ToList();
@@ -58,6 +61,14 @@ public class GeneticAlgoritm
             for (int i = 0; i < Population.Count; i++)
             {
                 Population[i].PenaltyEvaluation();
+            }
+
+            if (count%50000==0)
+                Console.WriteLine(count);
+            count++;
+            if (count == 100000)
+            {
+                KeepUp = false;
             }
         }
         return null;

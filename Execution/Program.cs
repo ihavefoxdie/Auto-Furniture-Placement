@@ -1,6 +1,11 @@
 ﻿using Execution;
 using FactoryMethod;
+using Furniture;
+using Interfaces;
+using Rooms;
+using GeneticAlgorithm;
 using System.Text.Json;
+using Vertex;
 
 namespace Testing;
 
@@ -11,17 +16,79 @@ static class Program
         BedFactory bedFactory = new();
         TableFactory tableFactory = new();
         DoorFactory doorFactory = new();
+        ChairFactory chairFactory= new();
 
         List<PolygonForJson> rectangles = new List<PolygonForJson>();
 
-        rectangles.Add(new(bedFactory.GetFurniture()));
+        List<GeneralFurniture> furnitures = new();
+        furnitures.Add(bedFactory.GetFurniture());
+        furnitures.Add(tableFactory.GetFurniture());
+        furnitures.Add(tableFactory.GetFurniture());
+        furnitures.Add(chairFactory.GetFurniture());
+
+        Room testingRoom = new(30, 30, new List<GeneralFurniture>(), furnitures, false);
+        testingRoom.RotateVertex = VertexManipulator.VertexRotation;
+        testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
+        GeneticAlgoritm algo = new(testingRoom);
+
+        for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
+        {
+            testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth/2, testingRoom.ContainerHeight/2);
+        }
+        //algo.Start();
+        /*for (int i = 0; i < 100; i++)
+        {
+            testingRoom.Mutate();
+        }*/
+
+        for (int i = 0; i < 1000000; i++)
+        {
+            for (int j = 0; j < testingRoom.FurnitureArray.Length; j++)
+            {
+                testingRoom.Scatter(testingRoom.FurnitureArray[j]);
+
+            }
+            for (int j = 0; j < testingRoom.FurnitureArray.Length; j++)
+            {
+                testingRoom.RandomRotation(testingRoom.FurnitureArray[j]);
+                if (i % 10 == 0)
+                {
+                    testingRoom.WallAlignment(testingRoom.FurnitureArray[j]);
+                }
+            }
+
+        }
+
+        /*for (int i = 0; i < 10000; i++)
+        {
+            testingRoom.Mutate();
+            if(i%10==0)
+                Console.WriteLine(i);
+        }*/
+
+        decimal[] center = new decimal[2];
+        center[0] = 15; center[1] = 15;
+        decimal[][] edges = new decimal[4][];
+        for (int i = 0; i < edges.Length; i++)
+            edges[i] = new decimal[2];
+
+        edges[0][0] = 0; edges[0][1] = 0;
+        edges[1][0] = 30; edges[1][1] = 0;
+        edges[2][0] = 30; edges[2][1] = 30;
+        edges[3][0] = 0; edges[3][1] = 30;
+
+        rectangles.Add(new PolygonForJson(1213, 30, 30, center, edges, "Room"));
+        foreach (IPolygon polygon in testingRoom.Polygons)
+            rectangles.Add(new PolygonForJson(polygon));
 
         string jsonFile = JsonSerializer.Serialize(rectangles);
-        File.WriteAllText("rectangles.json", jsonFile);
-        string serializedPolygon = File.ReadAllText("rectangles.json");
-        Thread.Sleep(2000);
-        var deserialized = JsonSerializer.Deserialize<List<PolygonForJson>>(serializedPolygon);
-        Console.WriteLine(serializedPolygon);
+        File.WriteAllText("visualization\\rectangles.json", jsonFile);
+
+        string serializedPolygon = File.ReadAllText("visualization\\rectangles.json");
+
+        /*Thread.Sleep(3000);
+        Process.Start("visualization\\testing shapes.exe");*/
+
 
 
 

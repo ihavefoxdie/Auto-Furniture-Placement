@@ -61,12 +61,7 @@ namespace Rooms
             if (windows is null && windowed)
                 throw new ArgumentNullException(nameof(windows), "The windows array is null!");
             Windows = windows;
-            WindowsInRoom = true;
-
-
-            if (FurnitureArray.Length == 0)
-                throw new Exception("The room has no furniture!");
-
+            WindowsInRoom = windowed;
         }
         #endregion
 
@@ -74,9 +69,10 @@ namespace Rooms
         {
             List<GeneralFurniture> furnitureToMutate = new();
 
+            int evenOrNot = new Random().Next(2);
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
-                if (i % 2 == 0)
+                if (i % 2 == evenOrNot)
                 {
                     furnitureToMutate.Add(FurnitureArray[i]);
                 }
@@ -136,9 +132,11 @@ namespace Rooms
             {
                 return parent;
             }
-            Room room = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom);
-
-            List<int> indexesToIgnore = new List<int>();
+            Room child = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom)
+            {
+                FurnitureArray = new GeneralFurniture[this.FurnitureArray.Length]
+            };
+            List<int> indexesToIgnore = new();
 
             for (int i = 0; i < this.FurnitureArray.Length; i++)
             {
@@ -146,56 +144,56 @@ namespace Rooms
                     continue;
                 if (i % 2 == 0)
                 {
-                    room.FurnitureArray[i] = (GeneralFurniture)this.FurnitureArray[i].Clone();
+                    child.FurnitureArray[i] = (GeneralFurniture)this.FurnitureArray[i].Clone();
                     if (FurnitureArray[i].Data.ParentIndex != null)
                     {
                         indexesToIgnore.Add((int)FurnitureArray[i].Data.ParentIndex);
-                        room.FurnitureArray[(int)FurnitureArray[i].Data.ParentIndex] = FurnitureArray[(int)FurnitureArray[i].Data.ParentIndex];
+                        child.FurnitureArray[(int)FurnitureArray[i].Data.ParentIndex] = FurnitureArray[(int)FurnitureArray[i].Data.ParentIndex];
                     }
                     if (FurnitureArray[i].Data.ChildIndex != null)
                     {
                         indexesToIgnore.Add((int)FurnitureArray[i].Data.ChildIndex);
-                        room.FurnitureArray[(int)FurnitureArray[i].Data.ChildIndex] = FurnitureArray[(int)FurnitureArray[i].Data.ChildIndex];
+                        child.FurnitureArray[(int)FurnitureArray[i].Data.ChildIndex] = FurnitureArray[(int)FurnitureArray[i].Data.ChildIndex];
                     }
                 }
                 else
                 {
-                    room.FurnitureArray[i] = (GeneralFurniture)roomParent.FurnitureArray[i].Clone();
-                    if (FurnitureArray[i].Data.ParentIndex != null)
+                    child.FurnitureArray[i] = (GeneralFurniture)roomParent.FurnitureArray[i].Clone();
+                    if (roomParent.FurnitureArray[i].Data.ParentIndex != null)
                     {
                         indexesToIgnore.Add((int)roomParent.FurnitureArray[i].Data.ParentIndex);
-                        room.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ParentIndex] = roomParent.FurnitureArray[(int)FurnitureArray[i].Data.ParentIndex];
+                        child.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ParentIndex] = roomParent.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ParentIndex];
                     }
-                    if (FurnitureArray[i].Data.ChildIndex != null)
+                    if (roomParent.FurnitureArray[i].Data.ChildIndex != null)
                     {
                         indexesToIgnore.Add((int)roomParent.FurnitureArray[i].Data.ChildIndex);
-                        room.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ChildIndex] = roomParent.FurnitureArray[(int)FurnitureArray[i].Data.ChildIndex];
+                        child.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ChildIndex] = roomParent.FurnitureArray[(int)roomParent.FurnitureArray[i].Data.ChildIndex];
                     }
                 }
             }
 
             for (int i = 0; i < this.Doors.Count; i++)
             {
-                room.Doors.Add((GeneralFurniture)this.Doors[i].Clone());
+                child.Doors.Add((GeneralFurniture)this.Doors[i].Clone());
             }
 
             if (Windows != null)
             {
-                room.Windows = new();
+                child.Windows = new();
                 for (int i = 0; i < this.Windows.Count; i++)
                 {
-                    room.Windows.Add((GeneralFurniture)this.Windows[i].Clone());
+                    child.Windows.Add((GeneralFurniture)this.Windows[i].Clone());
                 }
             }
 
-            room.DetermineCollision = this.DetermineCollision;
-            room.RotateVertex = this.RotateVertex;
-            room.PenaltyEvaluation();
+            child.DetermineCollision = this.DetermineCollision;
+            child.RotateVertex = this.RotateVertex;
+            child.PenaltyEvaluation();
 
-            return room;
+            return child;
         }
 
-        private void Scatter(GeneralFurniture item)
+        public void Scatter(GeneralFurniture item)
         {
             decimal x = new Random().Next(-5, 5);
             decimal y = new Random().Next(-5, 5);
@@ -224,7 +222,7 @@ namespace Rooms
             }
         }
 
-        private void RandomRotation(GeneralFurniture item)
+        public void RandomRotation(GeneralFurniture item)
         {
             int rotateFor = new Random().Next(360);
             if (item.Data.ParentIndex != null)
@@ -252,7 +250,7 @@ namespace Rooms
             }
         }
 
-        private void WallAlignment(GeneralFurniture item)
+        public void WallAlignment(GeneralFurniture item)
         {
             bool left = false;
             bool right = false;
@@ -315,7 +313,7 @@ namespace Rooms
             item.Data.ChildIndex = null;
         }
 
-        private void MoveObjectToObject(GeneralFurniture item)
+        public void MoveObjectToObject(GeneralFurniture item)
         {
             int index = 0;
             double minDistance = -1;
@@ -342,7 +340,7 @@ namespace Rooms
             item.Data.ChildIndex = null;
         }
 
-        private void MoveToParent(GeneralFurniture item)
+        public void MoveToParent(GeneralFurniture item)
         {
             if (item.Data.ParentID == -1)
                 return;
@@ -364,13 +362,18 @@ namespace Rooms
             decimal pointToMoveToX = FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation) * FurnitureArray[index].Width;
             decimal pointToMoveToY = FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation) * FurnitureArray[index].Width;
             Move(item, -(item.Center[0] - pointToMoveToX), -(item.Center[1] - pointToMoveToY));
+            if (OutOfBoundsDeterminer(item) != 0)
+            {
+                Move(item, (item.Center[0] - pointToMoveToX), (item.Center[1] - pointToMoveToY));
+                return;
+            }
             Rotate(item, FurnitureArray[index].Rotation - item.Rotation);
             item.Data.ParentIndex = index;
             FurnitureArray[index].Data.ChildIndex = FurnitureArray.ToList().IndexOf(item);
 
         }
 
-        private void Alighnment(GeneralFurniture item)
+        public void Alighnment(GeneralFurniture item)
         {
             GeneralFurniture alighnTo;
             while (true)
@@ -421,24 +424,15 @@ namespace Rooms
         {
             int fine = 0;
 
-            if (furniture.Center[1] < ContainerHeight && furniture.Center[0] < ContainerWidth &&
-                furniture.Center[1] > 0 && furniture.Center[0] > 0)
+            for (int j = 0; j < furniture.Vertices.GetLength(0); j++)
             {
-                for (int j = 0; j < furniture.Vertices.GetLength(0); j++)
+                if (furniture.Vertices[j, 0] > ContainerWidth || furniture.Vertices[j, 1] > ContainerHeight || furniture.Vertices[j, 0] < 0 || furniture.Vertices[j, 1] < 0)
                 {
-                    if (furniture.Vertices[j, 0] > ContainerWidth || furniture.Vertices[j, 1] > ContainerHeight)
-                    {
-                        fine += 10;
-                        furniture.IsOutOfBounds = true;
-                        break;
-                    }
-                    furniture.IsOutOfBounds = false;
+                    fine += 10;
+                    furniture.IsOutOfBounds = true;
+                    break;
                 }
-            }
-            else
-            {
-                furniture.IsOutOfBounds = true;
-                return fine += 10;
+                furniture.IsOutOfBounds = false;
             }
 
             return fine;
