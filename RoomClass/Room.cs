@@ -336,6 +336,11 @@ namespace Rooms
             decimal pointToMoveToX = FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation) * FurnitureArray[index].Width;
             decimal pointToMoveToY = FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation) * FurnitureArray[index].Width;
             Move(item, -(item.Center[0] - pointToMoveToX), -(item.Center[1] - pointToMoveToY));
+            if (OutOfBoundsDeterminer(item) != 0)
+            {
+                Move(item, (item.Center[0] - pointToMoveToX), (item.Center[1] - pointToMoveToY));
+                return;
+            }
             item.Data.ParentIndex = null;
             item.Data.ChildIndex = null;
         }
@@ -368,6 +373,7 @@ namespace Rooms
                 return;
             }
             Rotate(item, FurnitureArray[index].Rotation - item.Rotation);
+
             item.Data.ParentIndex = index;
             FurnitureArray[index].Data.ChildIndex = FurnitureArray.ToList().IndexOf(item);
 

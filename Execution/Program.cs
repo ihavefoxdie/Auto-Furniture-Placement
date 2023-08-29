@@ -41,7 +41,7 @@ static class Program
             testingRoom.Mutate();
         }*/
 
-        for (int i = 0; i < 1000000; i++)
+        /*for (int i = 0; i < 1000000; i++)
         {
             for (int j = 0; j < testingRoom.FurnitureArray.Length; j++)
             {
@@ -57,14 +57,14 @@ static class Program
                 }
             }
 
-        }
+        }*/
 
-        /*for (int i = 0; i < 10000; i++)
+        for (int i = 0; i < 100000; i++)
         {
             testingRoom.Mutate();
-            if(i%10==0)
+            if (i % 10 == 0)
                 Console.WriteLine(i);
-        }*/
+        }
 
         decimal[] center = new decimal[2];
         center[0] = 15; center[1] = 15;
