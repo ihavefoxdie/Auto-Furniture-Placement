@@ -1,7 +1,7 @@
 ﻿using Interfaces;
-namespace Execution;
+namespace GeneticAlgorithm;
 
-class PolygonForJson
+public class PolygonForJson
 {
     public int ID { get; set; }
 
