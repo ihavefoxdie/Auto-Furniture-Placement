@@ -10,7 +10,7 @@ namespace RoomClass.Zones
     {
         // T = MaxDiff * 1.2
         public double Temperature { get; set; }
-        public double TempDiff { get; set; }
+        public double CostDiff { get; set; }
         public double MaxDiff { get; set; }
         public double MinStep { get; set; }
         public double MaxStep { get; set; }
@@ -89,11 +89,12 @@ namespace RoomClass.Zones
 
         public SolutionClass Launch(SolutionClass InitialSolution)
         {
-            int iterAmount = 500;
+            int iterAmount = 1;
 
             Random random = new();
 
             double initCost;
+            float probability;
 
             List<double> cost = new(IterPerTemp);
 
@@ -103,13 +104,12 @@ namespace RoomClass.Zones
             do
             {
                 initCost = CurrentSolution.Cost;
-                double probability = 0;
                 for (int i = 0; i < IterPerTemp; i++)
                 {
                     cost.Add(CurrentSolution.Cost);
                     NeighbourSolution = SolutionClass.GenerateNeighbour(MaxStep, CurrentSolution);
-                    probability = Math.Exp((CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature);
-                    Console.WriteLine("DIFF : " + $"{CurrentSolution.Cost - NeighbourSolution.Cost}");
+                    probability = (float) Math.Exp(-Math.Abs(CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature);
+                    Console.WriteLine("DIFF : " + $"{-Math.Abs(CurrentSolution.Cost - NeighbourSolution.Cost)}");
                     Console.WriteLine(probability);
 
                     if (NeighbourSolution.Cost <= CurrentSolution.Cost)
@@ -127,10 +127,10 @@ namespace RoomClass.Zones
 
                 Temperature *= TempDecreaseRatio;
                 MaxStep = Math.Max(MaxStep * StepDecreaseRatio, InitialSolution.Aisle);
-                TempDiff = initCost - CurrentSolution.Cost;
+                CostDiff = initCost - CurrentSolution.Cost;
                 iterAmount--;
             }
-            while ((TempDiff > 0.1 || TempDiff < 0 ) && iterAmount > 0);
+            while ((CostDiff > 0.1 || CostDiff < 0) /*&& iterAmount > 0*/);
 
             #endregion
             var costArray = cost.ToArray();
