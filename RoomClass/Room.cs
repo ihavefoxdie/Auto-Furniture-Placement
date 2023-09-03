@@ -24,7 +24,6 @@ namespace Rooms
         public GeneralFurniture[] FurnitureArray { get; private set; }
         private List<GeneralFurniture> Doors { get; set; }
         private List<GeneralFurniture>? Windows { get; set; }
-        public int[,] RoomArray { get; set; }
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
@@ -48,7 +47,6 @@ namespace Rooms
         {
             ContainerHeight = height;
             ContainerWidth = width;
-            RoomArray = new int[width, height];
             FurnitureArray = new GeneralFurniture[items.Count];
             for (int i = 0; i < items.Count; i++)
             {
@@ -64,6 +62,18 @@ namespace Rooms
             WindowsInRoom = windowed;
         }
         #endregion
+
+        public void Randomize()
+        {
+            for (int i = 0; i < FurnitureArray.Length; i++)
+            {
+                for (int j = 0; j < 500; j++)
+                {
+                    Scatter(FurnitureArray[i]);
+                    RandomRotation(FurnitureArray[i]);
+                }
+            }
+        }
 
         public void Mutate()
         {
@@ -153,11 +163,13 @@ namespace Rooms
             };
             List<int> indexesToIgnore = new();
 
+            int even = new Random().Next(2);
+
             for (int i = 0; i < this.FurnitureArray.Length; i++)
             {
                 if (indexesToIgnore.Contains(i))
                     continue;
-                if (i % 2 == 0)
+                if (i % 2 == even)
                 {
                     child.FurnitureArray[i] = (GeneralFurniture)this.FurnitureArray[i].Clone();
                     if (FurnitureArray[i].Data.ParentIndex != null)
@@ -210,11 +222,13 @@ namespace Rooms
 
         public void Scatter(GeneralFurniture item)
         {
-            decimal x = new Random().Next(-1, 1);
+            decimal x = new Random().Next(-2, 2);
+            x *= item.Width;
             if (new Random().Next(10) > 8)
                 x += 3;
 
-            decimal y = new Random().Next(-1, 1);
+            decimal y = new Random().Next(-2, 2);
+            y*= item.Height;
             if (new Random().Next(10) > 8)
                 y += 3;
 
@@ -251,7 +265,7 @@ namespace Rooms
                 }
             }
             Console.WriteLine("successful " + item.Name + " move");
-            if(item.IsCollided)
+            if (item.IsCollided)
                 Console.WriteLine(item.IsCollided);
         }
 
@@ -587,7 +601,7 @@ namespace Rooms
                     item2.IsCollided = true;
                     item1.IsCollided = true;
                     collided = true;
-                    penalty += 10;
+                    penalty += 100;
                 }
             }
             decimal[] center = new decimal[] { item2.Center[0], item2.Center[1] };
@@ -597,7 +611,7 @@ namespace Rooms
                 item2.IsCollided = true;
                 item1.IsCollided = true;
                 collided = true;
-                penalty += 10;
+                penalty += 150;
             }
 
             if (!collided)
@@ -622,7 +636,7 @@ namespace Rooms
                 {
                     check = true;
                     if (!(furniture.Rotation >= 260 && furniture.Rotation <= 280))
-                        fine += 5;
+                        fine += 2;
                     break;
                 }
                 if (furniture.Vertices[i, 0] <= (0 + furniture.Flags.NearWall))
@@ -693,6 +707,32 @@ namespace Rooms
                 RotateVertex(ref item.Vertices[i, 0], ref item.Vertices[i, 1], radians, (int)item.Center[0], (int)item.Center[1]);
                 RotateVertex(ref item.ClearanceArea[i, 0], ref item.ClearanceArea[i, 1], radians, (int)item.Center[0], (int)item.Center[1]);
             }
+        }
+
+        public object Clone()
+        {
+            List<GeneralFurniture> clonedDoors = new List<GeneralFurniture>();
+            List<GeneralFurniture> clonedFurniture = new List<GeneralFurniture>();
+            List<GeneralFurniture> clonedWindows = new List<GeneralFurniture>();
+            for (int i = 0; i < Doors.Count; i++)
+            {
+                clonedDoors.Add((GeneralFurniture)Doors[i].Clone());
+            }
+
+            for (int i = 0; i < FurnitureArray.Length; i++)
+            {
+                clonedFurniture.Add((GeneralFurniture)FurnitureArray[i].Clone());
+            }
+            if (Windows != null)
+                for (int i = 0; i < Windows.Count; i++)
+                {
+                    clonedWindows.Add((GeneralFurniture)Windows[i].Clone());
+                }
+
+            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, clonedWindows);
+            clonedRoom.RotateVertex = this.RotateVertex;
+            clonedRoom.DetermineCollision = this.DetermineCollision;
+            return clonedRoom;
         }
 
         #endregion

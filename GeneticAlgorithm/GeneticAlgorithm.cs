@@ -9,7 +9,7 @@ public class GeneticAlgoritm
     public List<IPolygonGenesContainer> Population { get; private set; }
     private bool KeepUp { get; set; }
     public int Generation { get; private set; }
-    private Process visual;
+    //private Process visual;
 
     public GeneticAlgoritm(IPolygonGenesContainer container)
     {
@@ -17,20 +17,24 @@ public class GeneticAlgoritm
         KeepUp = true;
         for (int i = 0; i < 12; i++)
         {
-            Population.Add(container);
-        }
-    }
-    //TODO CROSSOVER AND MUTATION ALGORITHMS
-    public int Start()
-    {
-        for (int i = 0; i < Population.Count; i++)
-        {
+            Population.Add((IPolygonGenesContainer)container.Clone());
+            Population[i].PenaltyEvaluation();
+            Population[i].Randomize();
             Population[i].PenaltyEvaluation();
         }
+    }
+
+    public int Start()
+    {
         int count = 0;
         while (KeepUp)
         {
             Population = Population.OrderBy(container => container.Penalty).ToList();
+
+            if (count == 500000 || Population[0].Penalty < 10)
+            {
+                KeepUp = false;
+            }
 
             int transfer = (70 * Population.Count) / 100;
 
@@ -57,7 +61,7 @@ public class GeneticAlgoritm
                     if (indexParent1 != indexParent2)
                         break;
                 }
-                newContainersSet.Add(newContainersSet[indexParent1].Crossover(newContainersSet[indexParent2]));
+                newContainersSet.Add(newContainersSet[indexParent1].Crossover((IPolygonGenesContainer)newContainersSet[indexParent2].Clone()));
             }
 
 
@@ -83,11 +87,6 @@ public class GeneticAlgoritm
 
 
             count++;
-
-            if (count == 500000)
-            {
-                KeepUp = false;
-            }
         }
         Console.WriteLine(Population[0].Penalty + " and " + Population.Last().Penalty);
         SerializeBest();
@@ -174,7 +173,7 @@ public class GeneticAlgoritm
                 selector++;
                 sum += containers[selector].Penalty;
             }
-            containersToKeep.Add(containers[selector]);
+            containersToKeep.Add(containers[containers.Count - selector - 1]);
         }
 
         return containersToKeep;

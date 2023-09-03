@@ -31,9 +31,11 @@
 
         public object Clone()
         {
-            FurnitureData data = new (this.ID, this.Name, this.Width, this.Height, this.Zone, this.ExtraWidth, this.ExtraHeight, this.ParentID);
-            data.ParentIndex = this.ParentIndex;
-            data.ChildIndex = this.ChildIndex;
+            FurnitureData data = new(ID, Name, Width, Height, Zone, ExtraWidth, ExtraHeight, ParentID)
+            {
+                ParentIndex = this.ParentIndex,
+                ChildIndex = this.ChildIndex
+            };
             return data;
         }
     }

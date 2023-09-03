@@ -1,6 +1,6 @@
 ﻿namespace Interfaces;
 
-public interface IPolygonGenesContainer
+public interface IPolygonGenesContainer: ICloneable
 {
     public void PenaltyEvaluation();
     public double Penalty { get; set; }
@@ -9,4 +9,5 @@ public interface IPolygonGenesContainer
     public List<IPolygon> Polygons { get; }
     public void Mutate();
     public IPolygonGenesContainer Crossover(IPolygonGenesContainer parent);
+    public void Randomize();
 }

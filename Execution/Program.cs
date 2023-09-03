@@ -49,6 +49,10 @@ static class Program
         TableFactory tableFactory = new();
         DoorFactory doorFactory = new();
         ChairFactory chairFactory= new();
+        PoufFactory poufFactory = new();
+        ArmchairFactory armchairFactory = new();
+        CupboardFactory cupboardFactory = new();
+        DeskFactory deskFactory = new();
 
 
         List<GeneralFurniture> furnitures = new();
@@ -56,16 +60,23 @@ static class Program
         furnitures.Add(tableFactory.GetFurniture());
         furnitures.Add(tableFactory.GetFurniture());
         furnitures.Add(chairFactory.GetFurniture());
+        furnitures.Add(poufFactory.GetFurniture());
+        furnitures.Add(armchairFactory.GetFurniture());
+        furnitures.Add(cupboardFactory.GetFurniture());
+        furnitures.Add(deskFactory.GetFurniture());
 
         Room testingRoom = new(30, 30, new List<GeneralFurniture>(), furnitures, false);
         testingRoom.RotateVertex = VertexManipulator.VertexRotation;
         testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
-        GeneticAlgoritm algo = new(testingRoom);
 
         for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
         {
-            testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth/2, testingRoom.ContainerHeight/2);
+            testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth / 2, testingRoom.ContainerHeight / 2);
         }
+
+        GeneticAlgoritm algo = new(testingRoom);
+
+        
 
 
 
