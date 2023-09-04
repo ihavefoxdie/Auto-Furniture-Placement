@@ -5,6 +5,7 @@ namespace Rooms
 {
     //TODO: Integration with Zones class once (semi?)finished.
     //TODO: Should this class handle rotation and movement of IPolygon objects (i.e. GeneralFurniture)? Discuss.
+    //TODO: Clean this mess of a code!
     public sealed class Room : IPolygonGenesContainer
     {
         #region General Properties
@@ -114,22 +115,22 @@ namespace Rooms
                     furnitureToMutate.RemoveAt(value);
                     continue;
                 }
-                if (new Random().Next(5) == 0 && !wallAlignment)
+                /*if (new Random().Next(5) == 0 && !wallAlignment)
                 {
                     wallAlignment = true;
                     int value = selector.Next(furnitureToMutate.Count);
                     WallAlignment(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
                     continue;
-                }
-                if (new Random().Next(3) == 0 && !moveObjectToObject)
+                }*/
+                /*if (new Random().Next(3) == 0 && !moveObjectToObject)
                 {
                     moveObjectToObject = true;
                     int value = selector.Next(furnitureToMutate.Count);
                     MoveObjectToObject(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
                     continue;
-                }
+                }*/
                 if (new Random().Next(4) == 0 && !alignment)
                 {
                     alignment = true;
@@ -228,17 +229,37 @@ namespace Rooms
                 x += 3;
 
             decimal y = new Random().Next(-2, 2);
-            y*= item.Height;
+            y *= item.Height;
             if (new Random().Next(10) > 8)
                 y += 3;
+
+
+
 
             if (item.Data.ParentIndex != null)
             {
                 Move(FurnitureArray[(int)item.Data.ParentIndex], x, y);
-                if (OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ParentIndex]) != 0)
+                OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ParentIndex]);
+                if (FurnitureArray[(int)item.Data.ParentIndex].IsOutOfBounds)
                 {
                     Move(FurnitureArray[(int)item.Data.ParentIndex], -x, -y);
+                    OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ParentIndex]);
                     return;
+                }
+                for (int i = 0; i < FurnitureArray.Length; i++)
+                {
+                    if (FurnitureArray[(int)item.Data.ParentIndex] != FurnitureArray[i])
+                    {
+                        Collision(FurnitureArray[(int)item.Data.ParentIndex], FurnitureArray[i]);
+                        Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ParentIndex]);
+                        if (FurnitureArray[(int)item.Data.ChildIndex].IsCollided)
+                        {
+                            Move(FurnitureArray[(int)item.Data.ParentIndex], -x, -y);
+                            Collision(FurnitureArray[(int)item.Data.ParentIndex], FurnitureArray[i]);
+                            Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ParentIndex]);
+                            return;
+                        }
+                    }
                 }
             }
             if (item.Data.ChildIndex != null)
@@ -247,21 +268,43 @@ namespace Rooms
                 if (OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ChildIndex]) != 0)
                 {
                     Move(FurnitureArray[(int)item.Data.ChildIndex], -x, -y);
+                    OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ChildIndex]);
                     return;
+                }
+                for (int i = 0; i < FurnitureArray.Length; i++)
+                {
+                    if (FurnitureArray[(int)item.Data.ChildIndex] != FurnitureArray[i])
+                    {
+                        Collision(FurnitureArray[(int)item.Data.ChildIndex], FurnitureArray[i]);
+                        Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ChildIndex]);
+                        if (FurnitureArray[(int)item.Data.ChildIndex].IsCollided)
+                        {
+                            Move(FurnitureArray[(int)item.Data.ChildIndex], -x, -y);
+                            Collision(FurnitureArray[(int)item.Data.ChildIndex], FurnitureArray[i]);
+                            Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ChildIndex]);
+                            return;
+                        }
+                    }
                 }
             }
             Move(item, x, y);
             if (OutOfBoundsDeterminer(item) != 0)
             {
                 Move(item, -x, -y);
+                OutOfBoundsDeterminer(item);
                 return;
             }
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
-                if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
+                if (item != FurnitureArray[i])
                 {
-                    Move(item, -x, -y);
-                    return;
+                    Collision(item, FurnitureArray[i]); Collision(FurnitureArray[i], item);
+                    if (item.IsCollided)
+                    {
+                        Move(item, -x, -y);
+                        Collision(item, FurnitureArray[i]); Collision(FurnitureArray[i], item);
+                        return;
+                    }
                 }
             }
             Console.WriteLine("successful " + item.Name + " move");
@@ -271,29 +314,74 @@ namespace Rooms
 
         public void RandomRotation(GeneralFurniture item)
         {
-            int rotateFor = new Random().Next(10);
+            int minusOrPlus = new Random().Next(2);
+
+            int rotateFor = 0;
+
+            if (minusOrPlus > 0)
+                rotateFor = 90;
+            else
+                rotateFor = -90;
+
             if (item.Data.ParentIndex != null)
             {
                 Rotate(FurnitureArray[(int)item.Data.ParentIndex], rotateFor);
                 if (OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ParentIndex]) != 0)
                 {
                     Rotate(FurnitureArray[(int)item.Data.ParentIndex], rotateFor);
+                    OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ParentIndex]);
                     return;
                 }
+                for (int i = 0; i < FurnitureArray.Length; i++)
+                {
+                    if (FurnitureArray[(int)item.Data.ParentIndex] != FurnitureArray[i])
+                    {
+                        Collision(FurnitureArray[(int)item.Data.ParentIndex], FurnitureArray[i]);
+                        Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ParentIndex]);
+                        if (FurnitureArray[(int)item.Data.ChildIndex].IsCollided)
+                        {
+                            Rotate(FurnitureArray[(int)item.Data.ParentIndex], rotateFor);
+                            Collision(FurnitureArray[(int)item.Data.ParentIndex], FurnitureArray[i]);
+                            Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ParentIndex]);
+                            return;
+                        }
+                    }
+                }
             }
+
             if (item.Data.ChildIndex != null)
             {
                 Rotate(FurnitureArray[(int)item.Data.ChildIndex], rotateFor);
                 if (OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ChildIndex]) != 0)
                 {
                     Rotate(FurnitureArray[(int)item.Data.ChildIndex], rotateFor);
+                    OutOfBoundsDeterminer(FurnitureArray[(int)item.Data.ChildIndex]);
                     return;
                 }
+                for (int i = 0; i < FurnitureArray.Length; i++)
+                {
+                    if (FurnitureArray[(int)item.Data.ParentIndex] != FurnitureArray[i])
+                    {
+                        Collision(FurnitureArray[(int)item.Data.ChildIndex], FurnitureArray[i]);
+                        Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ChildIndex]);
+
+                        if (FurnitureArray[(int)item.Data.ChildIndex].IsCollided)
+                        {
+                            Rotate(FurnitureArray[(int)item.Data.ParentIndex], rotateFor);
+                            Collision(FurnitureArray[(int)item.Data.ChildIndex], FurnitureArray[i]);
+                            Collision(FurnitureArray[i], FurnitureArray[(int)item.Data.ChildIndex]);
+                            return;
+                        }
+                    }
+                }
             }
+
+
             Rotate(item, rotateFor);
             if (OutOfBoundsDeterminer(item) != 0)
             {
                 Rotate(item, -rotateFor);
+                OutOfBoundsDeterminer(item);
                 return;
             }
             for (int i = 0; i < FurnitureArray.Length; i++)
@@ -301,6 +389,7 @@ namespace Rooms
                 if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
                 {
                     Rotate(item, -rotateFor);
+                    Collision(item, FurnitureArray[i]); Collision(FurnitureArray[i], item);
                     return;
                 }
             }
@@ -514,15 +603,33 @@ namespace Rooms
         public void Alighnment(GeneralFurniture item)
         {
             GeneralFurniture alighnTo;
+            if (FurnitureArray.GetLength(0) <= 1)
+            {
+                return;
+            }
             while (true)
             {
                 alighnTo = FurnitureArray[new Random().Next(FurnitureArray.Length)];
 
                 if (alighnTo != item)
                     break;
+
+                Console.WriteLine("hobo(TM)-way test for meeting with itself");
             }
 
-            Rotate(item, alighnTo.Rotation - item.Rotation);
+            int rotateTo = alighnTo.Rotation - item.Rotation;
+            Rotate(item, rotateTo);
+
+            for (int i = 0; i < FurnitureArray.GetLength(0); i++)
+            {
+                if (item != FurnitureArray[i])
+                {
+                    Collision(item, FurnitureArray[i]); Collision(FurnitureArray[i], item);
+                }
+            }
+
+            if (item.IsCollided)
+                Rotate(item, -rotateTo);
         }
 
         //TODO Improve penalty evaluation by implementing a better method for more flexibility
@@ -586,6 +693,7 @@ namespace Rooms
             return fine;
         }
 
+        //TODO: figure out why the hell this thing is being a dumbass
         public int Collision(GeneralFurniture item1, GeneralFurniture item2)
         {
             int penalty = 0;

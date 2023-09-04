@@ -1,11 +1,10 @@
 ﻿using FactoryMethod;
 using Furniture;
+using GeneticAlgorithm;
 using Interfaces;
 using Rooms;
-using GeneticAlgorithm;
 using System.Text.Json;
 using Vertex;
-using System.Diagnostics;
 
 namespace Testing;
 
@@ -48,8 +47,8 @@ static class Program
         BedFactory bedFactory = new();
         TableFactory tableFactory = new();
         DoorFactory doorFactory = new();
-        ChairFactory chairFactory= new();
-        PoufFactory poufFactory = new();
+        ChairFactory chairFactory = new();
+        PouffeFactory poufFactory = new();
         ArmchairFactory armchairFactory = new();
         CupboardFactory cupboardFactory = new();
         DeskFactory deskFactory = new();
@@ -76,16 +75,17 @@ static class Program
 
         GeneticAlgoritm algo = new(testingRoom);
 
-        
 
 
 
-        algo.Start();
-        /*for (int i = 0; i < 1000000; i++)
+
+        //algo.Start();
+        for (int i = 0; i < 100000000; i++)
         {
+            Thread.Sleep(10);
             testingRoom.Mutate();
             sex(testingRoom);
-        }*/
+        }
 
         /*for (int i = 0; i < 100000; i++)
         {
@@ -93,7 +93,7 @@ static class Program
             if (i % 10 == 0)
                 Console.WriteLine(i);
         }*/
-        
+
 
 
 

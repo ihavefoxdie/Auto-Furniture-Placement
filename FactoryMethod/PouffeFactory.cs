@@ -2,18 +2,18 @@
 
 namespace FactoryMethod
 {
-    public class PoufFactory : FurnitureFactory
+    public class PouffeFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(3, "pouf", 1, 1, "rest");
+        private readonly FurnitureData _furnitureData = new(3, "pouffe", 1, 1, "rest");
         private readonly FurnitureDataFlags _furnitureDataFlags = new();
 
-        public PoufFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
+        public PouffeFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
             _furnitureData = furnitureData;
             _furnitureDataFlags = furnitureDataFlags;
         }
 
-        public PoufFactory()
+        public PouffeFactory()
         {
 
         }
@@ -21,14 +21,14 @@ namespace FactoryMethod
 
         public override GeneralFurniture GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            Pouf pouf = new(furnitureData, furnitureDataFlags);
-            return pouf;
+            Pouffe pouffe = new(furnitureData, furnitureDataFlags);
+            return pouffe;
         }
 
         public override GeneralFurniture GetFurniture()
         {
-            Pouf pouf = new(_furnitureData, _furnitureDataFlags);
-            return pouf;
+            Pouffe pouffe = new(_furnitureData, _furnitureDataFlags);
+            return pouffe;
         }
 
     }
