@@ -15,17 +15,17 @@ static class Program
         List<PolygonForJson> rectangles = new List<PolygonForJson>();
 
         decimal[] center = new decimal[2];
-        center[0] = 15; center[1] = 15;
+        center[0] = room.ContainerWidth/2; center[1] = room.ContainerHeight/2;
         decimal[][] edges = new decimal[4][];
         for (int i = 0; i < edges.Length; i++)
             edges[i] = new decimal[2];
 
         edges[0][0] = 0; edges[0][1] = 0;
-        edges[1][0] = 30; edges[1][1] = 0;
-        edges[2][0] = 30; edges[2][1] = 30;
-        edges[3][0] = 0; edges[3][1] = 30;
+        edges[1][0] = room.ContainerWidth; edges[1][1] = 0;
+        edges[2][0] = room.ContainerWidth; edges[2][1] = room.ContainerHeight;
+        edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
 
-        rectangles.Add(new PolygonForJson(1213, 30, 30, center, edges, "Room"));
+        rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, "Room"));
         IPolygonGenesContainer contain = room;
         foreach (IPolygon polygon in contain.Polygons)
             rectangles.Add(new PolygonForJson(polygon));
@@ -64,7 +64,7 @@ static class Program
         furnitures.Add(cupboardFactory.GetFurniture());
         furnitures.Add(deskFactory.GetFurniture());
 
-        Room testingRoom = new(30, 30, new List<GeneralFurniture>(), furnitures, false);
+        Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false);
         testingRoom.RotateVertex = VertexManipulator.VertexRotation;
         testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
 
@@ -82,7 +82,7 @@ static class Program
         //algo.Start();
         for (int i = 0; i < 100000000; i++)
         {
-            Thread.Sleep(10);
+            Thread.Sleep(100);
             testingRoom.Mutate();
             sex(testingRoom);
         }
