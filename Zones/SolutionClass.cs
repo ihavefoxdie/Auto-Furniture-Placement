@@ -162,7 +162,6 @@ namespace RoomClass.Zones
 
             for (int i = 0; i < Zones.Count - 1; i++)
             {
-                Zones[i].Resize(Aisle * 2, Aisle * 2);
 
                 for (int j = i + 1; j < Zones.Count; j++)
                 {
@@ -172,7 +171,6 @@ namespace RoomClass.Zones
                     }
                 }
 
-                Zones[i].Resize(-Aisle * 2, -Aisle * 2);
             }
 
 
