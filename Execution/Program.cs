@@ -25,7 +25,7 @@ static class Program
         edges[2][0] = room.ContainerWidth; edges[2][1] = room.ContainerHeight;
         edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
 
-        rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, "Room"));
+        rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, ""));
         IPolygonGenesContainer contain = room;
         foreach (IPolygon polygon in contain.Polygons)
             rectangles.Add(new PolygonForJson(polygon));
