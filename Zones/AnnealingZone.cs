@@ -29,10 +29,20 @@ namespace Zones
 
         public override void Resize(decimal deltaWidth, decimal deltaHeight)
         {
-            ExtendedWidth += deltaWidth;
-            ExtendedHeight += deltaHeight;
-            Area = (double)(ExtendedWidth * ExtendedHeight);
-            VertexManipulator.VertexResetting(Vertices, Center, (int)ExtendedWidth, (int)ExtendedHeight);
+            if (ExtendedWidth + deltaWidth <= 0 || ExtendedHeight + deltaHeight <= 0)
+                return;
+            else
+            {
+                ExtendedWidth += deltaWidth;
+
+
+
+                if (ExtendedHeight + deltaHeight > 0)
+                    ExtendedHeight += deltaHeight;
+
+                Area = (double)(ExtendedWidth * ExtendedHeight);
+                VertexManipulator.VertexResetting(Vertices, Center, (int)ExtendedWidth, (int)ExtendedHeight);
+            }
         }
 
         public Zone toZone()

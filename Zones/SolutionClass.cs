@@ -19,6 +19,8 @@ namespace RoomClass.Zones
         public int RoomHeight { get; private set; }
 
 
+
+
         public SolutionClass(List<AnnealingZone> zones, int aisle, int roomWidth, int roomHeight, List<GeneralFurniture> doors)
         {
             Aisle = aisle;
@@ -115,6 +117,13 @@ namespace RoomClass.Zones
             cost += ByWallPenalty();
             cost += DoorSpacePenalty();
 
+            ZoneClassInfo.OverlappingPenalty.Add(OverlappingPenalty());
+            ZoneClassInfo.FreeSpacePenalty.Add(FreeSpacePenalty());
+            ZoneClassInfo.ZoneShapePenalty.Add(ZoneShapePenalty());
+            ZoneClassInfo.SpaceRatioPenalty.Add(SpaceRatioPenalty());
+            ZoneClassInfo.ByWallPenalty.Add(ByWallPenalty());
+            ZoneClassInfo.DoorSpacePenalty.Add(DoorSpacePenalty());
+
             return cost;
         }
 
@@ -138,18 +147,37 @@ namespace RoomClass.Zones
             }
 
             return Math.Sqrt(area);
+            //return area;
         }
 
         private double FreeSpacePenalty()
         {
-            double area = 0;
+            double roomZonesArea = 0;
+            double zonesZonesArea = 0;
+
             foreach (var item in Zones)
             {
-                item.Resize(Aisle * 2, Aisle * 2);
-                area += item.Area;
-                item.Resize(-Aisle * 2, -Aisle * 2);
+                roomZonesArea += FindOverlapArea(item);
             }
-            return Math.Sqrt(RoomHeight * RoomWidth - area);
+
+            for (int i = 0; i < Zones.Count - 1; i++)
+            {
+                Zones[i].Resize(Aisle * 2, Aisle * 2);
+
+                for (int j = i + 1; j < Zones.Count; j++)
+                {
+                    if (DeterminRectangleCollision(Zones[i], Zones[j]))
+                    {
+                        zonesZonesArea += FindOverlapArea(Zones[i], Zones[j]);
+                    }
+                }
+
+                Zones[i].Resize(-Aisle * 2, -Aisle * 2);
+            }
+
+
+            //return Math.Sqrt(RoomHeight * RoomWidth - area);
+            return Math.Sqrt(RoomHeight * RoomWidth - (roomZonesArea - zonesZonesArea));
         }
 
         private double ZoneShapePenalty()
@@ -163,7 +191,8 @@ namespace RoomClass.Zones
                     decimal maxDim = Math.Max(item.ExtendedWidth, item.ExtendedHeight);
                     decimal minDim = Math.Min(item.ExtendedWidth, item.ExtendedHeight);
 
-                    penalty += (double)((maxDim - 3 * minDim) / 4);
+                    //penalty += (double)((maxDim - 3 * minDim) / 4);
+                    penalty += (double)((maxDim - 3 * minDim));
                 }
             }
             return penalty;
@@ -198,10 +227,11 @@ namespace RoomClass.Zones
                 penalty += distances.Min();
                 distances.Remove(distances.Min());
                 penalty += distances.Min() / 2;
+                //penalty += distances.Min();
 
             }
 
-            return penalty;
+            return penalty * 10;
         }
 
         private double DoorSpacePenalty()
@@ -231,6 +261,7 @@ namespace RoomClass.Zones
             }
 
             return Math.Sqrt(overlapArea);
+            //return overlapArea;
         }
 
 
@@ -295,7 +326,7 @@ namespace RoomClass.Zones
         }
 
 
-        private double FindOverlapArea<T>(T zone1, T zone2) where T : IPolygon
+        private double FindOverlapArea<T>(T polygon1, T polygon2) where T : IPolygon
         {
             /*
     x1, y1 - левая нижняя точка первого прямоугольника
@@ -305,10 +336,10 @@ namespace RoomClass.Zones
             */
 
 
-            decimal left = Math.Max(zone1.Vertices[1, 0], zone2.Vertices[1, 0]);
-            decimal top = Math.Min(zone1.Vertices[3, 1], zone2.Vertices[3, 1]);
-            decimal right = Math.Min(zone1.Vertices[3, 0], zone2.Vertices[3, 0]);
-            decimal bottom = Math.Max(zone1.Vertices[1, 1], zone2.Vertices[1, 1]);
+            decimal left = Math.Max(polygon1.Vertices[1, 0], polygon2.Vertices[1, 0]);
+            decimal top = Math.Min(polygon1.Vertices[3, 1], polygon2.Vertices[3, 1]);
+            decimal right = Math.Min(polygon1.Vertices[3, 0], polygon2.Vertices[3, 0]);
+            decimal bottom = Math.Max(polygon1.Vertices[1, 1], polygon2.Vertices[1, 1]);
 
             decimal width = right - left;
             decimal height = top - bottom;
@@ -318,6 +349,31 @@ namespace RoomClass.Zones
 
             return (double)(width * height);
         }
+        /// <summary>
+        /// Returns the overlapping area between room and polygon.
+        /// </summary>
+        private double FindOverlapArea<T>(T polygon) where T : IPolygon
+        {
+            double area;
+
+            decimal[,] roomVertices = new decimal[4, 2];
+            VertexManipulator.VertexResetting(roomVertices, new decimal[] { RoomWidth / 2, RoomHeight / 2 }, RoomWidth, RoomHeight);
+
+
+            decimal left = Math.Max(polygon.Vertices[1, 0], roomVertices[1, 0]);
+            decimal top = Math.Min(polygon.Vertices[3, 1], roomVertices[3, 1]);
+            decimal right = Math.Min(polygon.Vertices[3, 0], roomVertices[3, 0]);
+            decimal bottom = Math.Max(polygon.Vertices[1, 1], roomVertices[1, 1]);
+
+            decimal width = right - left;
+            decimal height = top - bottom;
+
+            if (width < 0 || height < 0)
+                return 0;
+
+            return (double)(width * height);
+        }
+
 
         private bool DeterminRectangleCollision(AnnealingZone rect1, AnnealingZone rect2)
         {

@@ -4,7 +4,8 @@ using RoomClass.Zones;
 using Rooms;
 using System.Diagnostics;
 using System.Drawing;
-using System.Xml;
+using System.IO;
+using System.Text.Json;
 using Vertex;
 using Zones;
 
@@ -22,17 +23,17 @@ namespace Testing
                 }
             }
 
-            void DrawZones<T>(Room room, List<T> zones, string name) where T : Zone 
+            void DrawZones<T>(Room room, List<T> zones, string name) where T : Zone
             {
                 //Drawing
                 // Initialize a Bitmap class object
-                Bitmap bitmap = new Bitmap(room.ContainerWidth + 10, room.ContainerHeight + 10, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
+                Bitmap bitmap = new Bitmap(room.ContainerWidth+10, room.ContainerHeight+10, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
 
                 // Create graphics class instance
                 Graphics graphics = Graphics.FromImage(bitmap);
 
                 // Create a brush while specifying its color
-                Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Purple));
+                Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Green));
 
                 // Create a pen
                 Pen pen = new Pen(brush);
@@ -143,7 +144,7 @@ namespace Testing
                 doorFactory.GetFurniture()
             };
 
-            Room newRoom = new(40, 40, door, furnitures, _ = false, 1)
+            Room newRoom = new(20, 20, door, furnitures, _ = false, 1)
             {
                 DetermineCollision = VertexManipulator.DetermineCollision
             };
@@ -181,7 +182,32 @@ namespace Testing
             PrintZoneInfo(newRoom.ZonesList);
 
             List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZonesList.Count);
+
+            newRoom.ZonesList[0].Center = new decimal[] { 5.5M, 4 };
+            newRoom.ZonesList[0].Width = 11;
+            newRoom.ZonesList[0].Height = 8;
+            VertexManipulator.VertexResetting(newRoom.ZonesList[0].Vertices, newRoom.ZonesList[0].Center, newRoom.ZonesList[0].Width, newRoom.ZonesList[0].Height);
+
+            newRoom.ZonesList[1].Center = new decimal[] { 16, 4 };
+            newRoom.ZonesList[1].Width = 8;
+            newRoom.ZonesList[1].Height = 8;
+            VertexManipulator.VertexResetting(newRoom.ZonesList[1].Vertices, newRoom.ZonesList[1].Center, newRoom.ZonesList[1].Width, newRoom.ZonesList[1].Height);
+
+            newRoom.ZonesList[2].Center = new decimal[] { 5.5M, 15.5M };
+            newRoom.ZonesList[2].Width = 11;
+            newRoom.ZonesList[2].Height = 9;
+            VertexManipulator.VertexResetting(newRoom.ZonesList[2].Vertices, newRoom.ZonesList[2].Center, newRoom.ZonesList[2].Width, newRoom.ZonesList[2].Height);
+
+
+            newRoom.ZonesList[3].Center = new decimal[] { 16, 15.5M };
+            newRoom.ZonesList[3].Width = 8;
+            newRoom.ZonesList[3].Height = 11;
+            VertexManipulator.VertexResetting(newRoom.ZonesList[3].Vertices, newRoom.ZonesList[3].Center, newRoom.ZonesList[3].Width, newRoom.ZonesList[3].Height);
+
             SimulatedAnnealing simulatedAnnealing = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
+
+
+            Console.WriteLine($"INITIAL COST : {simulatedAnnealing.InitialSolution.FindCost()}");
 
             DrawZones(newRoom, simulatedAnnealing.InitialSolution.Zones, "InitialSolution");
             OpenDrawingZones("InitialSolution.png");
@@ -193,14 +219,6 @@ namespace Testing
                 item.toZone();
             }
 
-            //SimulatedAnnealing simulatedAnnealing2 = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
-            
-            //simulatedAnnealing2.Launch(simulatedAnnealing2.InitialSolution);
-            //foreach (var item in simulatedAnnealing2.CurrentSolution.Zones)
-            //{
-            //    item.toZone();
-            //}
-
 
             DrawZones(newRoom, newRoom.ZonesList, "CurrentSolution");
 
@@ -208,17 +226,29 @@ namespace Testing
             OpenDrawingZones("AnnealingGraph.png");
 
 
-            //Console.WriteLine();
-            //PrintZoneInfo(simulatedAnnealing.InitialSolution.Zones);
+            simulatedAnnealing.OverlappingPenalty = ZoneClassInfo.OverlappingPenalty.ToList();
+            simulatedAnnealing.FreeSpacePenalty = ZoneClassInfo.FreeSpacePenalty.ToList();
+            simulatedAnnealing.ZoneShapePenalty = ZoneClassInfo.ZoneShapePenalty.ToList();
+            simulatedAnnealing.SpaceRatioPenalty = ZoneClassInfo.SpaceRatioPenalty.ToList();
+            simulatedAnnealing.ByWallPenalty = ZoneClassInfo.ByWallPenalty.ToList();
+            simulatedAnnealing.DoorSpacePenalty = ZoneClassInfo.DoorSpacePenalty.ToList();
 
-            //foreach (var item in simulatedAnnealing.InitialSolution.Zones)
+            string docPath = Environment.CurrentDirectory;
+
+            // Append text to an existing file named "WriteLines.txt".
+            //using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "PenaltyData.json"), true))
             //{
-            //    item.toZone();
+            //    JsonSerializerOptions options = new JsonSerializerOptions();
+            //    options.WriteIndented = true;
+            //    string temp = JsonSerializer.Serialize(simulatedAnnealing, options);
+            //    outputFile.Write(temp,);
             //}
 
-            //Console.WriteLine();
+            JsonSerializerOptions options = new JsonSerializerOptions();
+            options.WriteIndented = true;
+            string temp = JsonSerializer.Serialize(simulatedAnnealing, options);
+            File.WriteAllText(Path.Combine(docPath, "PenaltyData.json"), temp);
 
-            //PrintZoneInfo(newRoom.ZonesList);
 
             #endregion
         }

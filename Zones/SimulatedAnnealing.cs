@@ -1,31 +1,67 @@
 ﻿using Furniture;
 using ScottPlot;
+using System.Text.Json.Serialization;
 using Zones;
 
 namespace RoomClass.Zones
 {
     //TODO Implement Singleton pattern for SimulatedAnnealing
-
     public class SimulatedAnnealing
     {
         // T = MaxDiff * 1.2
+        [JsonIgnore]
         public double Temperature { get; set; }
-        public double CostDiff { get; set; }
-        public double MaxDiff { get; set; }
-        public double MinStep { get; set; }
-        public double MaxStep { get; set; }
-        public double StepDecreaseRatio { get; set; } = 0.95;
-        public double TempDecreaseRatio { get; set; } = 0.9;
-        public int NumTrials { get; set; } = 400;
-        public int IterPerTemp { get; set; } = 100;
+        [JsonIgnore]
 
+        public double CostDiff { get; set; }
+        [JsonIgnore]
+        public double MaxDiff { get; set; }
+        [JsonIgnore]
+        public double MinStep { get; set; }
+        [JsonIgnore]
+        public double MaxStep { get; set; }
+        [JsonIgnore]
+        public double StepDecreaseRatio { get; set; } = 0.95;
+        [JsonIgnore]
+        public double TempDecreaseRatio { get; set; } = 0.9;
+        [JsonIgnore]
+        public int NumTrials { get; set; } = 100;
+        [JsonIgnore]
+        public int IterPerTemp { get; set; } = 1000;
+        [JsonIgnore]
         public int RoomWidth { get; set; }
+        [JsonIgnore]
         public int RoomHeight { get; set; }
+        [JsonIgnore]
         private List<GeneralFurniture> Doors { get; set; }
+        [JsonIgnore]
         private List<AnnealingZone> AnnealingZones { get; set; }
+        [JsonIgnore]
         public SolutionClass InitialSolution { get; set; }
+        [JsonIgnore]
         public SolutionClass CurrentSolution { get; set; }
+        [JsonIgnore]
         public SolutionClass NeighbourSolution { get; set; }
+
+        [JsonInclude]
+        public List<double> OverlappingPenalty { get; set; } = new();
+
+        [JsonInclude]
+        public List<double> FreeSpacePenalty { get; set; } = new();
+
+        [JsonInclude]
+        public List<double> ZoneShapePenalty{ get; set; } = new();
+
+        [JsonInclude]
+        public List<double> SpaceRatioPenalty{ get; set; } = new();
+
+        [JsonInclude]
+        public List<double> ByWallPenalty{ get; set; } = new();
+
+        [JsonInclude]
+        public List<double> DoorSpacePenalty{ get; set; } = new();
+
+
 
         //TODO Create Initial solution instance inside ctor
 
@@ -43,11 +79,13 @@ namespace RoomClass.Zones
                 AnnealingZones.Add(new AnnealingZone(zone));
             }
 
+
+
             InitialSolution = new SolutionClass(AnnealingZones, aisle, RoomWidth, RoomHeight, doors);
-            InitialSolution.PrepareSolutionForSA();
+            //InitialSolution.PrepareSolutionForSA();
 
-            Temperature = DetermineInitialTemp();
-
+            //Temperature = DetermineInitialTemp();
+            Temperature = 50;
         }
 
         private double DetermineInitialTemp()
@@ -130,7 +168,7 @@ namespace RoomClass.Zones
                 CostDiff = initCost - CurrentSolution.Cost;
                 iterAmount--;
             }
-            while ((CostDiff > 0.1 || CostDiff < 0) /*&& iterAmount > 0*/);
+            while ((CostDiff > 0.1 || CostDiff < 0) && iterAmount > 0);
 
             #endregion
             var costArray = cost.ToArray();
