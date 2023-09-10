@@ -121,22 +121,22 @@ namespace Rooms
                     continue;
                 }
                 //TODO: The next 2 methods are broken. Fix
-                /*if (new Random().Next(5) == 0 && !wallAlignment)
+                if (new Random().Next(5) == 0 && !wallAlignment)
                 {
                     wallAlignment = true;
                     int value = selector.Next(furnitureToMutate.Count);
                     WallAlignment(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
                     continue;
-                }*/
-                /*if (new Random().Next(3) == 0 && !moveObjectToObject)
+                }
+                if (new Random().Next(3) == 0 && !moveObjectToObject)
                 {
                     moveObjectToObject = true;
                     int value = selector.Next(furnitureToMutate.Count);
                     MoveObjectToObject(furnitureToMutate.ElementAt(value));
                     furnitureToMutate.RemoveAt(value);
                     continue;
-                }*/
+                }
                 if (new Random().Next(4) == 0 && !alignment)
                 {
                     alignment = true;
@@ -317,7 +317,7 @@ namespace Rooms
         public void RandomRotation(GeneralFurniture item)
         {
             int minusOrPlus = new Random().Next(2);
-            int rotateFor = 0;
+            int rotateFor;
 
             if (minusOrPlus > 0)
                 rotateFor = 90;
@@ -355,13 +355,37 @@ namespace Rooms
 
             if (widthValue > (decimal)0.5)
                 right = true;
-            else
+            else if (widthValue < (decimal)0.5)
                 left = true;
+            else
+            {
+                switch (new Random().Next(2))
+                {
+                    case 0:
+                        left = true;
+                        break;
+                    case 1:
+                        right = true;
+                        break;
+                }
+            }
 
             if (heightValue > (decimal)0.5)
                 down = true;
-            else
+            else if (heightValue < (decimal)0.5)
                 up = true;
+            else
+            {
+                switch (new Random().Next(2))
+                {
+                    case 0:
+                        up = true;
+                        break;
+                    case 1:
+                        down = true;
+                        break;
+                }
+            }
 
 
             if (widthValue < (decimal)0.5)
@@ -378,82 +402,47 @@ namespace Rooms
             {
                 left = false; right = false;
             }
-            else
+            else if (widthValue == heightValue)
             {
                 up = false; down = false;
+            }
+            else
+            {
+                switch (new Random().Next(2))
+                {
+                    case 0:
+                        left = false;
+                        right = false;
+                        break;
+                    case 1:
+                        up = false;
+                        down = false;
+                        break;
+                }
             }
 
 
             if (left)
             {
-                Move(item, -item.Center[0] + item.Width / 2, 0);
-                for (int i = 0; i < FurnitureArray.Length; i++)
-                {
-                    if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
-                    {
-                        Move(item, -(-item.Center[0] + item.Width / 2), 0);
-                        return;
-                    }
-                    if (OutOfBoundsDeterminer(item) != 0)
-                    {
-                        Move(item, -(-item.Center[0] + item.Width / 2), 0);
-                        return;
-                    }
-                }
+                if (SafeMove(item, -item.Center[0] + item.Width / 2, 0) != 0)
+                    return;
             }
             if (right)
             {
-                Move(item, ContainerWidth - item.Center[0] - item.Width / 2, 0);
-                for (int i = 0; i < FurnitureArray.Length; i++)
-                {
-                    if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
-                    {
-                        Move(item, -(ContainerWidth - item.Center[0] - item.Width / 2), 0);
-                        return;
-                    }
-                    if (OutOfBoundsDeterminer(item) != 0)
-                    {
-                        Move(item, -(ContainerWidth - item.Center[0] - item.Width / 2), 0);
-                        return;
-                    }
-                }
+                if (SafeMove(item, ContainerWidth - item.Center[0] - item.Width / 2, 0) != 0)
+                    return;
             }
             if (up)
             {
-                Move(item, -item.Center[1] + item.Height / 2, 0);
-                for (int i = 0; i < FurnitureArray.Length; i++)
-                {
-                    if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
-                    {
-                        Move(item, -(-item.Center[1] + item.Height / 2), 0);
-                        return;
-                    }
-                    if (OutOfBoundsDeterminer(item) != 0)
-                    {
-                        Move(item, -(-item.Center[1] + item.Height / 2), 0);
-                        return;
-                    }
-                }
+                if (SafeMove(item, -item.Center[1] + item.Height / 2, 0) != 0)
+                    return;
             }
             if (down)
             {
-                Move(item, ContainerHeight - item.Center[1] - item.Height / 2, 0);
-                for (int i = 0; i < FurnitureArray.Length; i++)
-                {
-                    if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
-                    {
-                        Move(item, -(ContainerHeight - item.Center[1] - item.Height / 2), 0);
-                        return;
-                    }
-                    if (OutOfBoundsDeterminer(item) != 0)
-                    {
-                        Move(item, -(ContainerHeight - item.Center[1] - item.Height / 2), 0);
-                        return;
-                    }
-                }
+                if (SafeMove(item, ContainerHeight - item.Center[1] - item.Height / 2, 0) != 0)
+                    return;
             }
 
-            Console.WriteLine("cunt");
 
             item.Data.ParentIndex = null;
             item.Data.ChildIndex = null;
@@ -462,22 +451,13 @@ namespace Rooms
         public void MoveObjectToObject(GeneralFurniture item)
         {
             int index = 0;
-            //double minDistance = -1;
+
             List<int> candidates = new();
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
                 if (FurnitureArray[i].ID != item.ID)
                 {
                     candidates.Add(i);
-
-                    /*double distance = Math.Sqrt(Math.Pow((double)(item.Center[0] - FurnitureArray[i].Center[0]), 2) +
-                       Math.Pow((double)(item.Center[1] - FurnitureArray[i].Center[1]), 2));
-
-                    if (minDistance == -1 || distance < minDistance)
-                    {
-                        minDistance = distance;
-                        index = i;
-                    }*/
                 }
             }
 
@@ -491,20 +471,10 @@ namespace Rooms
 
             decimal oldCenterX = item.Center[0];
             decimal oldCenterY = item.Center[1];
-            Move(item, (pointToMoveToX - oldCenterX), (pointToMoveToY - oldCenterY));
-            if (OutOfBoundsDeterminer(item) != 0)
-            {
-                Move(item, -(pointToMoveToX - oldCenterY), -(pointToMoveToY - oldCenterY));
+
+            if (SafeMove(item, (pointToMoveToX - oldCenterX), (pointToMoveToY - oldCenterY)) != 0)
                 return;
-            }
-            for (int i = 0; i < FurnitureArray.Length; i++)
-            {
-                if (item != FurnitureArray[i] && (Collision(item, FurnitureArray[i]) != 0 || Collision(FurnitureArray[i], item) != 0))
-                {
-                    Move(item, -(pointToMoveToX - oldCenterY), -(pointToMoveToY - oldCenterY));
-                    return;
-                }
-            }
+
             item.Data.ParentIndex = null;
             item.Data.ChildIndex = null;
         }
@@ -533,17 +503,18 @@ namespace Rooms
 
             decimal oldCenterX = item.Center[0];
             decimal oldCenterY = item.Center[1];
-            Move(item, (pointToMoveToX - oldCenterX), (pointToMoveToY - oldCenterY));
-            if (OutOfBoundsDeterminer(item) != 0)
+
+            if (SafeMove(item, (pointToMoveToX - oldCenterX), (pointToMoveToY - oldCenterY)) != 0)
+                return;
+
+            if (SafeRotation(item, FurnitureArray[index].Rotation - item.Rotation) != 0)
             {
                 Move(item, (item.Center[0] - pointToMoveToX), (item.Center[1] - pointToMoveToY));
                 return;
             }
-            Rotate(item, FurnitureArray[index].Rotation - item.Rotation);
 
             item.Data.ParentIndex = index;
             FurnitureArray[index].Data.ChildIndex = FurnitureArray.ToList().IndexOf(item);
-
         }
 
         public void Alighnment(GeneralFurniture item)
@@ -631,7 +602,7 @@ namespace Rooms
 
         public int Collision(GeneralFurniture item1, GeneralFurniture item2)
         {
-            int penalty = 0;
+            int penalty;
             penalty = ProcessCollision(item1, item2);
             if (item1.IsCollided)
             {
@@ -804,9 +775,9 @@ namespace Rooms
 
         public object Clone()
         {
-            List<GeneralFurniture> clonedDoors = new List<GeneralFurniture>();
-            List<GeneralFurniture> clonedFurniture = new List<GeneralFurniture>();
-            List<GeneralFurniture> clonedWindows = new List<GeneralFurniture>();
+            List<GeneralFurniture> clonedDoors = new();
+            List<GeneralFurniture> clonedFurniture = new();
+            List<GeneralFurniture> clonedWindows = new();
             for (int i = 0; i < Doors.Count; i++)
             {
                 clonedDoors.Add((GeneralFurniture)Doors[i].Clone());
@@ -822,9 +793,11 @@ namespace Rooms
                     clonedWindows.Add((GeneralFurniture)Windows[i].Clone());
                 }
 
-            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, this.Aisle, clonedWindows);
-            clonedRoom.RotateVertex = this.RotateVertex;
-            clonedRoom.DetermineCollision = this.DetermineCollision;
+            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, this.Aisle, clonedWindows)
+            {
+                RotateVertex = this.RotateVertex,
+                DetermineCollision = this.DetermineCollision
+            };
             return clonedRoom;
         }
 

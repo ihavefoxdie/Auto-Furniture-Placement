@@ -1,7 +1,6 @@
 ﻿using Execution;
 using FactoryMethod;
 using Furniture;
-
 using GeneticAlgorithm;
 using Interfaces;
 using Rooms;
@@ -12,36 +11,6 @@ namespace Testing;
 
 static class Program
 {
-    static void sex(Room room)
-    {
-        List<PolygonForJson> rectangles = new List<PolygonForJson>();
-
-        decimal[] center = new decimal[2];
-        center[0] = room.ContainerWidth/2; center[1] = room.ContainerHeight/2;
-        decimal[][] edges = new decimal[4][];
-        for (int i = 0; i < edges.Length; i++)
-            edges[i] = new decimal[2];
-
-        edges[0][0] = 0; edges[0][1] = 0;
-        edges[1][0] = room.ContainerWidth; edges[1][1] = 0;
-        edges[2][0] = room.ContainerWidth; edges[2][1] = room.ContainerHeight;
-        edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
-
-        rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, ""));
-        IPolygonGenesContainer contain = room;
-        foreach (IPolygon polygon in contain.Polygons)
-            rectangles.Add(new PolygonForJson(polygon));
-
-        string jsonFile = JsonSerializer.Serialize(rectangles);
-        try
-        {
-            File.WriteAllText("visualization\\rectangles.json", jsonFile);
-        }
-        catch
-        { }
-
-        string serializedPolygon = File.ReadAllText("visualization\\rectangles.json");
-    }
     static void Main()
     {
         TestingClass testingClass = new TestingClass();
@@ -49,55 +18,7 @@ static class Program
 
         ////Process.Start("visualization\\testing shapes.exe");
 
-        //BedFactory bedFactory = new();
-        //TableFactory tableFactory = new();
-        //DoorFactory doorFactory = new();
-        //ChairFactory chairFactory = new();
-        //PouffeFactory poufFactory = new();
-        //ArmchairFactory armchairFactory = new();
-        //CupboardFactory cupboardFactory = new();
-        //DeskFactory deskFactory = new();
-
-
-        //List<GeneralFurniture> furnitures = new();
-        //furnitures.Add(bedFactory.GetFurniture());
-        //furnitures.Add(tableFactory.GetFurniture());
-        //furnitures.Add(tableFactory.GetFurniture());
-        //furnitures.Add(chairFactory.GetFurniture());
-        //furnitures.Add(poufFactory.GetFurniture());
-        //furnitures.Add(armchairFactory.GetFurniture());
-        //furnitures.Add(cupboardFactory.GetFurniture());
-        //furnitures.Add(deskFactory.GetFurniture());
-
-        //Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false, 0);
-        //testingRoom.RotateVertex = VertexManipulator.VertexRotation;
-        //testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
-
-        //for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
-        //{
-        //    testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth / 2, testingRoom.ContainerHeight / 2);
-        //}
-
-        //GeneticAlgoritm algo = new(testingRoom);
-
-
-
-
-
-        ////algo.Start();
-        //for (int i = 0; i < 100000000; i++)
-        //{
-        //    Thread.Sleep(100);
-        //    testingRoom.Mutate();
-        //    sex(testingRoom);
-        //}
-
-        /*for (int i = 0; i < 100000; i++)
-        {
-            testingRoom.Mutate();
-            if (i % 10 == 0)
-                Console.WriteLine(i);
-        }*/
+        
 
         /*int[] origRoomDim = new int[] { 160, 80 };
         int[] roomDim = new int[] { 160, 80 };
