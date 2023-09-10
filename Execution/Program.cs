@@ -1,256 +1,166 @@
 ﻿using FactoryMethod;
 using Furniture;
-using RoomClass.Zones;
+
+using GeneticAlgorithm;
+using Interfaces;
 using Rooms;
-using System.Diagnostics;
-using System.Drawing;
-using System.IO;
 using System.Text.Json;
 using Vertex;
-using Zones;
 
-namespace Testing
+namespace Testing;
+
+static class Program
 {
-    static class Program
+    static void sex(Room room)
     {
-        static void Main()
+        List<PolygonForJson> rectangles = new List<PolygonForJson>();
+
+        decimal[] center = new decimal[2];
+        center[0] = room.ContainerWidth/2; center[1] = room.ContainerHeight/2;
+        decimal[][] edges = new decimal[4][];
+        for (int i = 0; i < edges.Length; i++)
+            edges[i] = new decimal[2];
+
+        edges[0][0] = 0; edges[0][1] = 0;
+        edges[1][0] = room.ContainerWidth; edges[1][1] = 0;
+        edges[2][0] = room.ContainerWidth; edges[2][1] = room.ContainerHeight;
+        edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
+
+        rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, ""));
+        IPolygonGenesContainer contain = room;
+        foreach (IPolygon polygon in contain.Polygons)
+            rectangles.Add(new PolygonForJson(polygon));
+
+        string jsonFile = JsonSerializer.Serialize(rectangles);
+        try
         {
-            void PrintZoneInfo<T>(List<T> zonesList) where T : Zone
-            {
-                foreach (var item in zonesList)
-                {
-                    Console.WriteLine($"{item.Name} W:{item.Width} H:{item.Height} C: [x:{item.Center[0]} y:{item.Center[1]}]");
-                }
-            }
-
-            void DrawZones<T>(Room room, List<T> zones, string name) where T : Zone
-            {
-                //Drawing
-                // Initialize a Bitmap class object
-                Bitmap bitmap = new Bitmap(room.ContainerWidth+10, room.ContainerHeight+10, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-
-                // Create graphics class instance
-                Graphics graphics = Graphics.FromImage(bitmap);
-
-                // Create a brush while specifying its color
-                Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Green));
-
-                // Create a pen
-                Pen pen = new Pen(brush);
-
-                graphics.DrawRectangle(pen, new Rectangle(0, 0, room.ContainerWidth, room.ContainerHeight));
-
-
-
-                // Draw rectangle
-                foreach (var item in zones)
-                {
-                    switch (item.Name)
-                    {
-                        case "storage":
-                            pen.Color = Color.Black;
-                            break;
-                        case "rest":
-                            pen.Color = Color.Yellow;
-                            break;
-                        case "bed":
-                            pen.Color = Color.Blue;
-                            break;
-                        case "working":
-                            pen.Color = Color.Red;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    graphics.DrawRectangle(pen, new Rectangle((int)item.Vertices[1, 0], (int)item.Vertices[1, 1], item.Width, item.Height));
-                }
-
-                // Save output drawing
-                bitmap.Save($"{name}.png");
-
-            }
-
-            void OpenDrawingZones(string fileName)
-            {
-                var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
-                Process photoViewer = new Process();
-                photoViewer.StartInfo.UseShellExecute = true;
-                photoViewer.StartInfo.FileName = fileName;
-                photoViewer.Start();
-
-            }
-
-            //TODO Creating object have to use only FurnitureFactory
-            FurnitureFactory furnitureFactory = new BedFactory();
-
-            CupboardFactory cupboardFactory = new CupboardFactory();
-            DresserFactory dresserFactory = new DresserFactory();
-
-            PoufFactory poufFactory = new PoufFactory();
-            SofaFactory sofaFactory = new SofaFactory();
-            TableFactory tableFactory = new TableFactory();
-
-
-            NightstandFactory nightstandFactory = new NightstandFactory();
-            BedFactory bedFactory = new();
-
-            ChairFactory chairFactory = new ChairFactory();
-            DeskFactory deskFactory = new DeskFactory();
-
-            DoorFactory doorFactory = new();
-
-            int[] origRoomDim = new int[] { 160, 80 };
-            int[] roomDim = new int[] { 160, 80 };
-
-            List<GeneralFurniture> furnitures = new()
-            {
-                cupboardFactory.GetFurniture(),
-                dresserFactory.GetFurniture(),
-                poufFactory.GetFurniture(),
-                sofaFactory.GetFurniture(),
-                tableFactory.GetFurniture(),
-                nightstandFactory.GetFurniture(),
-                bedFactory.GetFurniture(),
-                cupboardFactory.GetFurniture(),
-                deskFactory.GetFurniture(),
-            };
-            /*for (int i = 0; i < furnitures.Count; i++)
-            {
-                furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
-            }
-            furnitures[0].Move(0, 0);
-            furnitures[1].Move(10, 15);*/
-            //furnitures[0].Rotate(45);
-
-            //Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
-
-
-            //Console.WriteLine(furnitures[0].Rotation);
-            //int rotateFor = 360 - furnitures[0].Rotation;
-
-            ////furnitures[0].Rotate(rotateFor);
-
-            //Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
-            //Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
-
-            List<GeneralFurniture> door = new()
-            {
-                doorFactory.GetFurniture()
-            };
-
-            Room newRoom = new(20, 20, door, furnitures, _ = false, 1)
-            {
-                DetermineCollision = VertexManipulator.DetermineCollision
-            };
-
-            //var listToDelete = newRoom.InitializeZones();
-
-
-
-
-            //Rasterizer.RasterizationMethod = LineDrawer.Line;
-
-            ////newRoom.RasterizationMethod()
-
-            ////newRoom.FurnitureList[0].Rotate(31);
-            //newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureList.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
-
-
-            //LineDrawer.Print(newRoom.RoomArray);
-
-
-
-
-
-
-            //Console.WriteLine(newRoom.Collision(newRoom.FurnitureList[0], newRoom.FurnitureList[1]));
-            //newRoom.PenaltyEvaluation();
-            //Console.WriteLine(newRoom.FurnitureList[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureList[1].IsOutOfBounds);
-            //Console.WriteLine(newRoom.Penalty);
-
-
-            #region AnnealingTesting
-
-            newRoom.InitializeZones();
-
-            PrintZoneInfo(newRoom.ZonesList);
-
-            List<AnnealingZone> annealingZones = new List<AnnealingZone>(newRoom.ZonesList.Count);
-
-            newRoom.ZonesList[0].Center = new decimal[] { 5.5M, 4 };
-            newRoom.ZonesList[0].Width = 11;
-            newRoom.ZonesList[0].Height = 8;
-            VertexManipulator.VertexResetting(newRoom.ZonesList[0].Vertices, newRoom.ZonesList[0].Center, newRoom.ZonesList[0].Width, newRoom.ZonesList[0].Height);
-
-            newRoom.ZonesList[1].Center = new decimal[] { 16, 4 };
-            newRoom.ZonesList[1].Width = 8;
-            newRoom.ZonesList[1].Height = 8;
-            VertexManipulator.VertexResetting(newRoom.ZonesList[1].Vertices, newRoom.ZonesList[1].Center, newRoom.ZonesList[1].Width, newRoom.ZonesList[1].Height);
-
-            newRoom.ZonesList[2].Center = new decimal[] { 5.5M, 15.5M };
-            newRoom.ZonesList[2].Width = 11;
-            newRoom.ZonesList[2].Height = 9;
-            VertexManipulator.VertexResetting(newRoom.ZonesList[2].Vertices, newRoom.ZonesList[2].Center, newRoom.ZonesList[2].Width, newRoom.ZonesList[2].Height);
-
-
-            newRoom.ZonesList[3].Center = new decimal[] { 16, 15.5M };
-            newRoom.ZonesList[3].Width = 8;
-            newRoom.ZonesList[3].Height = 11;
-            VertexManipulator.VertexResetting(newRoom.ZonesList[3].Vertices, newRoom.ZonesList[3].Center, newRoom.ZonesList[3].Width, newRoom.ZonesList[3].Height);
-
-            SimulatedAnnealing simulatedAnnealing = new(newRoom.ZonesList, newRoom.Aisle, newRoom.ContainerWidth, newRoom.ContainerHeight, newRoom.Doors);
-
-
-            Console.WriteLine($"INITIAL COST : {simulatedAnnealing.InitialSolution.FindCost()}");
-
-            DrawZones(newRoom, simulatedAnnealing.InitialSolution.Zones, "InitialSolution");
-            OpenDrawingZones("InitialSolution.png");
-
-            simulatedAnnealing.Launch(simulatedAnnealing.InitialSolution);
-
-            foreach (var item in simulatedAnnealing.CurrentSolution.Zones)
-            {
-                item.toZone();
-            }
-
-
-            DrawZones(newRoom, newRoom.ZonesList, "CurrentSolution");
-
-            OpenDrawingZones("CurrentSolution.png");
-            OpenDrawingZones("AnnealingGraph.png");
-
-
-            simulatedAnnealing.OverlappingPenalty = ZoneClassInfo.OverlappingPenalty.ToList();
-            simulatedAnnealing.FreeSpacePenalty = ZoneClassInfo.FreeSpacePenalty.ToList();
-            simulatedAnnealing.ZoneShapePenalty = ZoneClassInfo.ZoneShapePenalty.ToList();
-            simulatedAnnealing.SpaceRatioPenalty = ZoneClassInfo.SpaceRatioPenalty.ToList();
-            simulatedAnnealing.ByWallPenalty = ZoneClassInfo.ByWallPenalty.ToList();
-            simulatedAnnealing.DoorSpacePenalty = ZoneClassInfo.DoorSpacePenalty.ToList();
-
-            string docPath = Environment.CurrentDirectory;
-
-            // Append text to an existing file named "WriteLines.txt".
-            //using (StreamWriter outputFile = new StreamWriter(Path.Combine(docPath, "PenaltyData.json"), true))
-            //{
-            //    JsonSerializerOptions options = new JsonSerializerOptions();
-            //    options.WriteIndented = true;
-            //    string temp = JsonSerializer.Serialize(simulatedAnnealing, options);
-            //    outputFile.Write(temp,);
-            //}
-
-            JsonSerializerOptions options = new JsonSerializerOptions();
-            options.WriteIndented = true;
-            string temp = JsonSerializer.Serialize(simulatedAnnealing, options);
-            File.WriteAllText(Path.Combine(docPath, "PenaltyData.json"), temp);
-
-
-            #endregion
+            File.WriteAllText("visualization\\rectangles.json", jsonFile);
         }
+        catch
+        { }
+
+        string serializedPolygon = File.ReadAllText("visualization\\rectangles.json");
+    }
+    static void Main()
+    {
+        //Process.Start("visualization\\testing shapes.exe");
+
+        BedFactory bedFactory = new();
+        TableFactory tableFactory = new();
+        DoorFactory doorFactory = new();
+        ChairFactory chairFactory = new();
+        PouffeFactory poufFactory = new();
+        ArmchairFactory armchairFactory = new();
+        CupboardFactory cupboardFactory = new();
+        DeskFactory deskFactory = new();
+
+
+        List<GeneralFurniture> furnitures = new();
+        furnitures.Add(bedFactory.GetFurniture());
+        furnitures.Add(tableFactory.GetFurniture());
+        furnitures.Add(tableFactory.GetFurniture());
+        furnitures.Add(chairFactory.GetFurniture());
+        furnitures.Add(poufFactory.GetFurniture());
+        furnitures.Add(armchairFactory.GetFurniture());
+        furnitures.Add(cupboardFactory.GetFurniture());
+        furnitures.Add(deskFactory.GetFurniture());
+
+        Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false);
+        testingRoom.RotateVertex = VertexManipulator.VertexRotation;
+        testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
+
+        for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
+        {
+            testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth / 2, testingRoom.ContainerHeight / 2);
+        }
+
+        GeneticAlgoritm algo = new(testingRoom);
+
+
+
+
+
+        //algo.Start();
+        for (int i = 0; i < 100000000; i++)
+        {
+            Thread.Sleep(100);
+            testingRoom.Mutate();
+            sex(testingRoom);
+        }
+
+        /*for (int i = 0; i < 100000; i++)
+        {
+            testingRoom.Mutate();
+            if (i % 10 == 0)
+                Console.WriteLine(i);
+        }*/
+
+        /*int[] origRoomDim = new int[] { 160, 80 };
+        int[] roomDim = new int[] { 160, 80 };
+
+        List<GeneralFurniture> furnitures = new()
+        {
+            bedFactory.GetFurniture(),
+            tableFactory.GetFurniture()
+
+            //new GeneralFurniture(1, "bed", 40, 32, "livingRoom", false),
+            //new GeneralFurniture(2, "table", 40, 40, "kitchen", false, 2)
+        };
+        *//*for (int i = 0; i < furnitures.Count; i++)
+        {
+            furnitures[i].RotateVertex = VertexManipulator.VertexRotation;
+        }
+        furnitures[0].Move(0, 0);
+        furnitures[1].Move(10, 15);*//*
+        //furnitures[0].Rotate(45);
+
+        Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
+        Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
+        Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
+        Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
+        
+
+        Console.WriteLine(furnitures[0].Rotation);
+        int rotateFor = 360 - furnitures[0].Rotation;
+
+        //furnitures[0].Rotate(rotateFor);
+
+        Console.WriteLine(furnitures[0].Vertices[0, 0] + " " + furnitures[0].Vertices[0, 1]);
+        Console.WriteLine(furnitures[0].Vertices[1, 0] + " " + furnitures[0].Vertices[1, 1]);
+        Console.WriteLine(furnitures[0].Vertices[2, 0] + " " + furnitures[0].Vertices[2, 1]);
+        Console.WriteLine(furnitures[0].Vertices[3, 0] + " " + furnitures[0].Vertices[3, 1]);
+
+        List<GeneralFurniture> door = new()
+        {
+            doorFactory.GetFurniture()
+            //new(-1, "door", 15, 5, "ROOM", false, 0)
+        };
+        //door[0].Move(20, 0);
+
+        Room newRoom = new(40, 40, door, furnitures, _ = false)
+        {
+            DetermineCollision = VertexManipulator.DetermineCollision
+        };
+
+
+        Rasterizer.RasterizationMethod = LineDrawer.Line;
+
+        //newRoom.RasterizationMethod()
+
+        //newRoom.FurnitureArray[0].Rotate(31);
+        newRoom.RoomArray = Rasterizer.Rasterization(newRoom.FurnitureArray.ToList<IPolygon>(), newRoom.ContainerWidth, newRoom.ContainerWidth);
+
+        
+        LineDrawer.Print(newRoom.RoomArray);
+
+
+
+
+
+
+        Console.WriteLine(newRoom.Collision(newRoom.FurnitureArray[0], newRoom.FurnitureArray[1]));
+        newRoom.PenaltyEvaluation();
+        Console.WriteLine(newRoom.FurnitureArray[0].IsOutOfBounds); Console.WriteLine(newRoom.FurnitureArray[1].IsOutOfBounds);
+        Console.WriteLine(newRoom.Penalty);*/
     }
 }

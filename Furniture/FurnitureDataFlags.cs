@@ -1,10 +1,10 @@
 ﻿namespace Furniture
 {
-    public class FurnitureDataFlags
+    public class FurnitureDataFlags : ICloneable
     {
         public bool IgnoreWindows { get; protected set; }
         public int NearWall { get; protected set; }                 //Maximum distance allowed between a wall and the furniture object (-1 is set to ignore this charactiristic)
-        public bool Parent { get; }
+        public bool Parent { get; set; }
         public bool Accessible { get; protected set; }
 
 
@@ -14,6 +14,11 @@
             NearWall = nearWall;
             Parent = parent;
             Accessible = accessible;
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }
