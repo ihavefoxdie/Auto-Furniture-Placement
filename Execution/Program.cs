@@ -65,7 +65,7 @@ static class Program
         furnitures.Add(cupboardFactory.GetFurniture());
         furnitures.Add(deskFactory.GetFurniture());
 
-        Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false);
+        Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false, 0);
         testingRoom.RotateVertex = VertexManipulator.VertexRotation;
         testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
 

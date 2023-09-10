@@ -164,7 +164,7 @@ namespace Rooms
             {
                 return parent;
             }
-            Room child = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom)
+            Room child = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom, this.Aisle)
             {
                 FurnitureArray = new GeneralFurniture[this.FurnitureArray.Length]
             };
@@ -747,7 +747,7 @@ namespace Rooms
             // List contains distinct zones
             List<string> unique = new();
 
-            foreach (var item in FurnitureList)
+            foreach (var item in FurnitureArray)
             {
                 unique.Add(item.Data.Zone);
             }
@@ -756,7 +756,7 @@ namespace Rooms
 
             foreach (var item in unique)
             {
-                Zone zone = new(FurnitureList, item);
+                Zone zone = new(FurnitureArray.ToList(), item);
                 list.Add(zone);
             }
 
@@ -822,7 +822,7 @@ namespace Rooms
                     clonedWindows.Add((GeneralFurniture)Windows[i].Clone());
                 }
 
-            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, clonedWindows);
+            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, this.Aisle, clonedWindows);
             clonedRoom.RotateVertex = this.RotateVertex;
             clonedRoom.DetermineCollision = this.DetermineCollision;
             return clonedRoom;
