@@ -1,4 +1,5 @@
-﻿using FactoryMethod;
+﻿using Execution;
+using FactoryMethod;
 using Furniture;
 
 using GeneticAlgorithm;
@@ -43,50 +44,53 @@ static class Program
     }
     static void Main()
     {
-        //Process.Start("visualization\\testing shapes.exe");
-
-        BedFactory bedFactory = new();
-        TableFactory tableFactory = new();
-        DoorFactory doorFactory = new();
-        ChairFactory chairFactory = new();
-        PouffeFactory poufFactory = new();
-        ArmchairFactory armchairFactory = new();
-        CupboardFactory cupboardFactory = new();
-        DeskFactory deskFactory = new();
+        TestingClass testingClass = new TestingClass();
 
 
-        List<GeneralFurniture> furnitures = new();
-        furnitures.Add(bedFactory.GetFurniture());
-        furnitures.Add(tableFactory.GetFurniture());
-        furnitures.Add(tableFactory.GetFurniture());
-        furnitures.Add(chairFactory.GetFurniture());
-        furnitures.Add(poufFactory.GetFurniture());
-        furnitures.Add(armchairFactory.GetFurniture());
-        furnitures.Add(cupboardFactory.GetFurniture());
-        furnitures.Add(deskFactory.GetFurniture());
+        ////Process.Start("visualization\\testing shapes.exe");
 
-        Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false, 0);
-        testingRoom.RotateVertex = VertexManipulator.VertexRotation;
-        testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
-
-        for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
-        {
-            testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth / 2, testingRoom.ContainerHeight / 2);
-        }
-
-        GeneticAlgoritm algo = new(testingRoom);
+        //BedFactory bedFactory = new();
+        //TableFactory tableFactory = new();
+        //DoorFactory doorFactory = new();
+        //ChairFactory chairFactory = new();
+        //PouffeFactory poufFactory = new();
+        //ArmchairFactory armchairFactory = new();
+        //CupboardFactory cupboardFactory = new();
+        //DeskFactory deskFactory = new();
 
 
+        //List<GeneralFurniture> furnitures = new();
+        //furnitures.Add(bedFactory.GetFurniture());
+        //furnitures.Add(tableFactory.GetFurniture());
+        //furnitures.Add(tableFactory.GetFurniture());
+        //furnitures.Add(chairFactory.GetFurniture());
+        //furnitures.Add(poufFactory.GetFurniture());
+        //furnitures.Add(armchairFactory.GetFurniture());
+        //furnitures.Add(cupboardFactory.GetFurniture());
+        //furnitures.Add(deskFactory.GetFurniture());
+
+        //Room testingRoom = new(14, 14, new List<GeneralFurniture>(), furnitures, false, 0);
+        //testingRoom.RotateVertex = VertexManipulator.VertexRotation;
+        //testingRoom.DetermineCollision = VertexManipulator.DetermineCollision;
+
+        //for (int i = 0; i < testingRoom.FurnitureArray.Length; i++)
+        //{
+        //    testingRoom.Move(testingRoom.FurnitureArray[i], testingRoom.ContainerWidth / 2, testingRoom.ContainerHeight / 2);
+        //}
+
+        //GeneticAlgoritm algo = new(testingRoom);
 
 
 
-        //algo.Start();
-        for (int i = 0; i < 100000000; i++)
-        {
-            Thread.Sleep(100);
-            testingRoom.Mutate();
-            sex(testingRoom);
-        }
+
+
+        ////algo.Start();
+        //for (int i = 0; i < 100000000; i++)
+        //{
+        //    Thread.Sleep(100);
+        //    testingRoom.Mutate();
+        //    sex(testingRoom);
+        //}
 
         /*for (int i = 0; i < 100000; i++)
         {
