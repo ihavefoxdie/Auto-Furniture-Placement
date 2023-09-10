@@ -8,8 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ScottPlot" Version="4.1.67" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Furniture\Furniture.csproj" />
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\VertexOperations\VertexOperations.csproj" />
   </ItemGroup>
 
 </Project>

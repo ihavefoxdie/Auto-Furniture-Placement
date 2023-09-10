@@ -1,5 +1,6 @@
 ﻿using FactoryMethod;
 using Furniture;
+
 using GeneticAlgorithm;
 using Interfaces;
 using Rooms;
@@ -93,9 +94,6 @@ static class Program
             if (i % 10 == 0)
                 Console.WriteLine(i);
         }*/
-
-
-
 
         /*int[] origRoomDim = new int[] { 160, 80 };
         int[] roomDim = new int[] { 160, 80 };

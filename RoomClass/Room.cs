@@ -1,5 +1,6 @@
 ﻿using Furniture;
 using Interfaces;
+using Zones;
 
 namespace Rooms
 {
@@ -28,8 +29,10 @@ namespace Rooms
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
-        //List<Zones> ZonesList { get; private set; } //DEW EET
+        public List<Zone> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
+
+        public int Aisle { get; private set; }
         #endregion
 
 
@@ -44,8 +47,10 @@ namespace Rooms
 
 
         #region Constructor
-        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, List<GeneralFurniture>? windows = null)
+
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, int aisle, List<GeneralFurniture>? windows = null)
         {
+            Aisle = aisle;
             ContainerHeight = height;
             ContainerWidth = width;
             FurnitureArray = new GeneralFurniture[items.Count];
@@ -733,6 +738,29 @@ namespace Rooms
                 fine += 10;
             }
             return fine;
+        }
+
+        public void InitializeZones()
+        {
+            List<Zone> list = new();
+
+            // List contains distinct zones
+            List<string> unique = new();
+
+            foreach (var item in FurnitureList)
+            {
+                unique.Add(item.Data.Zone);
+            }
+
+            unique = unique.Distinct().ToList();
+
+            foreach (var item in unique)
+            {
+                Zone zone = new(FurnitureList, item);
+                list.Add(zone);
+            }
+
+            ZonesList = list;
         }
 
 

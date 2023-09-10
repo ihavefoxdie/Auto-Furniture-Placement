@@ -9,6 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Aspose.Drawing" Version="23.8.1">
+      <Aliases>AsposeDrawing</Aliases>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\FactoryMethod\FactoryMethod.csproj" />
     <ProjectReference Include="..\Furniture\Furniture.csproj" />
     <ProjectReference Include="..\GeneticAlgorithm\GeneticAlgorithm.csproj" />
@@ -16,6 +22,7 @@
     <ProjectReference Include="..\Rasterization\Rasterization.csproj" />
     <ProjectReference Include="..\RoomClass\RoomProject.csproj" />
     <ProjectReference Include="..\VertexOperations\VertexOperations.csproj" />
+    <ProjectReference Include="..\Zones\Zones.csproj" />
   </ItemGroup>
 
 </Project>

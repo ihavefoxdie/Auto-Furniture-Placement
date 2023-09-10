@@ -1,61 +1,66 @@
-﻿using Interfaces;
-using Furniture;
+﻿using Furniture;
+using Interfaces;
+using Vertex;
 
 namespace Zones
 {
+    //TODO Determine how to create IDs for each zone
     public class Zone : IPolygon
     {
         public int ID { get; }
         public string Name { get; set; }
         public double Area { get; set; }
+        public double FurnitureArea { get; set; }
         public List<GeneralFurniture> Furnitures { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public decimal[] Center { get; private set; }
-        public decimal[,] Vertices { get; private set; }
+        public decimal[] Center { get; set; }
+        public decimal[,] Vertices { get; set; }
+        public bool isStorage { get; private set; }
+
 
         public Zone(List<GeneralFurniture> furnitures, string zoneName)
         {
+            isStorage = false;
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.Data.Zone == zoneName).ToList();
-            Width = Furnitures.Select(p => p.Width + 2).Sum();
-            Height = Furnitures.Select(p => p.Height + 2).Sum();
-            Area = Math.Floor(Math.Sqrt(Width * Height));
+
+            Width = Furnitures.Select(p => p.Width).Sum();
+            Height = Furnitures.Select(p => p.Height).Sum();
+            Area = Math.Sqrt(Width * Height);
+            FurnitureArea = Furnitures.Select(p => p.Width * p.Height).Sum();
+
             Center = new decimal[2];
-            Center[0] = (decimal)Width / 2;     
-            Center[1] = (decimal)Height / 2;     
+            Center[0] = (decimal)Width / 2;
+            Center[1] = (decimal)Height / 2;
+
             Vertices = new decimal[4, 2];
 
-            Vertices[0, 1] = Height;                             // ← ↑
+            VertexManipulator.VertexResetting(Vertices, Center, Width, Height);
 
-            Vertices[1, 0] = Width; Vertices[1, 1] = Height;    // → ↑
+            if (DetermineZoneType())
+                isStorage = true;
 
-            Vertices[2, 0] = Width;                             // → ↓
         }
-        
-        //TODO Method can be used just once
-        public static List<Zone> InitializeZones(List<GeneralFurniture> furnitures)
+
+        public Zone(Zone prevZone)
         {
-            List<Zone> list = new();
+            Center = new decimal[2];
+            Vertices = new decimal[4, 2];
 
-            // List contains distinct zones
-            List<string> unique = new();
 
-            foreach (var item in furnitures)
-            {
-                unique.Add(item.Data.Zone);
-            }
+            Name = prevZone.Name;
+            Furnitures = prevZone.Furnitures;
+            Width = prevZone.Width;
+            Height = prevZone.Height;
+            Area = prevZone.Area;
+            FurnitureArea = prevZone.FurnitureArea;
+            Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
+            Array.Copy(prevZone.Vertices, Vertices, prevZone.Vertices.Length);  
 
-            unique = unique.Distinct().ToList();
-
-            foreach (var item in unique)
-            {
-                Zone zone = new(furnitures, item);
-                list.Add(zone);
-            }
-
-            return list;
+            isStorage = prevZone.isStorage;
         }
+
 
         public void Move(decimal centerDeltaX, decimal centerDeltaY)
         {
@@ -69,12 +74,19 @@ namespace Zones
             }
         }
 
-        public void Rotate(int angle)
+        public virtual void Rotate(int angle)
         {
             throw new NotImplementedException();
         }
 
-        //TODO Zone resizing method
+        public virtual void Resize(decimal deltaW, decimal deltaH)
+        {
+            Width = (int)Math.Floor(deltaW);
+            Height = (int)Math.Floor(deltaH);
+            Area = Width * Height;
+        }
+
+        private bool DetermineZoneType() => Name.ToLower() == "storage" ? true : false;
     }
 }
 
