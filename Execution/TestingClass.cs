@@ -93,23 +93,13 @@ namespace Execution
 
 
 
-            algo.Start();
+            //algo.Start();
             for (int i = 0; i < 100000000; i++)
             {
                 Thread.Sleep(100);
                 Room.Mutate();
                 PolySerialize(Room);
             }
-
-            for (int i = 0; i < 100000; i++)
-            {
-                Room.Mutate();
-                if (i % 10 == 0)
-                    Console.WriteLine(i);
-            }
-
-
         }
-
     }
 }

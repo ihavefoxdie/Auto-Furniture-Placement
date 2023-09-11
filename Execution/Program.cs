@@ -14,7 +14,7 @@ static class Program
     static void Main()
     {
         TestingClass testingClass = new TestingClass();
-
+        testingClass.GeneticTesting();
 
         ////Process.Start("visualization\\testing shapes.exe");
 

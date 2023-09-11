@@ -289,6 +289,11 @@ namespace Rooms
         public int SafeRotation(GeneralFurniture item, int rotateFor)
         {
             Rotate(item, rotateFor);
+            for (int i = 0; i < item.Vertices.GetLength(0); i++)
+            {
+                item.Vertices[i, 0] = Math.Round(item.Vertices[i, 0], 4);
+                item.Vertices[i, 1] = Math.Round(item.Vertices[i, 1], 4);
+            }
             OutOfBoundsDeterminer(item);
             if (item.IsOutOfBounds)
             {
@@ -392,7 +397,7 @@ namespace Rooms
             {
                 widthValue = 1 - widthValue;
             }
-            if (widthValue < (decimal)0.5)
+            if (heightValue < (decimal)0.5)
             {
                 heightValue = 1 - heightValue;
             }
@@ -402,7 +407,7 @@ namespace Rooms
             {
                 left = false; right = false;
             }
-            else if (widthValue == heightValue)
+            else if (widthValue > heightValue)
             {
                 up = false; down = false;
             }
