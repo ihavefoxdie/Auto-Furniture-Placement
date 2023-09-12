@@ -31,7 +31,6 @@ namespace Rooms
         public double Penalty { get; set; }
         public List<Zone> ZonesList { get; private set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
-
         public int Aisle { get; private set; }
         #endregion
 
@@ -346,7 +345,15 @@ namespace Rooms
                 return;
         }
 
-        public void WallAlignment(GeneralFurniture item)
+        enum Wall
+        {
+            Left,
+            Right,
+            Up,
+            Down
+        }
+
+        private Wall DetermineClosestWall(GeneralFurniture item)
         {
             bool left = false;
             bool right = false;
@@ -426,28 +433,44 @@ namespace Rooms
                 }
             }
 
-
             if (left)
-            {
-                if (SafeMove(item, -item.Center[0] + item.Width / 2, 0) != 0)
-                    return;
-            }
+                return Wall.Left;
             if (right)
-            {
-                if (SafeMove(item, ContainerWidth - item.Center[0] - item.Width / 2, 0) != 0)
-                    return;
-            }
+                return Wall.Right;
             if (up)
-            {
-                if (SafeMove(item, -item.Center[1] + item.Height / 2, 0) != 0)
-                    return;
-            }
+                return Wall.Up;
             if (down)
-            {
-                if (SafeMove(item, ContainerHeight - item.Center[1] - item.Height / 2, 0) != 0)
-                    return;
-            }
+                return Wall.Down;
 
+            return Wall.Down;
+        }
+
+        public void WallAlignment(GeneralFurniture item)
+        {
+            Wall direction = DetermineClosestWall(item);
+
+            switch (direction)
+            {
+                case (Wall.Left):
+                    if (SafeMove(item, -item.Center[0] + item.Width / 2, 0) != 0)
+                        return;
+                    break;
+
+                case (Wall.Right):
+                    if (SafeMove(item, ContainerWidth - item.Center[0] - item.Width / 2, 0) != 0)
+                        return;
+                    break;
+
+                case (Wall.Up):
+                    if (SafeMove(item, -item.Center[1] + item.Height / 2, 0) != 0)
+                        return;
+                    break;
+
+                case (Wall.Down):
+                    if (SafeMove(item, ContainerHeight - item.Center[1] - item.Height / 2, 0) != 0)
+                        return;
+                    break;
+            }
 
             item.Data.ParentIndex = null;
             item.Data.ChildIndex = null;
@@ -514,7 +537,7 @@ namespace Rooms
 
             if (SafeRotation(item, FurnitureArray[index].Rotation - item.Rotation) != 0)
             {
-                Move(item, (item.Center[0] - pointToMoveToX), (item.Center[1] - pointToMoveToY));
+                Move(item, -(pointToMoveToX - oldCenterX), -(pointToMoveToY - oldCenterY));
                 return;
             }
 
@@ -634,13 +657,13 @@ namespace Rooms
             {
                 for (int k = 0; k < item1.Vertices.GetLength(1); k++)
                 {
-                    arrayOfVertices[j, k] = Math.Round(item1.Vertices[j, k]);
+                    arrayOfVertices[j, k] = Math.Round(item1.Vertices[j, k], 5);
                 }
             }
 
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
             {
-                decimal[] point = new decimal[] { Math.Round(item2.Vertices[i, 0], 2), Math.Round(item2.Vertices[i, 1], 2) };
+                decimal[] point = new decimal[] { Math.Round(item2.Vertices[i, 0], 5), Math.Round(item2.Vertices[i, 1], 5) };
 
                 if (DetermineCollision(arrayOfVertices, point))
                 {
@@ -668,47 +691,75 @@ namespace Rooms
             return penalty;
         }
 
-        private int NearWallPenalty(GeneralFurniture furniture)
+        private int NearWallPenalty(GeneralFurniture item)
         {
-            if (furniture.Flags.NearWall < 0)
+            if (item.Flags.NearWall < 0)
                 return 0;
 
+            Wall direction = DetermineClosestWall(item);
             int fine = 0;
             bool check = false;
+            decimal distance;
 
-            for (int i = 0; i < furniture.Vertices.GetLength(0); i++)
+            switch(direction)
             {
-                if (furniture.Vertices[i, 1] <= (0 + furniture.Flags.NearWall))
+                case Wall.Left:
+                    if (item.Center[0] > item.Flags.NearWall)
+                        distance = item.Center[0];
+                    break;
+
+                case Wall.Right:
+                    if (item.Center[0] < ContainerWidth - item.Flags.NearWall)
+                        distance = ContainerWidth - item.Flags.NearWall - item.Center[0];
+                    break;
+
+                case Wall.Up:
+                    if (item.Center[1] > item.Flags.NearWall)
+                        distance = item.Center[1];
+                    break;
+
+                case Wall.Down:
+                    if (item.Center[0] < ContainerHeight - item.Flags.NearWall)
+                        distance = ContainerHeight - item.Flags.NearWall - item.Center[1];
+                    break;
+            }
+
+            /*for (int i = 0; i < item.Vertices.GetLength(0); i++)
+            {
+                if (item.Vertices[i, 1] <= (0 + item.Flags.NearWall))
                 {
                     check = true;
-                    if (!(furniture.Rotation >= 260 && furniture.Rotation <= 280))
+                    if (!(item.Rotation >= 260 && item.Rotation <= 280))
                         fine += 2;
                     break;
                 }
-                if (furniture.Vertices[i, 0] <= (0 + furniture.Flags.NearWall))
+                if (item.Vertices[i, 0] <= (0 + item.Flags.NearWall))
                 {
                     check = true;
-                    if (!((furniture.Rotation >= 350 && furniture.Rotation < 360) ||
-                        (furniture.Rotation >= 0 && furniture.Rotation <= 10)))
+                    if (!((item.Rotation >= 350 && item.Rotation < 360) ||
+                        (item.Rotation >= 0 && item.Rotation <= 10)))
                         fine += 5;
                     break;
                 }
-                if (furniture.Vertices[i, 1] >= (ContainerHeight - furniture.Flags.NearWall))
+                if (item.Vertices[i, 1] >= (ContainerHeight - item.Flags.NearWall))
                 {
                     check = true;
-                    if (!(furniture.Rotation >= 80 && furniture.Rotation <= 100))
+                    if (!(item.Rotation >= 80 && item.Rotation <= 100))
                         fine += 5;
                     break;
                 }
-                if (furniture.Vertices[i, 0] >= (ContainerWidth - furniture.Flags.NearWall))
+                if (item.Vertices[i, 0] >= (ContainerWidth - item.Flags.NearWall))
                 {
                     check = true;
-                    if (!(furniture.Rotation >= 170 && furniture.Rotation < 190))
+                    if (!(item.Rotation >= 170 && item.Rotation < 190))
                         fine += 5;
                     break;
                 }
-            }
+            }*/
 
+            
+            
+            
             if (!check)
             {
                 fine += 10;
