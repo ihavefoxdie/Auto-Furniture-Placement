@@ -4,6 +4,7 @@ using GeneticAlgorithm;
 using Interfaces;
 using RoomClass.Zones;
 using Rooms;
+using System.Diagnostics;
 using System.Text.Json;
 using Vertex;
 
@@ -52,8 +53,12 @@ namespace Execution
             return File.ReadAllText("visualization\\rectangles.json");
         }
 
+
+
         public void GeneticTesting()
         {
+            
+
             BedFactory bedFactory = new();
             TableFactory tableFactory = new();
             DoorFactory doorFactory = new();
