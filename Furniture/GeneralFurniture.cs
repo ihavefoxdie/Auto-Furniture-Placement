@@ -39,12 +39,12 @@ namespace Furniture
             Flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
             Center = new decimal[2];                //Center of furniture object
-            Center[0] = (decimal)Width / 2;         //  X
-            Center[1] = (decimal)Height / 2;        //  Y
-            ClearanceArea = new decimal[4, 2];      //     D_______C       where CB is front (i.e. 0 degrees rotation).
-            Vertices = new decimal[4, 2];           //     |       |       If Accessible property is set to true
-            ResetCoords();                          //     |       |       the front is the side that must be accessible.
-                                                    //     A_______B       Accessibility is determined with pathfinding algorithm.
+            Center[0] = (decimal)Width / 2;         //     X
+            Center[1] = (decimal)Height / 2;        //     Y
+            ClearanceArea = new decimal[4, 2];      //          D_______C       where CB is front (i.e. 0 degrees rotation).
+            Vertices = new decimal[4, 2];           //          |       |       If Accessible property is set to true
+            ResetCoords();                          //          |       |       the front is the side that must be accessible.
+                                                    //          A_______B       Accessibility is determined with pathfinding algorithm.
         }
 
         public GeneralFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)

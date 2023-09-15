@@ -238,6 +238,7 @@ namespace Rooms
             return child;
         }
 
+
         #region Mutation Types
         public void Scatter(GeneralFurniture item)
         {
@@ -508,6 +509,7 @@ namespace Rooms
         }
         #endregion
 
+
         //TODO Improve penalty evaluation by implementing a better method for more flexibility
         #region Penalty Related
         public void PenaltyEvaluation()
@@ -686,6 +688,7 @@ namespace Rooms
         }
         #endregion
 
+
         #region Moving Furniture
         public void Move(GeneralFurniture item, decimal centerDeltaX, decimal centerDeltaY)
         {
@@ -724,6 +727,7 @@ namespace Rooms
             return 0;
         }
         #endregion
+
 
         #region Rotating Furniture
         public void Rotate(GeneralFurniture item, int angle)

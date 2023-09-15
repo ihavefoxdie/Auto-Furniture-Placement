@@ -9,11 +9,11 @@ public class PolygonForJson
 
     public int Height { get; set; }
 
-    public decimal[] Center { get; set; }
+    public decimal[]? Center { get; set; }
 
-    public decimal[][] JaggedVertices { get; set; }
+    public decimal[][]? JaggedVertices { get; set; }
 
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     public PolygonForJson(IPolygon item)
     {
