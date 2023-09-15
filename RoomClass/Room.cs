@@ -22,6 +22,7 @@ namespace Rooms
                 return _list;
             }
         }
+
         private enum Wall
         {
             Left,
@@ -448,6 +449,7 @@ namespace Rooms
             item.Data.ChildIndex = null;
         }
 
+        //TODO: later in development introduce a whole new class for child-parent handling.
         public int MoveToParent(GeneralFurniture item)
         {
             if (item.Data.ParentID == -1)
@@ -467,8 +469,8 @@ namespace Rooms
             if (index == -1)
                 return -1;
 
-            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation) * FurnitureArray[index].Width);
-            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation) * FurnitureArray[index].Width);
+            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation * Math.PI / 180) * FurnitureArray[index].Width, 3);
+            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation * Math.PI / 180) * FurnitureArray[index].Width, 3);
 
             decimal oldCenterX = item.Center[0];
             decimal oldCenterY = item.Center[1];
@@ -476,7 +478,7 @@ namespace Rooms
             if (SafeMove(item, (pointToMoveToX - oldCenterX), (pointToMoveToY - oldCenterY)) != 0)
                 return -1;
 
-            if (SafeRotation(item, FurnitureArray[index].Rotation - item.Rotation) != 0)
+            if (SafeRotation(item, -item.Rotation + FurnitureArray[index].Rotation + 180) != 0)
             {
                 Move(item, -(pointToMoveToX - oldCenterX), -(pointToMoveToY - oldCenterY));
                 return -1;
@@ -785,7 +787,7 @@ namespace Rooms
         #endregion
 
 
-        
+
 
         public object Clone()
         {

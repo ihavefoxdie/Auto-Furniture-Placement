@@ -9,7 +9,7 @@ using Vertex;
 
 namespace Execution
 {
-    internal class TestingClass
+    public class TestingClass
     {
         private FurnitureFactory? FurnitureFactory { get; set; }
         private Room? Room { get; set; }
@@ -119,8 +119,6 @@ namespace Execution
 
         public void GeneticTesting()
         {
-
-
             BedFactory bedFactory = new();
             TableFactory tableFactory = new();
             DoorFactory doorFactory = new();
@@ -129,15 +127,16 @@ namespace Execution
             ArmchairFactory armchairFactory = new();
             CupboardFactory cupboardFactory = new();
             DeskFactory deskFactory = new();
+            NightstandFactory nightStand = new();
 
 
             List<GeneralFurniture> furnitures = new()
             {
                 bedFactory.GetFurniture(),
+                nightStand.GetFurniture(),
                 tableFactory.GetFurniture(),
                 tableFactory.GetFurniture(),
                 chairFactory.GetFurniture(),
-                poufFactory.GetFurniture(),
                 armchairFactory.GetFurniture(),
                 cupboardFactory.GetFurniture(),
                 deskFactory.GetFurniture()
@@ -151,7 +150,9 @@ namespace Execution
 
             for (int i = 0; i < Room.FurnitureArray.Length; i++)
             {
+                PolySerialize(Room);
                 Room.Move(Room.FurnitureArray[i], Room.ContainerWidth / 2, Room.ContainerHeight / 2);
+                PolySerialize(Room);
             }
 
             GeneticAlgoritm algo = new(Room);
@@ -164,6 +165,12 @@ namespace Execution
             for (int i = 0; i < 100000000; i++)
             {
                 Thread.Sleep(100);
+                for (int j = 0; j < Room.FurnitureArray.Length; j++)
+                {
+                    if (Room.FurnitureArray[j].Data.ParentIndex != null)
+                        Console.WriteLine(Room.FurnitureArray[j].Name + " has a parent at " +
+                            Room.FurnitureArray[j].Data.ParentIndex);
+                }
                 Room.Mutate();
                 PolySerialize(Room);
             }
