@@ -1,6 +1,6 @@
 ﻿using Furniture;
 using Interfaces;
-using Zones;
+
 
 namespace Rooms
 {
@@ -30,12 +30,12 @@ namespace Rooms
             Down
         }
         public GeneralFurniture[] FurnitureArray { get; private set; }
-        private List<GeneralFurniture> Doors { get; set; }
+        public List<GeneralFurniture> Doors { get; set; }
         private List<GeneralFurniture>? Windows { get; set; }
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
-        public List<Zone> ZonesList { get; private set; } //DEW EET
+        public List<IPolygon> ZonesList { get; set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
         public int Aisle { get; private set; }
         #endregion
@@ -785,28 +785,7 @@ namespace Rooms
         #endregion
 
 
-        public void InitializeZones()
-        {
-            List<Zone> list = new();
-
-            // List contains distinct zones
-            List<string> unique = new();
-
-            foreach (var item in FurnitureArray)
-            {
-                unique.Add(item.Data.Zone);
-            }
-
-            unique = unique.Distinct().ToList();
-
-            foreach (var item in unique)
-            {
-                Zone zone = new(FurnitureArray.ToList(), item);
-                list.Add(zone);
-            }
-
-            ZonesList = list;
-        }
+        
 
         public object Clone()
         {
