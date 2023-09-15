@@ -1,5 +1,8 @@
 ﻿using Furniture;
+using Rooms;
 using ScottPlot;
+using ScottPlot.Drawing;
+using ScottPlot.MarkerShapes;
 using System.Text.Json.Serialization;
 using Zones;
 
@@ -62,6 +65,49 @@ namespace RoomClass.Zones
         public List<double> DoorSpacePenalty{ get; set; } = new();
 
 
+        public SimulatedAnnealing(Room room )
+        {
+            RoomHeight = room.ContainerHeight;
+            RoomWidth = room.ContainerWidth;
+            Doors = room.Doors;
+
+            List<Zone> list = new();
+
+            // List contains distinct zones
+            List<string> unique = new();
+
+            foreach (var item in room.FurnitureArray)
+            {
+                unique.Add(item.Data.Zone);
+            }
+
+            unique = unique.Distinct().ToList();
+
+            foreach (var item in unique)
+            {
+                Zone zone = new(room.FurnitureArray.ToList(), item);
+                list.Add(zone);
+            }
+
+
+            MaxStep = int.Min(RoomHeight, RoomWidth) / 2;
+            AnnealingZones = new List<AnnealingZone>(list.Count);
+
+            foreach (Zone zone in list)
+            {
+                AnnealingZones.Add(new AnnealingZone(zone));
+            }
+
+
+
+            InitialSolution = new SolutionClass(AnnealingZones, room.Aisle, RoomWidth, RoomHeight, room.Doors);
+            InitialSolution.PrepareSolutionForSA();
+
+            //Temperature = DetermineInitialTemp();
+            Temperature = 50;
+
+        }
+
 
         //TODO Create Initial solution instance inside ctor
 
@@ -70,6 +116,9 @@ namespace RoomClass.Zones
             RoomHeight = roomHeight;
             RoomWidth = roomWidth;
             Doors = doors;
+
+
+
 
             MaxStep = int.Min(roomHeight, roomWidth) / 2;
             AnnealingZones = new List<AnnealingZone>(zones.Count);
@@ -87,6 +136,8 @@ namespace RoomClass.Zones
             //Temperature = DetermineInitialTemp();
             Temperature = 50;
         }
+
+
 
         private double DetermineInitialTemp()
         {
@@ -107,6 +158,8 @@ namespace RoomClass.Zones
             return (randomSolutions.Max(s => s.Cost) - randomSolutions.Min(s => s.Cost)) * 1.2;
         }
 
+
+
         private void PrintGraph(double[] xAxis, double[] yAxis, string name)
         {
             var plt = new ScottPlot.Plot();
@@ -125,7 +178,7 @@ namespace RoomClass.Zones
 
 
 
-        public SolutionClass Launch(SolutionClass InitialSolution)
+        public SolutionClass Launch()
         {
             int iterAmount = 1;
 

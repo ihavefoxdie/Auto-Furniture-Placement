@@ -41,38 +41,59 @@ namespace RoomClass.Zones
 
         public void PrepareSolutionForSA()
         {
-            Random random = new();
-            AnnealingZone annealingZone = null;
-            List<AnnealingZone> zones = new List<AnnealingZone>(Zones);
-            decimal[] offset = new decimal[2];
+            //Random random = new();
+            //AnnealingZone annealingZone = null;
+            //List<AnnealingZone> zones = new List<AnnealingZone>(Zones);
+            //decimal[] offset = new decimal[2];
 
             // ←↑
-            annealingZone = zones[random.Next(zones.Count)];
-            offset[0] = annealingZone.Vertices[1, 0];
-            offset[1] = annealingZone.Vertices[1, 1];
-            annealingZone.Move(-offset[0], -offset[1]);
-            zones.Remove(annealingZone);
+            //annealingZone = zones[random.Next(zones.Count)];
+            //offset[0] = annealingZone.Vertices[1, 0];
+            //offset[1] = annealingZone.Vertices[1, 1];
+            //annealingZone.Move(-offset[0], -offset[1]);
+            //zones.Remove(annealingZone);
 
             // ↑→
-            annealingZone = zones[random.Next(zones.Count)];
-            offset[0] = RoomWidth - annealingZone.Vertices[0, 0];
-            offset[1] = annealingZone.Vertices[0, 1];
-            annealingZone.Move(offset[0], -offset[1]);
-            zones.Remove(annealingZone);
+            //annealingZone = zones[random.Next(zones.Count)];
+            //offset[0] = RoomWidth - annealingZone.Vertices[0, 0];
+            //offset[1] = annealingZone.Vertices[0, 1];
+            //annealingZone.Move(offset[0], -offset[1]);
+            //zones.Remove(annealingZone);
 
             // ↓←
-            annealingZone = zones[random.Next(zones.Count)];
-            offset[0] = annealingZone.Vertices[2, 0];
-            offset[1] = RoomHeight - annealingZone.Vertices[2, 1];
-            annealingZone.Move(-offset[0], offset[1]);
-            zones.Remove(annealingZone);
+            //annealingZone = zones[random.Next(zones.Count)];
+            //offset[0] = annealingZone.Vertices[2, 0];
+            //offset[1] = RoomHeight - annealingZone.Vertices[2, 1];
+            //annealingZone.Move(-offset[0], offset[1]);
+            //zones.Remove(annealingZone);
 
             // ↓→
-            annealingZone = zones[random.Next(zones.Count)];
-            offset[0] = RoomWidth - annealingZone.Vertices[3, 0];
-            offset[1] = RoomHeight - annealingZone.Vertices[3, 1];
-            annealingZone.Move(offset[0], offset[1]);
-            zones.Remove(annealingZone);
+            //annealingZone = zones[random.Next(zones.Count)];
+            //offset[0] = RoomWidth - annealingZone.Vertices[3, 0];
+            //offset[1] = RoomHeight - annealingZone.Vertices[3, 1];
+            //annealingZone.Move(offset[0], offset[1]);
+            //zones.Remove(annealingZone);
+
+            Zones[0].Center = new decimal[] { 5.5M, 4 };
+            Zones[0].Width = 11;
+            Zones[0].Height = 8;
+            VertexManipulator.VertexResetting(Zones[0].Vertices, Zones[0].Center, Zones[0].Width, Zones[0].Height);
+
+            Zones[1].Center = new decimal[] { 16, 4 };
+            Zones[1].Width = 8;
+            Zones[1].Height = 8;
+            VertexManipulator.VertexResetting(Zones[1].Vertices, Zones[1].Center, Zones[1].Width, Zones[1].Height);
+
+            Zones[2].Center = new decimal[] { 5.5M, 15.5M };
+            Zones[2].Width = 11;
+            Zones[2].Height = 9;
+            VertexManipulator.VertexResetting(Zones[2].Vertices, Zones[2].Center, Zones[2].Width, Zones[2].Height);
+
+
+            Zones[3].Center = new decimal[] { 16, 15.5M };
+            Zones[3].Width = 8;
+            Zones[3].Height = 11;
+            VertexManipulator.VertexResetting(Zones[3].Vertices, Zones[3].Center, Zones[3].Width, Zones[3].Height);
 
         }
 

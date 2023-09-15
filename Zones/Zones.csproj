@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Furniture\Furniture.csproj" />
     <ProjectReference Include="..\Interfaces\Interfaces.csproj" />
+    <ProjectReference Include="..\RoomClass\RoomProject.csproj" />
     <ProjectReference Include="..\VertexOperations\VertexOperations.csproj" />
   </ItemGroup>
 
