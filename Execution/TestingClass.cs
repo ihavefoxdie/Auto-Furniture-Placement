@@ -4,8 +4,10 @@ using GeneticAlgorithm;
 using Interfaces;
 using RoomClass.Zones;
 using Rooms;
+using System.Diagnostics;
 using System.Text.Json;
 using Vertex;
+using Zones;
 
 namespace Execution
 {
@@ -49,8 +51,12 @@ namespace Execution
             };
 
             SimulatedAnnealing simulatedAnnealing = new(Room);
-            Room.ZonesList = simulatedAnnealing.Launch().Zones.ToList<IPolygon>();
+            simulatedAnnealing.Launch();
+
+            Room.ZonesList = simulatedAnnealing.CurrentSolution.Zones.ToList<IPolygon>();
             PolySerializeFuckingZones(Room);
+
+            SimulatedAnnealing.AnnealingDataSaver(simulatedAnnealing);
         }
 
         static string PolySerialize(Room room)
@@ -100,7 +106,7 @@ namespace Execution
             edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
 
             rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, ""));
-            
+
 
             foreach (IPolygon polygon in room.ZonesList)
                 rectangles.Add(new PolygonForJson(polygon));

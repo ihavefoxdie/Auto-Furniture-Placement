@@ -90,7 +90,7 @@ namespace RoomClass.Zones
             VertexManipulator.VertexResetting(Zones[2].Vertices, Zones[2].Center, Zones[2].Width, Zones[2].Height);
 
 
-            Zones[3].Center = new decimal[] { 16, 15.5M };
+            Zones[3].Center = new decimal[] { 16, 14.5M };
             Zones[3].Width = 8;
             Zones[3].Height = 11;
             VertexManipulator.VertexResetting(Zones[3].Vertices, Zones[3].Center, Zones[3].Width, Zones[3].Height);

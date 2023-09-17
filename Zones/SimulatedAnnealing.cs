@@ -1,8 +1,8 @@
 ﻿using Furniture;
 using Rooms;
 using ScottPlot;
-using ScottPlot.Drawing;
-using ScottPlot.MarkerShapes;
+using System.Diagnostics;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Zones;
 
@@ -30,7 +30,7 @@ namespace RoomClass.Zones
         [JsonIgnore]
         public int NumTrials { get; set; } = 100;
         [JsonIgnore]
-        public int IterPerTemp { get; set; } = 1000;
+        public int IterPerTemp { get; set; } = 200;
         [JsonIgnore]
         public int RoomWidth { get; set; }
         [JsonIgnore]
@@ -53,19 +53,19 @@ namespace RoomClass.Zones
         public List<double> FreeSpacePenalty { get; set; } = new();
 
         [JsonInclude]
-        public List<double> ZoneShapePenalty{ get; set; } = new();
+        public List<double> ZoneShapePenalty { get; set; } = new();
 
         [JsonInclude]
-        public List<double> SpaceRatioPenalty{ get; set; } = new();
+        public List<double> SpaceRatioPenalty { get; set; } = new();
 
         [JsonInclude]
-        public List<double> ByWallPenalty{ get; set; } = new();
+        public List<double> ByWallPenalty { get; set; } = new();
 
         [JsonInclude]
-        public List<double> DoorSpacePenalty{ get; set; } = new();
+        public List<double> DoorSpacePenalty { get; set; } = new();
 
 
-        public SimulatedAnnealing(Room room )
+        public SimulatedAnnealing(Room room)
         {
             RoomHeight = room.ContainerHeight;
             RoomWidth = room.ContainerWidth;
@@ -104,7 +104,7 @@ namespace RoomClass.Zones
             InitialSolution.PrepareSolutionForSA();
 
             //Temperature = DetermineInitialTemp();
-            Temperature = 50;
+            Temperature = 1000;
 
         }
 
@@ -194,12 +194,12 @@ namespace RoomClass.Zones
 
             do
             {
-                initCost = CurrentSolution.Cost;
                 for (int i = 0; i < IterPerTemp; i++)
                 {
+                    initCost = CurrentSolution.Cost;
                     cost.Add(CurrentSolution.Cost);
                     NeighbourSolution = SolutionClass.GenerateNeighbour(MaxStep, CurrentSolution);
-                    probability = (float) Math.Exp(-Math.Abs(CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature);
+                    probability = (float)Math.Exp(-Math.Abs(CurrentSolution.Cost - NeighbourSolution.Cost) / Temperature);
                     Console.WriteLine("DIFF : " + $"{-Math.Abs(CurrentSolution.Cost - NeighbourSolution.Cost)}");
                     Console.WriteLine(probability);
 
@@ -214,14 +214,15 @@ namespace RoomClass.Zones
                         CurrentSolution = NeighbourSolution;
                     }
 
+                    Temperature *= TempDecreaseRatio;
+                    //MaxStep = Math.Max(MaxStep * StepDecreaseRatio, InitialSolution.Aisle);
+                    MaxStep = 1;
+                    CostDiff = initCost - CurrentSolution.Cost;
                 }
 
-                Temperature *= TempDecreaseRatio;
-                MaxStep = Math.Max(MaxStep * StepDecreaseRatio, InitialSolution.Aisle);
-                CostDiff = initCost - CurrentSolution.Cost;
                 iterAmount--;
             }
-            while ((CostDiff > 0.1 || CostDiff < 0) && iterAmount > 0);
+            while ((CostDiff > 0.1 || CostDiff < 0)/*&& iterAmount > 0*/);
 
             #endregion
             var costArray = cost.ToArray();
@@ -230,6 +231,31 @@ namespace RoomClass.Zones
             PrintGraph(iterations, costArray, "AnnealingGraph");
             return CurrentSolution;
 
+        }
+
+        public static void AnnealingDataSaver(SimulatedAnnealing simulatedAnnealing)
+        {
+            #region GraphView
+            string fileName = "AnnealingGraph.png";
+            var filePath = Path.Combine(Environment.CurrentDirectory, fileName);
+            Process photoViewer = new Process();
+            photoViewer.StartInfo.UseShellExecute = true;
+            photoViewer.StartInfo.FileName = fileName;
+            photoViewer.Start();
+            #endregion
+
+
+            simulatedAnnealing.OverlappingPenalty = ZoneClassInfo.OverlappingPenalty.ToList();
+            simulatedAnnealing.FreeSpacePenalty = ZoneClassInfo.FreeSpacePenalty.ToList();
+            simulatedAnnealing.ZoneShapePenalty = ZoneClassInfo.ZoneShapePenalty.ToList();
+            simulatedAnnealing.SpaceRatioPenalty = ZoneClassInfo.SpaceRatioPenalty.ToList();
+            simulatedAnnealing.ByWallPenalty = ZoneClassInfo.ByWallPenalty.ToList();
+            simulatedAnnealing.DoorSpacePenalty = ZoneClassInfo.DoorSpacePenalty.ToList();
+
+            JsonSerializerOptions options = new JsonSerializerOptions();
+            options.WriteIndented = true;
+            string temp = JsonSerializer.Serialize(simulatedAnnealing, options);
+            File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "PenaltyData.json"), temp);
         }
     }
 }
