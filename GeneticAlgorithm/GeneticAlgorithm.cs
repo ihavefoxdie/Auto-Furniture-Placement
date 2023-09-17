@@ -1,5 +1,4 @@
 using Interfaces;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace GeneticAlgorithm;
@@ -11,16 +10,56 @@ public class GeneticAlgoritm
     public int Generation { get; private set; }
     //private Process visual;
 
+    //TODO: thorough debug
+    //TODO: determine why SOMETIMES AT THE START out of bounds exception is being thrown
     public GeneticAlgoritm(IPolygonGenesContainer container)
     {
+        List<double> fuckmyass = new();
         Population = new();
         KeepUp = true;
         for (int i = 0; i < 12; i++)
         {
             Population.Add((IPolygonGenesContainer)container.Clone());
             Population[i].PenaltyEvaluation();
+        }
+
+        for (int i = 0; i <= 12; i++)
+        {
+            for (int j = 0; j < 12; j++)
+            {
+                Population[j].PenaltyEvaluation();
+                Console.WriteLine(j + " - " + Population[j].Penalty);
+                if (j < fuckmyass.Count)
+                    if (fuckmyass[j] != Population[j].Penalty)
+                        Console.WriteLine("FUCK!!!!!!");
+            }
+            if (i == 12)
+                break;
+            Console.WriteLine("\n");
             Population[i].Randomize();
             Population[i].PenaltyEvaluation();
+            fuckmyass.Add(Population[i].Penalty);
+        }
+
+        fuckmyass.Clear();
+        for (int j = 0; j < 12; j++)
+        {
+            Population[j].PenaltyEvaluation();
+            fuckmyass.Add(Population[j].Penalty);
+            Console.WriteLine(j + " - " + Population[j].Penalty);
+        }
+
+        for (int i = 0; i < 500; i++)
+        {
+            Console.WriteLine("iteration for evaluation: " + i);
+            for (int j = 0; j < 12; j++)
+            {
+                Population[j].PenaltyEvaluation();
+                if (Population[j].Penalty != fuckmyass[j])
+                    Console.WriteLine("FUCK MY ASS");
+                Console.WriteLine(j + " - " + Population[j].Penalty);
+            }
+            Console.WriteLine("\n");
         }
     }
 
@@ -31,7 +70,18 @@ public class GeneticAlgoritm
         {
             Population = Population.OrderBy(container => container.Penalty).ToList();
 
-            if (count == 500000 || Population[0].Penalty < 10)
+            if (count % 1000 == 0)
+            {
+                SerializeElement(0);
+                /* if (visual != null)
+                 {
+                     visual.CloseMainWindow();
+                 }
+                 visual = Process.Start("visualization\\testing shapes.exe");*/
+                Console.WriteLine(count);
+            }
+
+            if (count >= 500000 && Population[0].Penalty < 10)
             {
                 KeepUp = false;
             }
@@ -74,42 +124,35 @@ public class GeneticAlgoritm
                 Population[i].PenaltyEvaluation();
             }
 
-            if (count % 5000 == 0)
-            {
-                SerializeBest();
-                /* if (visual != null)
-                 {
-                     visual.CloseMainWindow();
-                 }
-                 visual = Process.Start("visualization\\testing shapes.exe");*/
-                Console.WriteLine(count);
-            }
+
 
 
             count++;
         }
         Console.WriteLine(Population[0].Penalty + " and " + Population.Last().Penalty);
-        SerializeBest();
+        SerializeElement(0);
         return 1;
     }
 
-    private void SerializeBest()
+    private void SerializeElement(int n)
     {
-        List<PolygonForJson> rectangles = new List<PolygonForJson>();
+        List<PolygonForJson> rectangles = new();
 
         decimal[] center = new decimal[2];
-        center[0] = 15; center[1] = 15;
+        center[0] = Population[n].ContainerWidth / 2; center[1] = Population[n].ContainerHeight / 2;
         decimal[][] edges = new decimal[4][];
+
         for (int i = 0; i < edges.Length; i++)
             edges[i] = new decimal[2];
 
         edges[0][0] = 0; edges[0][1] = 0;
-        edges[1][0] = 30; edges[1][1] = 0;
-        edges[2][0] = 30; edges[2][1] = 30;
-        edges[3][0] = 0; edges[3][1] = 30;
+        edges[1][0] = Population[n].ContainerWidth; edges[1][1] = 0;
+        edges[2][0] = Population[n].ContainerWidth; edges[2][1] = Population[n].ContainerHeight;
+        edges[3][0] = 0; edges[3][1] = Population[n].ContainerHeight;
 
-        rectangles.Add(new PolygonForJson(1213, 30, 30, center, edges, "Room"));
-        IPolygonGenesContainer contain = Population[0];
+        rectangles.Add(new PolygonForJson(1213, Population[n].ContainerWidth, Population[n].ContainerHeight, center, edges, ""));
+        IPolygonGenesContainer contain = Population[n];
+
         foreach (IPolygon polygon in contain.Polygons)
             rectangles.Add(new PolygonForJson(polygon));
 
@@ -118,11 +161,8 @@ public class GeneticAlgoritm
         {
             File.WriteAllText("visualization\\rectangles.json", jsonFile);
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("errro heh");
-        }
-
+        catch
+        { }
     }
 
     private List<IPolygonGenesContainer> MutatePopulations(List<IPolygonGenesContainer> newContainersSet)

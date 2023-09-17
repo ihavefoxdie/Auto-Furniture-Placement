@@ -84,7 +84,7 @@ namespace Execution
             return File.ReadAllText("visualization\\rectangles.json");
         }
 
-        static string PolySerializeFuckingZones(Room room)
+        static string PolySerializeFuckingZones(Room room) //language!!!!
         {
             List<PolygonForJson> rectangles = new();
 
@@ -161,8 +161,8 @@ namespace Execution
 
 
 
-            //algo.Start();
-            for (int i = 0; i < 100000000; i++)
+            algo.Start();
+            /*for (int i = 0; i < 100000000; i++)
             {
                 Thread.Sleep(100);
                 for (int j = 0; j < Room.FurnitureArray.Length; j++)
@@ -173,7 +173,7 @@ namespace Execution
                 }
                 Room.Mutate();
                 PolySerialize(Room);
-            }
+            }*/
         }
     }
 }

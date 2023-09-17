@@ -80,7 +80,7 @@ namespace Rooms
         {
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
-                for (int j = 0; j < 500; j++)
+                for (int j = 0; j < 5000; j++)
                 {
                     Scatter(FurnitureArray[i]);
                     RandomRotation(FurnitureArray[i]);
@@ -176,10 +176,12 @@ namespace Rooms
             {
                 return parent;
             }
-            Room child = new(this.ContainerHeight, this.ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), this.WindowsInRoom, this.Aisle)
+
+            Room child = new(ContainerHeight, ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), WindowsInRoom, Aisle)
             {
                 FurnitureArray = new GeneralFurniture[this.FurnitureArray.Length]
             };
+
             List<int> indexesToIgnore = new();
 
             int even = new Random().Next(2);
@@ -190,7 +192,7 @@ namespace Rooms
                     continue;
                 if (i % 2 == even)
                 {
-                    child.FurnitureArray[i] = (GeneralFurniture)this.FurnitureArray[i].Clone();
+                    child.FurnitureArray[i] = (GeneralFurniture)FurnitureArray[i].Clone();
                     if (FurnitureArray[i].Data.ParentIndex != null)
                     {
                         indexesToIgnore.Add((int)FurnitureArray[i].Data.ParentIndex!);
@@ -511,7 +513,7 @@ namespace Rooms
         }
         #endregion
 
-
+        //TODO: this piss is not calculating penalty consistently. check for possible solutions
         //TODO Improve penalty evaluation by implementing a better method for more flexibility
         #region Penalty Related
         public void PenaltyEvaluation()
@@ -644,15 +646,15 @@ namespace Rooms
 
             Wall direction = DetermineClosestWall(item);
             double fine = 0;
-            double distance = 0;
-            double distancePercentage = 0;
+            decimal distance = 0;
+            decimal distancePercentage = 0;
 
             switch (direction)
             {
                 case Wall.Left:
                     if (item.Center[0] > item.Flags.NearWall)
                     {
-                        distance = (double)item.Center[0];
+                        distance = item.Center[0];
                         distancePercentage = distance / (ContainerWidth / 2);
                     }
                     break;
@@ -660,7 +662,7 @@ namespace Rooms
                 case Wall.Right:
                     if (item.Center[0] < ContainerWidth - item.Flags.NearWall)
                     {
-                        distance = ContainerWidth - item.Flags.NearWall - (double)item.Center[0];
+                        distance = ContainerWidth - item.Flags.NearWall - item.Center[0];
                         distancePercentage = distance / (ContainerWidth / 2);
                     }
                     break;
@@ -668,7 +670,7 @@ namespace Rooms
                 case Wall.Up:
                     if (item.Center[1] > item.Flags.NearWall)
                     {
-                        distance = (double)item.Center[1];
+                        distance = item.Center[1];
                         distancePercentage = distance / (ContainerHeight / 2);
                     }
                     break;
@@ -676,7 +678,7 @@ namespace Rooms
                 case Wall.Down:
                     if (item.Center[0] < ContainerHeight - item.Flags.NearWall)
                     {
-                        distance = ContainerHeight - item.Flags.NearWall - (double)item.Center[1];
+                        distance = ContainerHeight - item.Flags.NearWall - item.Center[1];
                         distancePercentage = distance / (ContainerHeight / 2);
                     }
                     break;
@@ -684,7 +686,7 @@ namespace Rooms
 
             if (distance != 0)
             {
-                fine += distancePercentage * 10;
+                fine += (double)Math.Round(distancePercentage * 10, 5);
             }
             return fine;
         }

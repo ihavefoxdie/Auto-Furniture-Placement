@@ -33,8 +33,8 @@
         {
             FurnitureData data = new(ID, Name, Width, Height, Zone, ExtraWidth, ExtraHeight, ParentID)
             {
-                ParentIndex = this.ParentIndex,
-                ChildIndex = this.ChildIndex
+                ParentIndex = ParentIndex != null ? (int)ParentIndex : null,
+                ChildIndex = ParentIndex != null ? (int)ParentIndex : null
             };
             return data;
         }

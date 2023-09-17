@@ -1,5 +1,6 @@
 ﻿using Interfaces;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace Furniture
 {
@@ -99,6 +100,26 @@ namespace Furniture
         public object Clone()
         {
             GeneralFurniture obj = (GeneralFurniture)MemberwiseClone();
+            obj.Center = Center.ToArray();
+
+            obj.Vertices = new decimal[Vertices.GetLength(0),Vertices.GetLength(1)];
+            for (int i = 0; i < obj.Vertices.GetLength(0); i++)
+            {
+                for (int j = 0; j < obj.Vertices.GetLength(1); j++)
+                {
+                    obj.Vertices[i, j] = Vertices[i, j];
+                }
+            }
+
+            obj.ClearanceArea = new decimal[ClearanceArea.GetLength(0), ClearanceArea.GetLength(1)];
+            for (int i = 0; i < obj.ClearanceArea.GetLength(0); i++)
+            {
+                for (int j = 0; j < obj.ClearanceArea.GetLength(1); j++)
+                {
+                    obj.ClearanceArea[i, j] = ClearanceArea[i, j];
+                }
+            }
+
             obj.Data = (FurnitureData)Data.Clone();
             obj.Flags = (FurnitureDataFlags)Flags.Clone();
 
