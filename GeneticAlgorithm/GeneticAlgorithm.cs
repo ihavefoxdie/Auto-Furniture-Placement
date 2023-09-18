@@ -211,7 +211,7 @@ public class GeneticAlgoritm
             while (sum <= pointers[i])
             {
                 selector++;
-                sum += containers[selector].Penalty;
+                sum += containers[selector].Penalty; // this motherfucker is throwing the exception!
             }
             containersToKeep.Add(containers[containers.Count - selector - 1]);
         }

@@ -523,10 +523,11 @@ namespace Rooms
             {
                 Penalty += OutOfBoundsDeterminer(FurnitureArray[i]);
                 Penalty += NearWallPenalty(FurnitureArray[i]);
+                Penalty = Math.Round(Penalty, 5);
 
                 for (int j = 0; j < FurnitureArray.Length; j++)
                 {
-                    if (FurnitureArray[j].ID == FurnitureArray[i].Data.ParentID && FurnitureArray[i].Data.ParentIndex == null)
+                    if (FurnitureArray[j].ID == FurnitureArray[i].Data.ParentID && (FurnitureArray[i].Data.ParentIndex == null && FurnitureArray[j].Data.ChildIndex != null))
                         Penalty += 10;
                 }
 
@@ -686,7 +687,7 @@ namespace Rooms
 
             if (distance != 0)
             {
-                fine += (double)Math.Round(distancePercentage * 10, 5);
+                fine = (double)Math.Round(distancePercentage * 10, 5);
             }
             return fine;
         }
