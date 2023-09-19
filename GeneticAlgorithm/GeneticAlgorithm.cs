@@ -88,7 +88,9 @@ public class GeneticAlgoritm
 
             int transfer = (70 * Population.Count) / 100;
 
-            List<IPolygonGenesContainer> newContainersSet = SUS(transfer, Population);
+
+
+            List<IPolygonGenesContainer> newContainersSet = SUS(transfer, Population, FromPenaltyToFitness());
 
             transfer = Population.Count - transfer;
 
@@ -132,6 +134,20 @@ public class GeneticAlgoritm
         Console.WriteLine(Population[0].Penalty + " and " + Population.Last().Penalty);
         SerializeElement(0);
         return 1;
+    }
+
+    public List<double> FromPenaltyToFitness()
+    {
+        double maxPenalty = Population.Last().Penalty;
+
+        List<double> fitnessOfPopulation = new();
+
+        foreach (var population in Population)
+        {
+            fitnessOfPopulation.Add(maxPenalty -  population.Penalty);
+        }
+
+        return fitnessOfPopulation;
     }
 
     private void SerializeElement(int n)
@@ -183,13 +199,13 @@ public class GeneticAlgoritm
         container.Mutate();
     }
 
-    private static List<IPolygonGenesContainer> SUS(int amountToKeep, List<IPolygonGenesContainer> containers)
+    private static List<IPolygonGenesContainer> SUS(int amountToKeep, List<IPolygonGenesContainer> containers, List<double> fitness)
     {
         Random a = new();
 
         double totalPenalty = 0;
         for (int i = 0; i < containers.Count; i++)
-            totalPenalty += containers[i].Penalty;
+            totalPenalty += fitness[i];
 
         int distance = (int)(totalPenalty / amountToKeep);
 
@@ -197,25 +213,71 @@ public class GeneticAlgoritm
         for (int i = 0; i < amountToKeep; i++)
             pointers.Add(a.Next(distance) + i * distance);
 
-        return RWS(containers, pointers);
+        return RWS(containers, pointers, fitness);
     }
 
-    private static List<IPolygonGenesContainer> RWS(List<IPolygonGenesContainer> containers, List<int> pointers)
+    private static List<IPolygonGenesContainer> RWS(List<IPolygonGenesContainer> containers, List<int> pointers, List<double> fitness)
     {
         List<IPolygonGenesContainer> containersToKeep = new();
-
+        //pointers.Reverse();
+        List<int> selectorsUsed = new();
         for (int i = 0; i < pointers.Count; i++)
         {
             int selector = -1;
             double sum = 0;
-            while (sum <= pointers[i])
+
+            while (sum < pointers[i])
             {
                 selector++;
-                sum += containers[selector].Penalty; // this motherfucker is throwing the exception!
+                sum += fitness[i];
             }
-            containersToKeep.Add(containers[containers.Count - selector - 1]);
-        }
 
+            while(selector < 0)
+                selector++;
+            while (selector >= containers.Count)
+                selector--;
+
+            int tempSelector = selector;
+            bool check = true;
+            while(containersToKeep.Contains(containers[tempSelector]))
+            {
+                check = false;
+
+                if (tempSelector == 0)
+                    break;
+                tempSelector--;
+
+                check = true;
+            }
+            if (check)
+            {
+                containersToKeep.Add(containers[tempSelector]);
+                selectorsUsed.Add(tempSelector);
+
+                continue;
+            }
+
+            tempSelector = selector;
+            check = true;
+            while (containersToKeep.Contains(containers[tempSelector]))
+            {
+                check = false;
+
+                if (tempSelector + 1 >= containers.Count)
+                    break;
+                tempSelector++;
+
+                check = true;
+            }
+            if (check)
+            {
+                containersToKeep.Add(containers[tempSelector]);
+                selectorsUsed.Add(tempSelector);
+
+                continue;
+            }
+        }
+        selectorsUsed = selectorsUsed.OrderDescending().ToList();
         return containersToKeep;
     }
 }

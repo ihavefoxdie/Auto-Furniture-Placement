@@ -24,4 +24,8 @@
     <ProjectReference Include="..\Zones\Zones.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="visualization\" />
+  </ItemGroup>
+
 </Project>
