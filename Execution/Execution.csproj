@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="visualization\**" />
+    <EmbeddedResource Remove="visualization\**" />
+    <None Remove="visualization\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Aspose.Drawing" Version="23.8.1">
       <Aliases>AsposeDrawing</Aliases>
     </PackageReference>
@@ -22,10 +28,6 @@
     <ProjectReference Include="..\RoomClass\RoomProject.csproj" />
     <ProjectReference Include="..\VertexOperations\VertexOperations.csproj" />
     <ProjectReference Include="..\Zones\Zones.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="visualization\" />
   </ItemGroup>
 
 </Project>

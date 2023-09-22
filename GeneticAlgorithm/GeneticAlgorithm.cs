@@ -17,15 +17,16 @@ public class GeneticAlgoritm
         List<double> fuckmyass = new();
         Population = new();
         KeepUp = true;
-        for (int i = 0; i < 12; i++)
+        int size = 8;
+        for (int i = 0; i < size; i++)
         {
             Population.Add((IPolygonGenesContainer)container.Clone());
             Population[i].PenaltyEvaluation();
         }
 
-        for (int i = 0; i <= 12; i++)
+        for (int i = 0; i <= size; i++)
         {
-            for (int j = 0; j < 12; j++)
+            for (int j = 0; j < size; j++)
             {
                 Population[j].PenaltyEvaluation();
                 Console.WriteLine(j + " - " + Population[j].Penalty);
@@ -33,7 +34,7 @@ public class GeneticAlgoritm
                     if (fuckmyass[j] != Population[j].Penalty)
                         Console.WriteLine("FUCK!!!!!!");
             }
-            if (i == 12)
+            if (i == size)
                 break;
             Console.WriteLine("\n");
             Population[i].Randomize();
@@ -42,7 +43,7 @@ public class GeneticAlgoritm
         }
 
         fuckmyass.Clear();
-        for (int j = 0; j < 12; j++)
+        for (int j = 0; j < size; j++)
         {
             Population[j].PenaltyEvaluation();
             fuckmyass.Add(Population[j].Penalty);
@@ -52,7 +53,7 @@ public class GeneticAlgoritm
         for (int i = 0; i < 500; i++)
         {
             Console.WriteLine("iteration for evaluation: " + i);
-            for (int j = 0; j < 12; j++)
+            for (int j = 0; j < size; j++)
             {
                 Population[j].PenaltyEvaluation();
                 if (Population[j].Penalty != fuckmyass[j])
@@ -65,58 +66,74 @@ public class GeneticAlgoritm
 
     public int Start()
     {
+        IPolygonGenesContainer bestRoom = (IPolygonGenesContainer)Population[0].Clone();
+        double lowestPenalty = Population[0].Penalty;
         int count = 0;
         while (KeepUp)
         {
             Population = Population.OrderBy(container => container.Penalty).ToList();
-
-            if (count % 1000 == 0)
+            if (lowestPenalty > Population[0].Penalty)
             {
-                SerializeElement(0);
-                /* if (visual != null)
-                 {
-                     visual.CloseMainWindow();
-                 }
-                 visual = Process.Start("visualization\\testing shapes.exe");*/
-                Console.WriteLine(count);
+                lowestPenalty = Population[0].Penalty;
+                bestRoom = (IPolygonGenesContainer)Population[0].Clone();
+                bestRoom.Penalty = lowestPenalty;
             }
 
-            if (count >= 500000 && Population[0].Penalty < 10)
+            if (lowestPenalty <= 1)
+                break;
+
+            if (count % 500 == 0)
             {
-                KeepUp = false;
+                SerializeElement(0);
+
+                Console.WriteLine(count + "\nPenalty: " + Population[0].Penalty + "\nLowest penalty yet: " + lowestPenalty + "\n");
+            }
+
+            if (count % 10000 == 0)
+            {
+                Console.Write("Continue?\n\n1 - Yes;\nAny other symbol - No.\n\nEnter corresponding number: ");
+                string? choice = Console.ReadLine();
+                if (choice != null)
+                {
+                    if (choice != "1")
+                        break;
+                }
             }
 
             int transfer = (70 * Population.Count) / 100;
 
-
-
             List<IPolygonGenesContainer> newContainersSet = SUS(transfer, Population, FromPenaltyToFitness());
+
 
             transfer = Population.Count - transfer;
 
-            List<int> usedParents = new();
+            List<int> usedParentsOne = new();
+            int parentsAmount = newContainersSet.Count;
             for (int i = 0; i < transfer; i++)
             {
                 int indexParent1;
                 while (true)
                 {
-                    indexParent1 = new Random().Next(newContainersSet.Count);
-                    if (usedParents.Contains(indexParent1))
+                    indexParent1 = new Random().Next(parentsAmount);
+                    if (usedParentsOne.Contains(indexParent1))
                         continue;
                     break;
                 }
-                usedParents.Add(indexParent1);
+                usedParentsOne.Add(indexParent1);
                 int indexParent2;
                 while (true)
                 {
-                    indexParent2 = new Random().Next(newContainersSet.Count);
-                    if (indexParent1 != indexParent2)
+                    indexParent2 = new Random().Next(parentsAmount);
+                    if (indexParent1 != indexParent2 && !usedParentsOne.Contains(indexParent2))
                         break;
                 }
-                newContainersSet.Add(newContainersSet[indexParent1].Crossover((IPolygonGenesContainer)newContainersSet[indexParent2].Clone()));
+                newContainersSet.Add(newContainersSet[indexParent1].Crossover(newContainersSet[indexParent2]));
             }
 
-
+            for (int i = 0; i < newContainersSet.Count; i++)
+            {
+                newContainersSet[i].PenaltyEvaluation();
+            }
 
             var newPoluation = MutatePopulations(newContainersSet);
 
@@ -125,13 +142,10 @@ public class GeneticAlgoritm
             {
                 Population[i].PenaltyEvaluation();
             }
-
-
-
-
             count++;
         }
-        Console.WriteLine(Population[0].Penalty + " and " + Population.Last().Penalty);
+
+        Population[0] = bestRoom;
         SerializeElement(0);
         return 1;
     }
@@ -144,8 +158,9 @@ public class GeneticAlgoritm
 
         foreach (var population in Population)
         {
-            fitnessOfPopulation.Add(maxPenalty -  population.Penalty);
+            fitnessOfPopulation.Add(population.Penalty);
         }
+        fitnessOfPopulation.Reverse();
 
         return fitnessOfPopulation;
     }
@@ -183,15 +198,26 @@ public class GeneticAlgoritm
 
     private List<IPolygonGenesContainer> MutatePopulations(List<IPolygonGenesContainer> newContainersSet)
     {
-        int evenOrNot = new Random().Next(2);
-        for (int i = 0; i < newContainersSet.Count; i++)
+        int amountToMutate = newContainersSet.Count / 2;
+        if (amountToMutate == 0) amountToMutate = 1;
+
+        List<IPolygonGenesContainer> mutated = new();
+
+        while (true)
         {
-            if (i % 2 == evenOrNot)
+            for (int i = 0; i < newContainersSet.Count; i++)
             {
-                MutatePopulation(newContainersSet[i]);
+                int chance = new Random().Next(100);
+
+                if (chance > 49 && !mutated.Contains(newContainersSet[i]))
+                {
+                    MutatePopulation(newContainersSet[i]);
+                    mutated.Add(newContainersSet[i]);
+                }
+
+                if (mutated.Count == amountToMutate) { return newContainersSet; }
             }
         }
-        return newContainersSet;
     }
 
     private void MutatePopulation(IPolygonGenesContainer container)
@@ -232,14 +258,14 @@ public class GeneticAlgoritm
                 sum += fitness[i];
             }
 
-            while(selector < 0)
+            while (selector < 0)
                 selector++;
             while (selector >= containers.Count)
                 selector--;
 
             int tempSelector = selector;
             bool check = true;
-            while(containersToKeep.Contains(containers[tempSelector]))
+            while (containersToKeep.Contains(containers[tempSelector]))
             {
                 check = false;
 
@@ -277,7 +303,7 @@ public class GeneticAlgoritm
                 continue;
             }
         }
-        selectorsUsed = selectorsUsed.OrderDescending().ToList();
+        //selectorsUsed = selectorsUsed.OrderDescending().ToList();
         return containersToKeep;
     }
 }
