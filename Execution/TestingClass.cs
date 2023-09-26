@@ -11,7 +11,7 @@ namespace Execution
 {
     public class TestingClass
     {
-        private FurnitureFactory? FurnitureFactory { get; set; }
+        //private FurnitureFactory? FurnitureFactory { get; set; }
         private Room? Room { get; set; }
 
         public void AnnealingTesting()
@@ -142,7 +142,7 @@ namespace Execution
                 deskFactory.GetFurniture()
             };
 
-            Room = new(14, 14, new List<GeneralFurniture>(), furnitures, false, 0)
+            Room = new(140, 140, new List<GeneralFurniture>(), furnitures, false, 0)
             {
                 RotateVertex = VertexManipulator.VertexRotation,
                 DetermineCollision = VertexManipulator.DetermineCollision
@@ -161,19 +161,20 @@ namespace Execution
 
 
 
-            algo.Start();
-            /*for (int i = 0; i < 100000000; i++)
+            //algo.Start();
+
+            for (int i = 0; i < 100000000; i++)
             {
                 Thread.Sleep(100);
                 for (int j = 0; j < Room.FurnitureArray.Length; j++)
                 {
-                    if (Room.FurnitureArray[j].Data.ParentIndex != null)
+                    if (Room.FurnitureArray[j].Data.ParentIndex != -1)
                         Console.WriteLine(Room.FurnitureArray[j].Name + " has a parent at " +
                             Room.FurnitureArray[j].Data.ParentIndex);
                 }
                 Room.Mutate();
                 PolySerialize(Room);
-            }*/
+            }
         }
     }
 }

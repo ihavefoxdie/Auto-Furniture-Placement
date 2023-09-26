@@ -4,7 +4,7 @@ namespace FactoryMethod
 {
     public class ArmchairFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(15, "armchair", 1, 1, "working", 1, 1);
+        private readonly FurnitureData _furnitureData = new(15, "armchair", 10, 10, "working", 5, 5);
         private readonly FurnitureDataFlags _furnitureDataFlags = new();
 
         public ArmchairFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)

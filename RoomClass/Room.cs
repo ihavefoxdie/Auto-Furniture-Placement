@@ -305,41 +305,50 @@ namespace Rooms
             decimal x = new Random().Next(-1, 1);
             decimal y = new Random().Next(-1, 1);
 
-
-            if (!item.IsCollided && new Random().Next(100) < 80)
+            if(!item.IsCollided && new Random().Next(100) > 80)
             {
-                y /= 2;
-                x /= 2;
+                y *= 5;
+                x *= 5;
             }
-            else
+            else if (item.IsCollided && new Random().Next(100) < 80)
             {
-                if (new Random().Next(100) > 60)
+                if (new Random().Next(100) > 40)
                     x *= item.Width / 2;
+                if (new Random().Next(100) > 60)
+                    x += 30;
                 if (new Random().Next(100) > 80)
-                    x += 3;
+                    x += 30;
 
-                if (new Random().Next(5) > 60)
+                if (new Random().Next(100) > 40)
                     y *= item.Height / 2;
+                if (new Random().Next(100) > 60)
+                    y += 30;
                 if (new Random().Next(100) > 80)
-                    y += 3;
+                    y += 30;
             }
 
-
-
-
-            if (item.Data.ParentIndex != -1)
-            {
-                if (SafeMove(FurnitureArray[(int)item.Data.ParentIndex], x, y) != 0)
-                    return;
-            }
-            if (item.Data.ChildIndex != -1)
-            {
-                if (SafeMove(FurnitureArray[(int)item.Data.ChildIndex], x, y) != 0)
-                    return;
-            }
+            x = Math.Round(x, 5);
+            y = Math.Round(y, 5);
 
             if (SafeMove(item, x, y) != 0)
                 return;
+
+            if (item.Data.ParentIndex != -1)
+            {
+                if (SafeMove(FurnitureArray[item.Data.ParentIndex], x, y) != 0)
+                {
+                    Move(item, -x, -y);
+                    return;
+                }
+            }
+            if (item.Data.ChildIndex != -1)
+            {
+                if (SafeMove(FurnitureArray[item.Data.ChildIndex], x, y) != 0)
+                {
+                    Move(item, -x, -y);
+                    return;
+                }
+            }
         }
 
         public int RandomRotation(GeneralFurniture item)
@@ -360,7 +369,7 @@ namespace Rooms
         {
             if (item.Data.ParentIndex != -1)
             {
-                return ProcessRotation(FurnitureArray[(int)item.Data.ParentIndex], rotateFor);
+                return ProcessRotation(FurnitureArray[item.Data.ParentIndex], rotateFor);
             }
             if (item.Data.ChildIndex != -1)
             {
@@ -675,7 +684,9 @@ namespace Rooms
 
             for (int j = 0; j < furniture.Vertices.GetLength(0); j++)
             {
-                if (Math.Round(furniture.Vertices[j, 0], 3) > (decimal)ContainerWidth || Math.Round(furniture.Vertices[j, 1], 3) > (decimal)ContainerHeight || Math.Round(furniture.Vertices[j, 0], 3) < 0 || Math.Round(furniture.Vertices[j, 1], 3) < 0)
+                if (Math.Round(furniture.Vertices[j, 0], 5) > ContainerWidth || Math.Round(furniture.Vertices[j, 1], 5) > ContainerHeight ||
+                    Math.Round(furniture.Vertices[j, 0], 5) > ContainerHeight || Math.Round(furniture.Vertices[j, 1], 5) > ContainerWidth ||
+                    Math.Round(furniture.Vertices[j, 0], 5) < 0 || Math.Round(furniture.Vertices[j, 1], 5) < 0)
                 {
                     fine += 10;
                     furniture.IsOutOfBounds = true;
@@ -714,20 +725,25 @@ namespace Rooms
                 return penalty;
 
             bool collided = false;
-            decimal[,] arrayOfVertices = new decimal[item1.Vertices.GetLength(0), 2];
+
+            decimal[,] arrayOfVerticesOne = new decimal[item1.Vertices.GetLength(0), 2];
+            decimal[,] arrayOfVerticesTwo = new decimal[item2.Vertices.GetLength(0), 2]; 
 
             for (int j = 0; j < item1.Vertices.GetLength(0); j++)
             {
                 for (int k = 0; k < item1.Vertices.GetLength(1); k++)
                 {
-                    arrayOfVertices[j, k] = Math.Round(item1.Vertices[j, k], 5);
+                    arrayOfVerticesOne[j, k] = Math.Round(item1.Vertices[j, k], 5);
+                    arrayOfVerticesTwo[j, k] = Math.Round(item2.Vertices[j, k], 5);
                 }
             }
 
             for (int i = 0; i < item2.Vertices.GetLength(0); i++)
             {
-                decimal[] point = new decimal[] { Math.Round(item2.Vertices[i, 0], 5), Math.Round(item2.Vertices[i, 1], 5) };
-                if (DetermineCollision(arrayOfVertices, point))
+                decimal[] pointOne = new decimal[2] { Math.Round(item1.Vertices[i, 0], 5), Math.Round(item1.Vertices[i, 1], 5) };
+                decimal[] pointTwo = new decimal[2] { Math.Round(item2.Vertices[i, 0], 5), Math.Round(item2.Vertices[i, 1], 5) };
+
+                if (DetermineCollision(arrayOfVerticesOne, pointTwo) || DetermineCollision(arrayOfVerticesTwo, pointOne))
                 {
                     item2.IsCollided = true;
                     item1.IsCollided = true;
@@ -736,8 +752,9 @@ namespace Rooms
                 }
             }
 
-            decimal[] center = new decimal[] { item2.Center[0], item2.Center[1] };
-            if (DetermineCollision(arrayOfVertices, center))
+            decimal[] centerOne = new decimal[] { item1.Center[0], item1.Center[1] };
+            decimal[] centerTwo = new decimal[] { item2.Center[0], item2.Center[1] };
+            if (DetermineCollision(arrayOfVerticesOne, centerTwo) || DetermineCollision(arrayOfVerticesTwo, centerOne))
             {
                 item2.IsCollided = true;
                 item1.IsCollided = true;
@@ -877,12 +894,15 @@ namespace Rooms
         public int SafeMove(GeneralFurniture item, decimal x, decimal y)
         {
             Move(item, x, y);
-            if (OutOfBoundsDeterminer(item) != 0)
+
+            OutOfBoundsDeterminer(item);
+            if (item.IsOutOfBounds == true)
             {
                 Move(item, -x, -y);
                 OutOfBoundsDeterminer(item);
                 return 1;
             }
+
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
                 if (item != FurnitureArray[i])
@@ -929,12 +949,13 @@ namespace Rooms
             Rotate(item, rotateFor);
             for (int i = 0; i < item.Vertices.GetLength(0); i++)
             {
-                item.Vertices[i, 0] = Math.Round(item.Vertices[i, 0], 4);
-                item.Vertices[i, 1] = Math.Round(item.Vertices[i, 1], 4);
+                item.Vertices[i, 0] = Math.Round(item.Vertices[i, 0], 5);
+                item.Vertices[i, 1] = Math.Round(item.Vertices[i, 1], 5);
 
-                item.ClearanceArea[i, 0] = Math.Round(item.ClearanceArea[i, 0], 4);
-                item.ClearanceArea[i, 1] = Math.Round(item.ClearanceArea[i, 1], 4);
+                item.ClearanceArea[i, 0] = Math.Round(item.ClearanceArea[i, 0], 5);
+                item.ClearanceArea[i, 1] = Math.Round(item.ClearanceArea[i, 1], 5);
             }
+
             OutOfBoundsDeterminer(item);
             if (item.IsOutOfBounds)
             {
@@ -942,6 +963,7 @@ namespace Rooms
                 OutOfBoundsDeterminer(item);
                 return 1;
             }
+
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
                 if (item != FurnitureArray[i])
@@ -950,7 +972,7 @@ namespace Rooms
                     if (item.IsCollided)
                     {
                         Rotate(item, -rotateFor);
-                        Collision(item, FurnitureArray[i]); Collision(FurnitureArray[i], item);
+                        Collision(item, FurnitureArray[i]);
                         return 1;
                     }
                 }
