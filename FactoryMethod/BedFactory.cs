@@ -1,16 +1,11 @@
 ﻿using Furniture;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FactoryMethod
 {
     public class BedFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(7, "bed", 30, 40, "bed", 5, 5);
-        private readonly FurnitureDataFlags _furnitureDataFlags = new();
+        private readonly FurnitureData _furnitureData = new(7, "bed", 30, 40, "bed", 10, 10);
+        private readonly FurnitureDataFlags _furnitureDataFlags = new(true, 10);
 
         public BedFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
@@ -26,7 +21,7 @@ namespace FactoryMethod
 
         public override GeneralFurniture GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
-            Bed bed = new(furnitureData,furnitureDataFlags);
+            Bed bed = new(furnitureData, furnitureDataFlags);
             return bed;
         }
 

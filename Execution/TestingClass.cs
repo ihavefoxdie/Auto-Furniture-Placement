@@ -161,11 +161,11 @@ namespace Execution
 
 
 
-            //algo.Start();
+            algo.Start();
 
-            for (int i = 0; i < 100000000; i++)
+            /*for (int i = 0; i < 100000000; i++)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(50);
                 for (int j = 0; j < Room.FurnitureArray.Length; j++)
                 {
                     if (Room.FurnitureArray[j].Data.ParentIndex != -1)
@@ -174,7 +174,7 @@ namespace Execution
                 }
                 Room.Mutate();
                 PolySerialize(Room);
-            }
+            }*/
         }
     }
 }

@@ -8,7 +8,7 @@
         public bool Accessible { get; protected set; }
 
 
-        public FurnitureDataFlags(bool ignoreWindows = true, int nearWall = 1, bool parent = false, bool accessible = false)
+        public FurnitureDataFlags(bool ignoreWindows = true, int nearWall = -1, bool parent = false, bool accessible = false)
         {
             IgnoreWindows = ignoreWindows;
             NearWall = nearWall;

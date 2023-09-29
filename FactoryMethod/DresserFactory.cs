@@ -5,7 +5,7 @@ namespace FactoryMethod
     public class DresserFactory : FurnitureFactory
     {
         private readonly FurnitureData _furnitureData = new(2, "dresser", 20, 10, "storage");
-        private readonly FurnitureDataFlags _furnitureDataFlags = new();
+        private readonly FurnitureDataFlags _furnitureDataFlags = new(false, 10);
 
         public DresserFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {

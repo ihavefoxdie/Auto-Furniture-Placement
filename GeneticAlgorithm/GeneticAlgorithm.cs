@@ -8,7 +8,6 @@ public class GeneticAlgoritm
     public List<IPolygonGenesContainer> Population { get; private set; }
     private bool KeepUp { get; set; }
     public int Generation { get; private set; }
-    //private Process visual;
 
     //TODO: thorough debug
     //TODO: determine why SOMETIMES AT THE START out of bounds exception is being thrown
@@ -40,27 +39,6 @@ public class GeneticAlgoritm
             Population[i].Randomize();
             Population[i].PenaltyEvaluation();
             fuckmyass.Add(Population[i].Penalty);
-        }
-
-        fuckmyass.Clear();
-        for (int j = 0; j < size; j++)
-        {
-            Population[j].PenaltyEvaluation();
-            fuckmyass.Add(Population[j].Penalty);
-            Console.WriteLine(j + " - " + Population[j].Penalty);
-        }
-
-        for (int i = 0; i < 500; i++)
-        {
-            Console.WriteLine("iteration for evaluation: " + i);
-            for (int j = 0; j < size; j++)
-            {
-                Population[j].PenaltyEvaluation();
-                if (Population[j].Penalty != fuckmyass[j])
-                    Console.WriteLine("FUCK MY ASS");
-                Console.WriteLine(j + " - " + Population[j].Penalty);
-            }
-            Console.WriteLine("\n");
         }
     }
 
@@ -107,7 +85,7 @@ public class GeneticAlgoritm
 
             transfer = Population.Count - transfer;
 
-            List<int> usedParentsOne = new();
+            List<int> usedParents = new();
             int parentsAmount = newContainersSet.Count;
             for (int i = 0; i < transfer; i++)
             {
@@ -115,16 +93,16 @@ public class GeneticAlgoritm
                 while (true)
                 {
                     indexParent1 = new Random().Next(parentsAmount);
-                    if (usedParentsOne.Contains(indexParent1))
+                    if (usedParents.Contains(indexParent1))
                         continue;
                     break;
                 }
-                usedParentsOne.Add(indexParent1);
+                usedParents.Add(indexParent1);
                 int indexParent2;
                 while (true)
                 {
                     indexParent2 = new Random().Next(parentsAmount);
-                    if (indexParent1 != indexParent2 && !usedParentsOne.Contains(indexParent2))
+                    if (indexParent1 != indexParent2 && !usedParents.Contains(indexParent2))
                         break;
                 }
                 newContainersSet.Add(newContainersSet[indexParent1].Crossover(newContainersSet[indexParent2]));
