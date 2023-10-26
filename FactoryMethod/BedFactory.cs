@@ -4,8 +4,8 @@ namespace FactoryMethod
 {
     public class BedFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(7, "bed", 30, 40, "bed", 10, 10);
-        private readonly FurnitureDataFlags _furnitureDataFlags = new(true, 10);
+        private readonly FurnitureData _furnitureData = new(7, "bed", 40, 30, "bed", 40, 40);
+        private readonly FurnitureDataFlags _furnitureDataFlags = new(true, 0);
 
         public BedFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {

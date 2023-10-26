@@ -1,9 +1,9 @@
 ﻿using Execution;
-using System.ComponentModel.Design;
 
 TestingClass testingClass = new TestingClass();
+testingClass.GeneticTesting();
 
-Console.Write("Type ONLY either of numbers.\n\n1. Genetic testing;\n2. Annealing testing.\n\nEnter corresponding number: ");
+/*Console.Write("Type ONLY either of numbers.\n\n1. Genetic testing;\n2. Annealing testing.\n\nEnter corresponding number: ");
 switch (Console.ReadLine())
 {
     case "1":
@@ -15,6 +15,6 @@ switch (Console.ReadLine())
     default:
         Console.WriteLine("No such option.");
         break;
-}
+}*/
 
 

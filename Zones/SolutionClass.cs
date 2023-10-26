@@ -33,7 +33,7 @@ namespace RoomClass.Zones
             //{
             //    zone.Center[0] = RoomWidth / 2;
             //    zone.Center[1] = RoomHeight / 2;
-            //    VertexManipulator.VertexResetting(zone.Vertices, zone.Center, zone.Width, zone.Height);
+            //    VertexManipulator.VertexResetting(zone.Vertices, zone.Center, zone.Depth, zone.FrontWidth);
             //}
 
             Cost = FindCost();
@@ -75,25 +75,25 @@ namespace RoomClass.Zones
             //zones.Remove(annealingZone);
 
             Zones[0].Center = new decimal[] { 5.5M, 4 };
-            Zones[0].Width = 11;
-            Zones[0].Height = 8;
-            VertexManipulator.VertexResetting(Zones[0].Vertices, Zones[0].Center, Zones[0].Width, Zones[0].Height);
+            Zones[0].Depth = 11;
+            Zones[0].FrontWidth = 8;
+            VertexManipulator.VertexResetting(Zones[0].Vertices, Zones[0].Center, Zones[0].Depth, Zones[0].FrontWidth);
 
             Zones[1].Center = new decimal[] { 16, 4 };
-            Zones[1].Width = 8;
-            Zones[1].Height = 8;
-            VertexManipulator.VertexResetting(Zones[1].Vertices, Zones[1].Center, Zones[1].Width, Zones[1].Height);
+            Zones[1].Depth = 8;
+            Zones[1].FrontWidth = 8;
+            VertexManipulator.VertexResetting(Zones[1].Vertices, Zones[1].Center, Zones[1].Depth, Zones[1].FrontWidth);
 
             Zones[2].Center = new decimal[] { 5.5M, 15.5M };
-            Zones[2].Width = 11;
-            Zones[2].Height = 9;
-            VertexManipulator.VertexResetting(Zones[2].Vertices, Zones[2].Center, Zones[2].Width, Zones[2].Height);
+            Zones[2].Depth = 11;
+            Zones[2].FrontWidth = 9;
+            VertexManipulator.VertexResetting(Zones[2].Vertices, Zones[2].Center, Zones[2].Depth, Zones[2].FrontWidth);
 
 
             Zones[3].Center = new decimal[] { 16, 15.5M };
-            Zones[3].Width = 8;
-            Zones[3].Height = 11;
-            VertexManipulator.VertexResetting(Zones[3].Vertices, Zones[3].Center, Zones[3].Width, Zones[3].Height);
+            Zones[3].Depth = 8;
+            Zones[3].FrontWidth = 11;
+            VertexManipulator.VertexResetting(Zones[3].Vertices, Zones[3].Center, Zones[3].Depth, Zones[3].FrontWidth);
 
         }
 

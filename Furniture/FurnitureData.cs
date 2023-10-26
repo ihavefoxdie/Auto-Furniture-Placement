@@ -7,25 +7,25 @@
     {
         public int ID { get; set; }                 //ID of the furniture object
         public string Name { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Depth { get; set; }
+        public int FrontWidth { get; set; }
         public string Zone { get; set; }            //String value for the zone this furniture object belongs to
-        public int ExtraWidth { get; }              //Extra width applied to the base width for clearance area boundries
-        public int ExtraHeight { get; }             //Same as ExtraWidth but applied for height
+        public int ExtraDepth { get; }              //Extra width applied to the base width for clearance area boundries
+        public int ExtraWidth { get; }              //Same as ExtraDepth but applied for frontWidth
         public int ParentID { get; private set; }   //ID of the parent furniture object
         public int ChildIndex { get; set; }
         public int ParentIndex { get; set; }
 
-        public FurnitureData(int id, string name, int length, int height, string zone, int extraLength = 0, int extraHeight = 0, int parentID = -1)
+        public FurnitureData(int id, string name, int depth, int frontWidth, string zone, int extraDepth = 0, int extraWidth = 0, int parentID = -1)
         {
             ID = id;
             Name = name;
-            Width = length;
-            Height = height;
+            Depth = depth;
+            FrontWidth = frontWidth;
             Zone = zone;
 
-            ExtraWidth = extraLength;
-            ExtraHeight = extraHeight;
+            ExtraDepth = extraDepth;
+            ExtraWidth = extraWidth;
             ParentID = parentID;
 
             ParentIndex = -1;
@@ -34,7 +34,7 @@
 
         public object Clone()
         {
-            FurnitureData data = new(ID, Name, Width, Height, Zone, ExtraWidth, ExtraHeight, ParentID)
+            FurnitureData data = new(ID, Name, Depth, FrontWidth, Zone, ExtraDepth, ExtraWidth, ParentID)
             {
                 ParentIndex = this.ParentIndex,
                 ChildIndex = this.ChildIndex

@@ -9,22 +9,22 @@ namespace Zones
     public class AnnealingZone : Zone
     {
         private Zone _parentZone;
-        //ExtendedWidth and Height is dedicated to work with non integral numbers
+        //ExtendedWidth and FrontWidth is dedicated to work with non integral numbers
         public decimal ExtendedWidth { get; set; }
         public decimal ExtendedHeight { get; set; }
 
         public AnnealingZone(Zone zone) : base(zone)
         {
             _parentZone = zone;
-            ExtendedWidth = zone.Width;
-            ExtendedHeight = zone.Height;
+            ExtendedWidth = zone.Depth;
+            ExtendedHeight = zone.FrontWidth;
         }
 
         public AnnealingZone(AnnealingZone zone) : base(zone)
         {
             _parentZone = zone._parentZone;
-            ExtendedWidth = zone.Width;
-            ExtendedHeight = zone.Height;
+            ExtendedWidth = zone.Depth;
+            ExtendedHeight = zone.FrontWidth;
         }
 
         public override void Resize(decimal deltaWidth, decimal deltaHeight)
@@ -48,10 +48,10 @@ namespace Zones
         public Zone toZone()
         {
             _parentZone.Center = Center;
-            _parentZone.Height = (int)ExtendedHeight;
-            _parentZone.Width = (int)ExtendedWidth;
+            _parentZone.FrontWidth = (int)ExtendedHeight;
+            _parentZone.Depth = (int)ExtendedWidth;
             _parentZone.Area = Area;
-            VertexManipulator.VertexResetting(_parentZone.Vertices, _parentZone.Center, _parentZone.Width, _parentZone.Height);
+            VertexManipulator.VertexResetting(_parentZone.Vertices, _parentZone.Center, _parentZone.Depth, _parentZone.FrontWidth);
             return _parentZone;
         }
 

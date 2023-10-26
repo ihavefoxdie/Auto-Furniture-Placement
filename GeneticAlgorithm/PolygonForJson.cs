@@ -18,8 +18,8 @@ public class PolygonForJson
     public PolygonForJson(IPolygon item)
     {
         ID = item.ID;
-        Width = item.Width;
-        Height = item.Height;
+        Width = item.Depth;
+        Height = item.FrontWidth;
         Center = item.Center;
         Name = item.Name;
         JaggedVertices = new decimal[item.Vertices.GetLength(0)][];

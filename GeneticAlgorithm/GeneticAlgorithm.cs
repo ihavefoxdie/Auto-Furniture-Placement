@@ -13,7 +13,6 @@ public class GeneticAlgoritm
     //TODO: determine why SOMETIMES AT THE START out of bounds exception is being thrown
     public GeneticAlgoritm(IPolygonGenesContainer container)
     {
-        List<double> fuckmyass = new();
         Population = new();
         KeepUp = true;
         int size = 8;
@@ -23,23 +22,19 @@ public class GeneticAlgoritm
             Population[i].PenaltyEvaluation();
         }
 
-        for (int i = 0; i <= size; i++)
+        Task[] tasks = new Task[size];
+        for (int i = 0; i < size; i++)
         {
-            for (int j = 0; j < size; j++)
+            var item = Population[i];
+            tasks[i] = new Task(() =>
             {
-                Population[j].PenaltyEvaluation();
-                Console.WriteLine(j + " - " + Population[j].Penalty);
-                if (j < fuckmyass.Count)
-                    if (fuckmyass[j] != Population[j].Penalty)
-                        Console.WriteLine("FUCK!!!!!!");
-            }
-            if (i == size)
-                break;
-            Console.WriteLine("\n");
-            Population[i].Randomize();
-            Population[i].PenaltyEvaluation();
-            fuckmyass.Add(Population[i].Penalty);
+                item.Randomize();
+                item.PenaltyEvaluation();
+                Console.WriteLine(item.Penalty);
+            });
+            tasks[i].Start();
         }
+        Task.WaitAll(tasks);
     }
 
     public int Start()
@@ -176,31 +171,19 @@ public class GeneticAlgoritm
 
     private List<IPolygonGenesContainer> MutatePopulations(List<IPolygonGenesContainer> newContainersSet)
     {
-        int amountToMutate = newContainersSet.Count / 2;
-        if (amountToMutate == 0) amountToMutate = 1;
+        Task[] tasks = new Task[newContainersSet.Count / 2];
+        int index = 0;
 
-        List<IPolygonGenesContainer> mutated = new();
-
-        while (true)
+        for (int i = new Random().Next(2); i < newContainersSet.Count; i += 2)
         {
-            for (int i = 0; i < newContainersSet.Count; i++)
-            {
-                int chance = new Random().Next(100);
-
-                if (chance > 49 && !mutated.Contains(newContainersSet[i]))
-                {
-                    MutatePopulation(newContainersSet[i]);
-                    mutated.Add(newContainersSet[i]);
-                }
-
-                if (mutated.Count == amountToMutate) { return newContainersSet; }
-            }
+            var sex = newContainersSet[i];
+            tasks[index] = new Task(sex.Mutate);
+            tasks[index].Start();
+            index++;
         }
-    }
 
-    private void MutatePopulation(IPolygonGenesContainer container)
-    {
-        container.Mutate();
+        Task.WaitAll(tasks);
+        return newContainersSet;
     }
 
     private static List<IPolygonGenesContainer> SUS(int amountToKeep, List<IPolygonGenesContainer> containers, List<double> fitness)

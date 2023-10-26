@@ -5,21 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Furniture
+namespace Furniture;
+
+public class Chair : GeneralFurniture
 {
-    public class Chair : GeneralFurniture
+    public Chair(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags) : base(furnitureData, furnitureDataFlags)
     {
-
-        public Chair(int id, string name, int length, int height, string zone, bool ignoreWindows, int extraLength = 0, int extraHeight = 0, int nearWall = -1, bool parent = false, bool accessable = false) : base(id, name, length, height, zone, ignoreWindows, extraLength, extraHeight, nearWall, parent, accessable)
-        {
-
-        }
-
-
-        public Chair(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags) : base(furnitureData, furnitureDataFlags)
-        {
-
-        }
 
     }
 }

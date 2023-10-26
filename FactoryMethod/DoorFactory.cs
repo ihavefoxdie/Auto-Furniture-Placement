@@ -9,7 +9,7 @@ namespace FactoryMethod
 {
     public class DoorFactory : FurnitureFactory
     {
-        private readonly FurnitureData _furnitureData = new(10, "door", 10, 3, "obstacles", 1, 1);
+        private readonly FurnitureData _furnitureData = new(10, "door", 3, 13, "obstacles", 60, 20);
         private readonly FurnitureDataFlags _furnitureDataFlags = new(false);
 
         public DoorFactory(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
@@ -23,13 +23,13 @@ namespace FactoryMethod
 
         }
 
-        public override GeneralFurniture GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
+        public override Door GetFurniture(FurnitureData furnitureData, FurnitureDataFlags furnitureDataFlags)
         {
             Door door = new(furnitureData,furnitureDataFlags);
             return door;
         }
 
-        public override GeneralFurniture GetFurniture()
+        public override Door GetFurniture()
         {
             Door door = new(_furnitureData, _furnitureDataFlags);
             return door;

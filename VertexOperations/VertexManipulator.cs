@@ -37,10 +37,10 @@ namespace Vertex
         public static bool DeterminRectangleCollision(IPolygon polygon1, IPolygon polygon2)
         {
             if (
-                polygon1.Center[0] - polygon1.Width / 2 < polygon2.Center[0] + polygon2.Width / 2 &&
-                polygon1.Center[0] + polygon1.Width / 2 > polygon2.Center[0] - polygon2.Width / 2 &&
-                polygon1.Center[1] - polygon1.Height / 2 < polygon2.Center[1] + polygon2.Height / 2 &&
-                polygon1.Height / 2 + polygon1.Center[1] > polygon2.Center[1] - polygon2.Height / 2
+                polygon1.Center[0] - polygon1.Depth / 2 < polygon2.Center[0] + polygon2.Depth / 2 &&
+                polygon1.Center[0] + polygon1.Depth / 2 > polygon2.Center[0] - polygon2.Depth / 2 &&
+                polygon1.Center[1] - polygon1.FrontWidth / 2 < polygon2.Center[1] + polygon2.FrontWidth / 2 &&
+                polygon1.FrontWidth / 2 + polygon1.Center[1] > polygon2.Center[1] - polygon2.FrontWidth / 2
               )
                 return true;
             return false;

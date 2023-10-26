@@ -14,11 +14,11 @@ namespace Furniture
         public string Name { get { return Data.Name; } }
         public int ID { get { return Data.ID; } }                              //ID of the furniture object
         public int Rotation { get; set; }                                      //Current rotation of the object in degrees
-        public int Width { get { return Data.Width; } }                        //Object width      A_______B      D_______C
-        public int Height { get { return Data.Height; } }                      //Object height     D       С
-                                                                               //                  |       |
-                                                                               //                  |       |
-                                                                               //                  A       B
+        public int Depth { get { return Data.Depth; } }                        //Object width       A_______B      D_______C
+        public int FrontWidth { get { return Data.FrontWidth; } }              //Object front width D       С
+                                                                               //                   |       |
+                                                                               //                   |       |
+                                                                               //                   A       B
         public bool IsOutOfBounds { get; set; }
         public bool IsCollided { get; set; }
         #endregion
@@ -32,16 +32,17 @@ namespace Furniture
 
 
         #region Contsructors
-        public GeneralFurniture(int id, string name, int length, int height, string zone, bool ignoreWindows,
-                                int extraLength = 0, int extraHeight = 0, int nearWall = -1, bool parent = false,
+        public GeneralFurniture(int id, string name, int depth, int frontWidth, string zone, bool ignoreWindows,
+                                int extraDepth = 0, int extraWidth = 0, int nearWall = -1, bool parent = false,
                                 bool accessible = false)
         {
-            Data = new(id, name, length, height, zone, extraLength, extraHeight);
+            Data = new(id, name, depth, frontWidth, zone, extraDepth, extraWidth);
             Flags = new(ignoreWindows, nearWall, parent, accessible);
             Rotation = 0;
             Center = new decimal[2];                //Center of furniture object
-            Center[0] = (decimal)Width / 2;         //     X
-            Center[1] = (decimal)Height / 2;        //     Y
+            Center[0] = (decimal)Depth / 2;         //     X
+            Center[1] = (decimal)FrontWidth / 2;    //     Y
+
             ClearanceArea = new decimal[4, 2];      //          D_______C       where CB is front (i.e. 0 degrees rotation).
             Vertices = new decimal[4, 2];           //          |       |       If Accessible property is set to true
             ResetCoords();                          //          |       |       the front is the side that must be accessible.
@@ -55,8 +56,8 @@ namespace Furniture
             Rotation = 0;
 
             Center = new decimal[2];
-            Center[0] = (decimal)Width / 2;
-            Center[1] = (decimal)Height / 2;
+            Center[0] = (decimal)Depth / 2;
+            Center[1] = (decimal)FrontWidth / 2;
 
             ClearanceArea = new decimal[4, 2];
             Vertices = new decimal[4, 2];
@@ -71,30 +72,30 @@ namespace Furniture
         //Resetting coordinates of the rectangle for rotation and value assignment in constructor.
         public void ResetCoords()
         {
-            Vertices[0, 0] = Center[0] - (decimal)Width / 2;       //A
-            Vertices[0, 1] = Center[1] + (decimal)Height / 2;
+            Vertices[0, 0] = Center[0] - (decimal)Depth / 2;       //A
+            Vertices[0, 1] = Center[1] + (decimal)FrontWidth / 2;
 
-            Vertices[1, 0] = Center[0] + (decimal)Width / 2;       //B
-            Vertices[1, 1] = Center[1] + (decimal)Height / 2;
+            Vertices[1, 0] = Center[0] + (decimal)Depth / 2;       //B
+            Vertices[1, 1] = Center[1] + (decimal)FrontWidth / 2;
 
-            Vertices[2, 0] = Center[0] + (decimal)Width / 2;       //C
-            Vertices[2, 1] = Center[1] - (decimal)Height / 2;
+            Vertices[2, 0] = Center[0] + (decimal)Depth / 2;       //C
+            Vertices[2, 1] = Center[1] - (decimal)FrontWidth / 2;
 
-            Vertices[3, 0] = Center[0] - (decimal)Width / 2;       //D
-            Vertices[3, 1] = Center[1] - (decimal)Height / 2;
+            Vertices[3, 0] = Center[0] - (decimal)Depth / 2;       //D
+            Vertices[3, 1] = Center[1] - (decimal)FrontWidth / 2;
 
 
-            ClearanceArea[0, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
-            ClearanceArea[0, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
+            ClearanceArea[0, 0] = Center[0] - (decimal)(Depth + Data.ExtraDepth) / 2;
+            ClearanceArea[0, 1] = Center[1] + (decimal)(FrontWidth + Data.ExtraWidth) / 2;
 
-            ClearanceArea[1, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
-            ClearanceArea[1, 1] = Center[1] + (decimal)(Height + Data.ExtraHeight) / 2;
+            ClearanceArea[1, 0] = Center[0] + (decimal)(Depth + Data.ExtraDepth) / 2;
+            ClearanceArea[1, 1] = Center[1] + (decimal)(FrontWidth + Data.ExtraWidth) / 2;
 
-            ClearanceArea[2, 0] = Center[0] + (decimal)(Width + Data.ExtraWidth) / 2;
-            ClearanceArea[2, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
+            ClearanceArea[2, 0] = Center[0] + (decimal)(Depth + Data.ExtraDepth) / 2;
+            ClearanceArea[2, 1] = Center[1] - (decimal)(FrontWidth + Data.ExtraWidth) / 2;
 
-            ClearanceArea[3, 0] = Center[0] - (decimal)(Width + Data.ExtraWidth) / 2;
-            ClearanceArea[3, 1] = Center[1] - (decimal)(Height + Data.ExtraHeight) / 2;
+            ClearanceArea[3, 0] = Center[0] - (decimal)(Depth + Data.ExtraDepth) / 2;
+            ClearanceArea[3, 1] = Center[1] - (decimal)(FrontWidth + Data.ExtraWidth) / 2;
         }
 
         public object Clone()

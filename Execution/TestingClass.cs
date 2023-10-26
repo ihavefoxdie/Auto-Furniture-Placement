@@ -14,7 +14,7 @@ namespace Execution
         //private FurnitureFactory? FurnitureFactory { get; set; }
         private Room? Room { get; set; }
 
-        public void AnnealingTesting()
+        /*public void AnnealingTesting()
         {
             BedFactory bedFactory = new();
             TableFactory tableFactory = new();
@@ -50,8 +50,8 @@ namespace Execution
 
             SimulatedAnnealing simulatedAnnealing = new(Room);
             Room.ZonesList = simulatedAnnealing.Launch().Zones.ToList<IPolygon>();
-            PolySerializeFuckingZones(Room);
-        }
+            PolySerializeZones(Room);
+        }*/
 
         static string PolySerialize(Room room)
         {
@@ -84,7 +84,7 @@ namespace Execution
             return File.ReadAllText("visualization\\rectangles.json");
         }
 
-        static string PolySerializeFuckingZones(Room room) //language!!!!
+        /*static string PolySerializeZones(Room room) //language!!!!
         {
             List<PolygonForJson> rectangles = new();
 
@@ -114,7 +114,7 @@ namespace Execution
             { }
 
             return File.ReadAllText("visualization\\rectangles.json");
-        }
+        }*/
 
 
         public void GeneticTesting()
@@ -128,7 +128,7 @@ namespace Execution
             CupboardFactory cupboardFactory = new();
             DeskFactory deskFactory = new();
             NightstandFactory nightStand = new();
-
+            WindowFactory window = new();
 
             List<GeneralFurniture> furnitures = new()
             {
@@ -142,11 +142,26 @@ namespace Execution
                 deskFactory.GetFurniture()
             };
 
-            Room = new(140, 140, new List<GeneralFurniture>(), furnitures, false, 0)
+            List<GeneralFurniture> doors = new()
+            {
+                doorFactory.GetFurniture()
+            };
+
+            List<GeneralFurniture> windows = new()
+            {
+                window.GetFurniture()
+            };
+
+            Room = new(140, 140, doors, furnitures, false, 0, windows)
             {
                 RotateVertex = VertexManipulator.VertexRotation,
                 DetermineCollision = VertexManipulator.DetermineCollision
             };
+
+            Room.Move(Room.Doors[0], -Room.Doors[0].Center[0] + 100, -Room.Doors[0].Center[1]);
+            Room.Rotate(Room.Doors[0], 90);
+            Room.Move(Room.Windows![0], -Room.Windows![0].Center[0] + 30, -Room.Windows![0].Center[1] + Room.ContainerHeight);
+            Room.Rotate(Room.Windows![0], 270);
 
             for (int i = 0; i < Room.FurnitureArray.Length; i++)
             {

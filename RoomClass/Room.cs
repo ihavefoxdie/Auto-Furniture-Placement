@@ -19,6 +19,17 @@ namespace Rooms
                 {
                     _list.Add(polygon);
                 }
+                foreach (IPolygon polygon in Doors)
+                {
+                    _list.Add(polygon);
+                }
+                if(Windows != null)
+                {
+                    foreach (IPolygon polygon in Windows)
+                    {
+                        _list.Add(polygon);
+                    }
+                }
                 return _list;
             }
         }
@@ -31,12 +42,12 @@ namespace Rooms
             Down
         }
         public GeneralFurniture[] FurnitureArray { get; private set; }
-        public List<GeneralFurniture> Doors { get; set; }
-        private List<GeneralFurniture>? Windows { get; set; }
+        public List<GeneralFurniture> Doors { get; private set; }
+        public List<GeneralFurniture>? Windows { get; private set; }
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
-        public List<IPolygon> ZonesList { get; set; } //DEW EET
+        //public List<IPolygon> ZonesList { get; set; } //DEW EET
         public bool WindowsInRoom { get; private set; }
         public int Aisle { get; private set; }
         #endregion
@@ -305,14 +316,14 @@ namespace Rooms
             else if (item.IsCollided && new Random().Next(100) < 80)
             {
                 if (new Random().Next(100) > 40)
-                    x *= item.Width / 2;
+                    x *= item.Depth / 2;
                 if (new Random().Next(100) > 60)
                     x += 30;
                 if (new Random().Next(100) > 80)
                     x += 30;
 
                 if (new Random().Next(100) > 40)
-                    y *= item.Height / 2;
+                    y *= item.FrontWidth / 2;
                 if (new Random().Next(100) > 60)
                     y += 30;
                 if (new Random().Next(100) > 80)
@@ -480,22 +491,22 @@ namespace Rooms
             switch (direction)
             {
                 case (Wall.Left):
-                    if (SafeMove(item, -item.Center[0] + item.Width / 2, 0) != 0)
+                    if (SafeMove(item, -item.Center[0] + item.Depth / 2, 0) != 0)
                         return;
                     break;
 
                 case (Wall.Right):
-                    if (SafeMove(item, ContainerWidth - item.Center[0] - item.Width / 2, 0) != 0)
+                    if (SafeMove(item, ContainerWidth - item.Center[0] - item.Depth / 2, 0) != 0)
                         return;
                     break;
 
                 case (Wall.Up):
-                    if (SafeMove(item, -item.Center[1] + item.Height / 2, 0) != 0)
+                    if (SafeMove(item, -item.Center[1] + item.FrontWidth / 2, 0) != 0)
                         return;
                     break;
 
                 case (Wall.Down):
-                    if (SafeMove(item, ContainerHeight - item.Center[1] - item.Height / 2, 0) != 0)
+                    if (SafeMove(item, ContainerHeight - item.Center[1] - item.FrontWidth / 2, 0) != 0)
                         return;
                     break;
             }
@@ -532,8 +543,8 @@ namespace Rooms
             else
                 return;
 
-            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation) * FurnitureArray[index].Width);
-            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation) * FurnitureArray[index].Width);
+            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation) * FurnitureArray[index].Depth);
+            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation) * FurnitureArray[index].Depth);
 
             decimal oldCenterX = item.Center[0];
             decimal oldCenterY = item.Center[1];
@@ -576,8 +587,8 @@ namespace Rooms
                     return -1;
             }
 
-            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation * Math.PI / 180) * FurnitureArray[index].Width, 3);
-            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation * Math.PI / 180) * FurnitureArray[index].Width, 3);
+            decimal pointToMoveToX = Math.Round(FurnitureArray[index].Center[0] + (decimal)Math.Cos(FurnitureArray[index].Rotation * Math.PI / 180) * (FurnitureArray[index].Depth / 2 + item.Depth / 2 + 1), 3);
+            decimal pointToMoveToY = Math.Round(FurnitureArray[index].Center[1] + (decimal)Math.Sin(FurnitureArray[index].Rotation * Math.PI / 180) * (FurnitureArray[index].Depth / 2 + item.Depth / 2 + 1), 3);
 
             decimal oldCenterX = item.Center[0];
             decimal oldCenterY = item.Center[1];
@@ -641,9 +652,10 @@ namespace Rooms
 
                 for (int k = 0; k < Doors.Count; k++)
                 {
-                    int doorCollision = (Collision(Doors[k], FurnitureArray[i]));
-                    if (doorCollision != 0)
-                        Penalty += 10 + doorCollision;
+                    int doorCollision = Collision(Doors[k], FurnitureArray[i]);
+                    int clearanceCollision = ClearenceAreaCollision(FurnitureArray[i], Doors[k]);
+                    if (doorCollision != 0 || clearanceCollision != 0)
+                        Penalty += 10 + doorCollision + clearanceCollision;
                 }
 
                 if (Windows is not null)
@@ -651,9 +663,10 @@ namespace Rooms
                     if (!FurnitureArray[i].Flags.IgnoreWindows)
                         for (int n = 0; n < Windows.Count; n++)
                         {
-                            int windowCollision = Collision(Windows[i], FurnitureArray[i]);
-                            if (windowCollision != 0)
-                                Penalty += 10 + windowCollision;
+                            int windowCollision = Collision(Windows[n], FurnitureArray[i]);
+                            int clearanceCollision = ClearenceAreaCollision(FurnitureArray[i], Windows[n]);
+                            if (windowCollision != 0 || clearanceCollision != 0)
+                                Penalty += 10 + windowCollision + clearanceCollision;
                         }
                 }
 
@@ -662,7 +675,7 @@ namespace Rooms
                     int furnitureCollision = Collision(FurnitureArray[i], FurnitureArray[j]);
                     Penalty += furnitureCollision;
 
-                    if (FurnitureArray[i].Data.ExtraHeight != 0 || FurnitureArray[i].Data.ExtraWidth != 0)
+                    if (FurnitureArray[i].Data.ExtraWidth != 0 || FurnitureArray[i].Data.ExtraDepth != 0)
                     {
                         if (FurnitureArray[i].Data.ParentID != FurnitureArray[j].ID && FurnitureArray[j].Data.ParentID != FurnitureArray[i].ID)
                         {
@@ -770,7 +783,7 @@ namespace Rooms
 
         private int ClearenceAreaCollision(GeneralFurniture item1, GeneralFurniture item2)
         {
-            int penalty = 0;
+            int penalty;
 
             penalty = ClearenceAreaCollisionProccess(item1, item2);
             if (penalty != 0)
@@ -825,13 +838,23 @@ namespace Rooms
             double fine = 0;
             decimal distance = 0;
             decimal distancePercentage = 0;
+            decimal distanceToSide;
 
             switch (direction)
             {
                 case Wall.Left:
-                    if (item.Center[0] > item.Flags.NearWall)
+                    if (item.Rotation == 0 || item.Rotation == 180)
                     {
-                        distance = item.Center[0] - item.Flags.NearWall;
+                        distanceToSide = item.Depth / 2;
+                    }
+                    else
+                    {
+                        distanceToSide = item.FrontWidth / 2;
+                    }
+
+                    if (item.Center[0] - distanceToSide > item.Flags.NearWall)
+                    {
+                        distance = item.Center[0] - distanceToSide - item.Flags.NearWall;
                         distancePercentage = distance / (ContainerWidth / 2);
                     }
                     if (item.Rotation != 0)
@@ -841,9 +864,18 @@ namespace Rooms
                     break;
 
                 case Wall.Right:
-                    if (item.Center[0] < ContainerWidth - item.Flags.NearWall)
+                    if (item.Rotation == 0 || item.Rotation == 180)
                     {
-                        distance = ContainerWidth - item.Flags.NearWall - item.Center[0];
+                        distanceToSide = item.Depth / 2;
+                    }
+                    else
+                    {
+                        distanceToSide = item.FrontWidth / 2;
+                    }
+
+                    if (item.Center[0] + distanceToSide < ContainerWidth - item.Flags.NearWall)
+                    {
+                        distance = ContainerWidth + distanceToSide - item.Flags.NearWall - item.Center[0];
                         distancePercentage = distance / (ContainerWidth / 2);
                     }
                     if (item.Rotation != 180)
@@ -853,7 +885,16 @@ namespace Rooms
                     break;
 
                 case Wall.Up:
-                    if (item.Center[1] > item.Flags.NearWall)
+                    if (item.Rotation == 0 || item.Rotation == 180)
+                    {
+                        distanceToSide = item.FrontWidth / 2;
+                    }
+                    else
+                    {
+                        distanceToSide = item.Depth / 2;
+                    }
+
+                    if (item.Center[1] - distanceToSide > item.Flags.NearWall)
                     {
                         distance = item.Center[1] - item.Flags.NearWall;
                         distancePercentage = distance / (ContainerHeight / 2);
@@ -865,7 +906,16 @@ namespace Rooms
                     break;
 
                 case Wall.Down:
-                    if (item.Center[0] < ContainerHeight - item.Flags.NearWall)
+                    if (item.Rotation == 0 || item.Rotation == 180)
+                    {
+                        distanceToSide = item.FrontWidth / 2;
+                    }
+                    else
+                    {
+                        distanceToSide = item.Depth / 2;
+                    }
+
+                    if (item.Center[0] + distanceToSide < ContainerHeight - item.Flags.NearWall)
                     {
                         distance = ContainerHeight - item.Flags.NearWall - item.Center[1];
                         distancePercentage = distance / (ContainerHeight / 2);

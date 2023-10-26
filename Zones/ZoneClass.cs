@@ -12,8 +12,8 @@ namespace Zones
         public double Area { get; set; }
         public double FurnitureArea { get; set; }
         public List<GeneralFurniture> Furnitures { get; set; }
-        public int Width { get; set; }
-        public int Height { get; set; }
+        public int Depth { get; set; }
+        public int FrontWidth { get; set; }
         public decimal[] Center { get; set; }
         public decimal[,] Vertices { get; set; }
         public bool isStorage { get; private set; }
@@ -25,18 +25,18 @@ namespace Zones
             Name = zoneName;
             Furnitures = furnitures.Where(p => p.Data.Zone == zoneName).ToList();
 
-            Width = Furnitures.Select(p => p.Width).Sum();
-            Height = Furnitures.Select(p => p.Height).Sum();
-            Area = Math.Sqrt(Width * Height);
-            FurnitureArea = Furnitures.Select(p => p.Width * p.Height).Sum();
+            Depth = Furnitures.Select(p => p.Depth).Sum();
+            FrontWidth = Furnitures.Select(p => p.FrontWidth).Sum();
+            Area = Math.Sqrt(Depth * FrontWidth);
+            FurnitureArea = Furnitures.Select(p => p.Depth * p.FrontWidth).Sum();
 
             Center = new decimal[2];
-            Center[0] = (decimal)Width / 2;
-            Center[1] = (decimal)Height / 2;
+            Center[0] = (decimal)Depth / 2;
+            Center[1] = (decimal)FrontWidth / 2;
 
             Vertices = new decimal[4, 2];
 
-            VertexManipulator.VertexResetting(Vertices, Center, Width, Height);
+            VertexManipulator.VertexResetting(Vertices, Center, Depth, FrontWidth);
 
             if (DetermineZoneType())
                 isStorage = true;
@@ -51,8 +51,8 @@ namespace Zones
 
             Name = prevZone.Name;
             Furnitures = prevZone.Furnitures;
-            Width = prevZone.Width;
-            Height = prevZone.Height;
+            Depth = prevZone.Depth;
+            FrontWidth = prevZone.FrontWidth;
             Area = prevZone.Area;
             FurnitureArea = prevZone.FurnitureArea;
             Array.Copy(prevZone.Center, Center, prevZone.Center.Length);
@@ -81,9 +81,9 @@ namespace Zones
 
         public virtual void Resize(decimal deltaW, decimal deltaH)
         {
-            Width = (int)Math.Floor(deltaW);
-            Height = (int)Math.Floor(deltaH);
-            Area = Width * Height;
+            Depth = (int)Math.Floor(deltaW);
+            FrontWidth = (int)Math.Floor(deltaH);
+            Area = Depth * FrontWidth;
         }
 
         private bool DetermineZoneType() => Name.ToLower() == "storage" ? true : false;
