@@ -23,7 +23,7 @@ namespace Rooms
                 {
                     _list.Add(polygon);
                 }
-                if(Windows != null)
+                if (Windows != null)
                 {
                     foreach (IPolygon polygon in Windows)
                     {
@@ -92,10 +92,10 @@ namespace Rooms
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
 
-                for (int j = 0; j < new Random().Next(400, 5000); j++)
+                for (int j = 0; j < new Random().Next(1000, 5000); j++)
                 {
-                    Scatter(FurnitureArray[i]);
-                    RandomRotation(FurnitureArray[i]);
+                    WallAlignment(FurnitureArray[i], true);
+                    Mutate();
                 }
             }
         }
@@ -354,6 +354,49 @@ namespace Rooms
             }
         }
 
+        public void UnsafeScatter(GeneralFurniture item)
+        {
+            decimal x = new Random().Next(-1, 2);
+            decimal y = new Random().Next(-1, 2);
+
+            if (!item.IsCollided && new Random().Next(100) > 80)
+            {
+                y *= 5;
+                x *= 5;
+            }
+            else if (item.IsCollided && new Random().Next(100) < 80)
+            {
+                if (new Random().Next(100) > 40)
+                    x *= item.Depth / 2;
+                if (new Random().Next(100) > 60)
+                    x += 30;
+                if (new Random().Next(100) > 80)
+                    x += 30;
+
+                if (new Random().Next(100) > 40)
+                    y *= item.FrontWidth / 2;
+                if (new Random().Next(100) > 60)
+                    y += 30;
+                if (new Random().Next(100) > 80)
+                    y += 30;
+            }
+
+            x = Math.Round(x, 5);
+            y = Math.Round(y, 5);
+
+
+            if (item.Data.ParentIndex != -1)
+            {
+                Move(item, -x, -y);
+                return;
+            }
+            if (item.Data.ChildIndex != -1)
+            {
+                Move(item, -x, -y);
+                return;
+            }
+        }
+
         public int RandomRotation(GeneralFurniture item)
         {
             int minusOrPlus = new Random().Next(2);
@@ -366,6 +409,20 @@ namespace Rooms
 
 
             return ProcessRotation(item, rotateFor);
+        }
+
+        public void UnsafeRandomRotation(GeneralFurniture item)
+        {
+            int minusOrPlus = new Random().Next(2);
+            int rotateFor;
+
+            if (minusOrPlus > 0)
+                rotateFor = 90;
+            else
+                rotateFor = -90;
+
+
+            Rotate(item, rotateFor);
         }
 
         private int ProcessRotation(GeneralFurniture item, int rotateFor)
@@ -484,9 +541,33 @@ namespace Rooms
             return Wall.Down;
         }
 
-        public void WallAlignment(GeneralFurniture item)
+        private Wall RandomWall()
         {
-            Wall direction = DetermineClosestWall(item);
+            Wall decision = Wall.Down;
+            switch (new Random().Next(4))
+            {
+                case 0:
+                    decision = Wall.Left;
+                    break;
+                case 1:
+                    decision = Wall.Right;
+                    break;
+                case 2:
+                    decision = Wall.Up;
+                    break;
+                case 3:
+                    decision = Wall.Down;
+                    break;
+            }
+            return decision;
+        }
+
+        public void WallAlignment(GeneralFurniture item, bool randomize = false)
+        {
+            Wall direction = RandomWall();
+            if(!randomize)
+                direction = DetermineClosestWall(item);
+
 
             switch (direction)
             {

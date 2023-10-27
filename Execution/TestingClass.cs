@@ -152,13 +152,13 @@ namespace Execution
                 window.GetFurniture()
             };
 
-            Room = new(140, 140, doors, furnitures, false, 0, windows)
+            Room = new(90, 90, doors, furnitures, false, 0, windows)
             {
                 RotateVertex = VertexManipulator.VertexRotation,
                 DetermineCollision = VertexManipulator.DetermineCollision
             };
 
-            Room.Move(Room.Doors[0], -Room.Doors[0].Center[0] + 100, -Room.Doors[0].Center[1]);
+            Room.Move(Room.Doors[0], -Room.Doors[0].Center[0] + 40, -Room.Doors[0].Center[1]);
             Room.Rotate(Room.Doors[0], 90);
             Room.Move(Room.Windows![0], -Room.Windows![0].Center[0] + 30, -Room.Windows![0].Center[1] + Room.ContainerHeight);
             Room.Rotate(Room.Windows![0], 270);

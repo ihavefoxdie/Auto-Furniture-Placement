@@ -50,15 +50,14 @@ public class GeneticAlgoritm
                 lowestPenalty = Population[0].Penalty;
                 bestRoom = (IPolygonGenesContainer)Population[0].Clone();
                 bestRoom.Penalty = lowestPenalty;
+                SerializeElement(0);
             }
 
             if (lowestPenalty <= 1)
                 break;
 
-            if (count % 500 == 0)
+            if (count % 1000 == 0)
             {
-                SerializeElement(0);
-
                 Console.WriteLine(count + "\nPenalty: " + Population[0].Penalty + "\nLowest penalty yet: " + lowestPenalty + "\n");
             }
 
@@ -176,8 +175,8 @@ public class GeneticAlgoritm
 
         for (int i = new Random().Next(2); i < newContainersSet.Count; i += 2)
         {
-            var sex = newContainersSet[i];
-            tasks[index] = new Task(sex.Mutate);
+            var item = newContainersSet[i];
+            tasks[index] = new Task(item.Mutate);
             tasks[index].Start();
             index++;
         }

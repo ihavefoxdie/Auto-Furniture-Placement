@@ -86,7 +86,7 @@ namespace Zones
             Area = Depth * FrontWidth;
         }
 
-        private bool DetermineZoneType() => Name.ToLower() == "storage" ? true : false;
+        private bool DetermineZoneType() => Name.ToLower() == "storage";
     }
 }
 
