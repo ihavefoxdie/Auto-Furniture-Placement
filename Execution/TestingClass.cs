@@ -2,7 +2,6 @@
 using Furniture;
 using GeneticAlgorithm;
 using Interfaces;
-using RoomClass.Zones;
 using Rooms;
 using System.Text.Json;
 using Vertex;
@@ -11,47 +10,8 @@ namespace Execution
 {
     public class TestingClass
     {
-        //private FurnitureFactory? FurnitureFactory { get; set; }
         private Room? Room { get; set; }
 
-        /*public void AnnealingTesting()
-        {
-            BedFactory bedFactory = new();
-            TableFactory tableFactory = new();
-            DoorFactory doorFactory = new();
-            ChairFactory chairFactory = new();
-            PouffeFactory poufFactory = new();
-            ArmchairFactory armchairFactory = new();
-            CupboardFactory cupboardFactory = new();
-            DeskFactory deskFactory = new();
-
-            List<GeneralFurniture> doors = new()
-            {
-                doorFactory.GetFurniture()
-            };
-
-            List<GeneralFurniture> furnitures = new()
-            {
-                bedFactory.GetFurniture(),
-                tableFactory.GetFurniture(),
-                tableFactory.GetFurniture(),
-                chairFactory.GetFurniture(),
-                poufFactory.GetFurniture(),
-                armchairFactory.GetFurniture(),
-                cupboardFactory.GetFurniture(),
-                deskFactory.GetFurniture()
-            };
-
-            Room = new(20, 20, doors, furnitures, false, 1)
-            {
-                RotateVertex = VertexManipulator.VertexRotation,
-                DetermineCollision = VertexManipulator.DetermineCollision
-            };
-
-            SimulatedAnnealing simulatedAnnealing = new(Room);
-            Room.ZonesList = simulatedAnnealing.Launch().Zones.ToList<IPolygon>();
-            PolySerializeZones(Room);
-        }*/
 
         static string PolySerialize(Room room)
         {
@@ -83,38 +43,6 @@ namespace Execution
 
             return File.ReadAllText("visualization\\rectangles.json");
         }
-
-        /*static string PolySerializeZones(Room room) //language!!!!
-        {
-            List<PolygonForJson> rectangles = new();
-
-            decimal[] center = new decimal[2];
-            center[0] = room.ContainerWidth / 2; center[1] = room.ContainerHeight / 2;
-            decimal[][] edges = new decimal[4][];
-            for (int i = 0; i < edges.Length; i++)
-                edges[i] = new decimal[2];
-
-            edges[0][0] = 0; edges[0][1] = 0;
-            edges[1][0] = room.ContainerWidth; edges[1][1] = 0;
-            edges[2][0] = room.ContainerWidth; edges[2][1] = room.ContainerHeight;
-            edges[3][0] = 0; edges[3][1] = room.ContainerHeight;
-
-            rectangles.Add(new PolygonForJson(1213, room.ContainerWidth, room.ContainerHeight, center, edges, ""));
-            
-
-            foreach (IPolygon polygon in room.ZonesList)
-                rectangles.Add(new PolygonForJson(polygon));
-
-            string jsonFile = JsonSerializer.Serialize(rectangles);
-            try
-            {
-                File.WriteAllText("visualization\\rectangles.json", jsonFile);
-            }
-            catch
-            { }
-
-            return File.ReadAllText("visualization\\rectangles.json");
-        }*/
 
 
         public void GeneticTesting()
@@ -152,15 +80,15 @@ namespace Execution
                 window.GetFurniture()
             };
 
-            Room = new(90, 90, doors, furnitures, false, 0, windows)
+            Room = new(90, 90, doors, furnitures, windows)
             {
                 RotateVertex = VertexManipulator.VertexRotation,
                 DetermineCollision = VertexManipulator.DetermineCollision
             };
 
-            Room.Move(Room.Doors[0], -Room.Doors[0].Center[0] + 40, -Room.Doors[0].Center[1]);
+            Room.Move(Room.Doors[0], -Room.Doors[0].Center[0] + 20, -Room.Doors[0].Center[1]);
             Room.Rotate(Room.Doors[0], 90);
-            Room.Move(Room.Windows![0], -Room.Windows![0].Center[0] + 30, -Room.Windows![0].Center[1] + Room.ContainerHeight);
+            Room.Move(Room.Windows![0], -Room.Windows![0].Center[0] + 25, -Room.Windows![0].Center[1] + Room.ContainerHeight);
             Room.Rotate(Room.Windows![0], 270);
 
             for (int i = 0; i < Room.FurnitureArray.Length; i++)
@@ -172,24 +100,7 @@ namespace Execution
 
             GeneticAlgoritm algo = new(Room);
 
-
-
-
-
             algo.Start();
-
-            /*for (int i = 0; i < 100000000; i++)
-            {
-                Thread.Sleep(50);
-                for (int j = 0; j < Room.FurnitureArray.Length; j++)
-                {
-                    if (Room.FurnitureArray[j].Data.ParentIndex != -1)
-                        Console.WriteLine(Room.FurnitureArray[j].Name + " has a parent at " +
-                            Room.FurnitureArray[j].Data.ParentIndex);
-                }
-                Room.Mutate();
-                PolySerialize(Room);
-            }*/
         }
     }
 }

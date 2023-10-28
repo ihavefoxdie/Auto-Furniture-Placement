@@ -4,8 +4,6 @@ using Interfaces;
 
 namespace Rooms
 {
-    //TODO: Integration with Zones class once (semi?)finished.
-    //TODO: Should this class handle rotation and movement of IPolygon objects (i.e. GeneralFurniture)? Discuss.
     //TODO: Clean this mess of a code!
     public sealed class Room : IPolygonGenesContainer
     {
@@ -47,9 +45,6 @@ namespace Rooms
         public int ContainerHeight { get; private set; }
         public int ContainerWidth { get; private set; }
         public double Penalty { get; set; }
-        //public List<IPolygon> ZonesList { get; set; } //DEW EET
-        public bool WindowsInRoom { get; private set; }
-        public int Aisle { get; private set; }
         #endregion
 
 
@@ -64,10 +59,8 @@ namespace Rooms
 
 
         #region Constructor
-
-        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, bool windowed, int aisle, List<GeneralFurniture>? windows = null)
+        public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, List<GeneralFurniture>? windows = null)
         {
-            Aisle = aisle;
             ContainerHeight = height;
             ContainerWidth = width;
             FurnitureArray = new GeneralFurniture[items.Count];
@@ -79,10 +72,7 @@ namespace Rooms
             if (doors is null)
                 throw new ArgumentNullException(nameof(doors), "The doors array is null!");
             Doors = doors;
-            if (windows is null && windowed)
-                throw new ArgumentNullException(nameof(windows), "The windows array is null!");
             Windows = windows;
-            WindowsInRoom = windowed;
         }
         #endregion
 
@@ -91,20 +81,37 @@ namespace Rooms
         {
             for (int i = 0; i < FurnitureArray.Length; i++)
             {
-
+                for (int n = 0; n < FurnitureArray.Length; n++)
+                {
+                    FurnitureArray[n].Data.ChildIndex = -1;
+                    FurnitureArray[n].Data.ParentIndex = -1;
+                }
                 for (int j = 0; j < new Random().Next(1000, 5000); j++)
                 {
                     WallAlignment(FurnitureArray[i], true);
-                    Mutate();
+                    UnsafeRandomRotation(FurnitureArray[i]);
+                    UnsafeScatterRandomization(FurnitureArray[i]);
                 }
+                Mutate(4);
             }
         }
 
-        public void Mutate()
+        public void Mutate(double modifier)
         {
             List<GeneralFurniture> furnitureToMutate = new();
             int amountToMutate = FurnitureArray.Length / 2;
-            if (amountToMutate == 0) amountToMutate = 1;
+
+            if (amountToMutate == 0)
+            {
+                amountToMutate = 1;
+            }
+            else if (modifier >= 2)
+            {
+                amountToMutate += (int)modifier;
+            }
+
+            if (amountToMutate > FurnitureArray.Length)
+                amountToMutate = FurnitureArray.Length;
 
             while (true)
             {
@@ -145,54 +152,63 @@ namespace Rooms
                     alignment = false;
                     moveToParent = false;
                 }
-
-                if (new Random().Next(100) > 69 && !scatter)
+                switch (new Random().Next(6))
                 {
-                    scatter = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    Scatter(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
-                }
-                if (new Random().Next(100) > 49 && !randomRotation)
-                {
-                    randomRotation = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    RandomRotation(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
-                }
-                if (new Random().Next(100) > 79 && !wallAlignment)
-                {
-                    wallAlignment = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    WallAlignment(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
-                }
-                if (new Random().Next(100) > 84 && !moveObjectToObject)
-                {
-                    moveObjectToObject = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    MoveObjectToObject(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
-                }
-                if (new Random().Next(100) > 74 && !alignment)
-                {
-                    alignment = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    Alighnment(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
-                }
-                if (new Random().Next(100) > 79 && !moveToParent)
-                {
-                    moveToParent = true;
-                    int value = selector.Next(furnitureToMutate.Count);
-                    MoveToParent(furnitureToMutate.ElementAt(value));
-                    furnitureToMutate.RemoveAt(value);
-                    continue;
+                    case 0:
+                        if (new Random().Next(100) * modifier > 69 && !scatter)
+                        {
+                            scatter = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            Scatter(furnitureToMutate.ElementAt(value));
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
+                    case 1:
+                        if (new Random().Next(100) * modifier > 49 && !randomRotation)
+                        {
+                            randomRotation = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            RandomRotation(furnitureToMutate.ElementAt(value));
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
+                    case 2:
+                        if (new Random().Next(100) * modifier > 79 && !wallAlignment)
+                        {
+                            wallAlignment = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            bool roll = new Random().Next(100) > 89 ? true : false;
+                            WallAlignment(furnitureToMutate.ElementAt(value), roll);
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
+                    case 3:
+                        if (new Random().Next(100) * modifier > 84 && !moveObjectToObject)
+                        {
+                            moveObjectToObject = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            MoveObjectToObject(furnitureToMutate.ElementAt(value));
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
+                    case 4:
+                        if (new Random().Next(100) * modifier > 74 && !alignment)
+                        {
+                            alignment = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            Alighnment(furnitureToMutate.ElementAt(value));
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
+                    case 5:
+                        if (new Random().Next(100) * modifier > 79 && !moveToParent)
+                        {
+                            moveToParent = true;
+                            int value = selector.Next(furnitureToMutate.Count);
+                            MoveToParent(furnitureToMutate.ElementAt(value));
+                            furnitureToMutate.RemoveAt(value);
+                        }
+                        break;
                 }
             }
         }
@@ -204,7 +220,7 @@ namespace Rooms
                 return parent;
             }
 
-            Room child = new(ContainerHeight, ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>(), WindowsInRoom, Aisle)
+            Room child = new(ContainerHeight, ContainerWidth, new List<GeneralFurniture>(), new List<GeneralFurniture>())
             {
                 FurnitureArray = new GeneralFurniture[this.FurnitureArray.Length]
             };
@@ -354,47 +370,57 @@ namespace Rooms
             }
         }
 
-        public void UnsafeScatter(GeneralFurniture item)
+
+        public void UnsafeScatterRandomization(GeneralFurniture item)
         {
             decimal x = new Random().Next(-1, 2);
             decimal y = new Random().Next(-1, 2);
 
-            if (!item.IsCollided && new Random().Next(100) > 80)
+            switch (new Random().Next(4))
             {
-                y *= 5;
-                x *= 5;
+                case 0:
+                    x *= item.FrontWidth;
+                    y *= item.Depth;
+                    break;
+                case 1:
+                    x *= item.Depth;
+                    y *= item.FrontWidth;
+                    break;
+                case 2:
+                    x *= item.FrontWidth;
+                    y *= item.FrontWidth;
+                    break;
+                case 3:
+                    x *= item.Depth;
+                    y *= item.Depth;
+                    break;
             }
-            else if (item.IsCollided && new Random().Next(100) < 80)
-            {
-                if (new Random().Next(100) > 40)
-                    x *= item.Depth / 2;
-                if (new Random().Next(100) > 60)
-                    x += 30;
-                if (new Random().Next(100) > 80)
-                    x += 30;
 
-                if (new Random().Next(100) > 40)
-                    y *= item.FrontWidth / 2;
-                if (new Random().Next(100) > 60)
-                    y += 30;
-                if (new Random().Next(100) > 80)
-                    y += 30;
+            if (new Random().Next(0, 100) > 85)
+            {
+                x *= new Random().Next(1, 4);
+                y *= new Random().Next(1, 4);
             }
 
             x = Math.Round(x, 5);
             y = Math.Round(y, 5);
 
 
-            if (item.Data.ParentIndex != -1)
-            {
-                Move(item, -x, -y);
-                return;
-            }
-            if (item.Data.ChildIndex != -1)
-            {
-                Move(item, -x, -y);
-                return;
-            }
+            CollisionMove(item, x, y);
+        }
+
+        private void UnsafeRandomRotation(GeneralFurniture item)
+        {
+            int minusOrPlus = new Random().Next(2);
+            int rotateFor;
+
+            if (minusOrPlus > 0)
+                rotateFor = 90;
+            else
+                rotateFor = -90;
+
+
+            CollisionRotation(item, rotateFor);
         }
 
         public int RandomRotation(GeneralFurniture item)
@@ -409,20 +435,6 @@ namespace Rooms
 
 
             return ProcessRotation(item, rotateFor);
-        }
-
-        public void UnsafeRandomRotation(GeneralFurniture item)
-        {
-            int minusOrPlus = new Random().Next(2);
-            int rotateFor;
-
-            if (minusOrPlus > 0)
-                rotateFor = 90;
-            else
-                rotateFor = -90;
-
-
-            Rotate(item, rotateFor);
         }
 
         private int ProcessRotation(GeneralFurniture item, int rotateFor)
@@ -541,7 +553,7 @@ namespace Rooms
             return Wall.Down;
         }
 
-        private Wall RandomWall()
+        private static Wall RandomWall()
         {
             Wall decision = Wall.Down;
             switch (new Random().Next(4))
@@ -565,7 +577,7 @@ namespace Rooms
         public void WallAlignment(GeneralFurniture item, bool randomize = false)
         {
             Wall direction = RandomWall();
-            if(!randomize)
+            if (!randomize)
                 direction = DetermineClosestWall(item);
 
 
@@ -715,6 +727,7 @@ namespace Rooms
         }
         #endregion
 
+
         #region Penalty Related
         public void PenaltyEvaluation()
         {
@@ -736,7 +749,7 @@ namespace Rooms
                     int doorCollision = Collision(Doors[k], FurnitureArray[i]);
                     int clearanceCollision = ClearenceAreaCollision(FurnitureArray[i], Doors[k]);
                     if (doorCollision != 0 || clearanceCollision != 0)
-                        Penalty += 10 + doorCollision + clearanceCollision;
+                        Penalty += 50 + doorCollision + clearanceCollision;
                 }
 
                 if (Windows is not null)
@@ -747,7 +760,7 @@ namespace Rooms
                             int windowCollision = Collision(Windows[n], FurnitureArray[i]);
                             int clearanceCollision = ClearenceAreaCollision(FurnitureArray[i], Windows[n]);
                             if (windowCollision != 0 || clearanceCollision != 0)
-                                Penalty += 10 + windowCollision + clearanceCollision;
+                                Penalty += 50 + windowCollision + clearanceCollision;
                         }
                 }
 
@@ -1020,7 +1033,7 @@ namespace Rooms
 
 
         #region Moving Furniture
-        public void Move(GeneralFurniture item, decimal centerDeltaX, decimal centerDeltaY)
+        public static void Move(GeneralFurniture item, decimal centerDeltaX, decimal centerDeltaY)
         {
             item.Center[0] += centerDeltaX;
             item.Center[1] += centerDeltaY;
@@ -1061,6 +1074,18 @@ namespace Rooms
                 }
             }
             return 0;
+        }
+
+        private void CollisionMove(GeneralFurniture item, decimal x, decimal y)
+        {
+            Move(item, x, y);
+
+            OutOfBoundsDeterminer(item);
+            if (item.IsOutOfBounds == true)
+            {
+                Move(item, -x, -y);
+                OutOfBoundsDeterminer(item);
+            }
         }
         #endregion
 
@@ -1123,9 +1148,27 @@ namespace Rooms
             }
             return 0;
         }
+
+        private void CollisionRotation(GeneralFurniture item, int rotateFor)
+        {
+            Rotate(item, rotateFor);
+            for (int i = 0; i < item.Vertices.GetLength(0); i++)
+            {
+                item.Vertices[i, 0] = Math.Round(item.Vertices[i, 0], 5);
+                item.Vertices[i, 1] = Math.Round(item.Vertices[i, 1], 5);
+
+                item.ClearanceArea[i, 0] = Math.Round(item.ClearanceArea[i, 0], 5);
+                item.ClearanceArea[i, 1] = Math.Round(item.ClearanceArea[i, 1], 5);
+            }
+
+            OutOfBoundsDeterminer(item);
+            if (item.IsOutOfBounds)
+            {
+                Rotate(item, -rotateFor);
+                OutOfBoundsDeterminer(item);
+            }
+        }
         #endregion
-
-
 
 
         public object Clone()
@@ -1148,7 +1191,7 @@ namespace Rooms
                     clonedWindows.Add((GeneralFurniture)Windows[i].Clone());
                 }
 
-            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, WindowsInRoom, this.Aisle, clonedWindows)
+            Room clonedRoom = new(this.ContainerHeight, this.ContainerWidth, clonedDoors, clonedFurniture, clonedWindows)
             {
                 RotateVertex = this.RotateVertex,
                 DetermineCollision = this.DetermineCollision

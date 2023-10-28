@@ -1,4 +1,5 @@
 using Interfaces;
+using System.Drawing;
 using System.Text.Json;
 
 namespace GeneticAlgorithm;
@@ -9,8 +10,7 @@ public class GeneticAlgoritm
     private bool KeepUp { get; set; }
     public int Generation { get; private set; }
 
-    //TODO: thorough debug
-    //TODO: determine why SOMETIMES AT THE START out of bounds exception is being thrown
+
     public GeneticAlgoritm(IPolygonGenesContainer container)
     {
         Population = new();
@@ -19,11 +19,14 @@ public class GeneticAlgoritm
         for (int i = 0; i < size; i++)
         {
             Population.Add((IPolygonGenesContainer)container.Clone());
-            Population[i].PenaltyEvaluation();
         }
+        Nuke();
+    }
 
-        Task[] tasks = new Task[size];
-        for (int i = 0; i < size; i++)
+    private void Nuke()
+    {
+        Task[] tasks = new Task[Population.Count];
+        for (int i = 0; i < Population.Count; i++)
         {
             var item = Population[i];
             tasks[i] = new Task(() =>
@@ -42,6 +45,9 @@ public class GeneticAlgoritm
         IPolygonGenesContainer bestRoom = (IPolygonGenesContainer)Population[0].Clone();
         double lowestPenalty = Population[0].Penalty;
         int count = 0;
+        int penaltyStagnationCount = 0;
+        double mutationModifier = 1;
+        int amountToMutate = Population.Count / 2;
         while (KeepUp)
         {
             Population = Population.OrderBy(container => container.Penalty).ToList();
@@ -51,9 +57,39 @@ public class GeneticAlgoritm
                 bestRoom = (IPolygonGenesContainer)Population[0].Clone();
                 bestRoom.Penalty = lowestPenalty;
                 SerializeElement(0);
+                penaltyStagnationCount = 0;
+                mutationModifier = 1;
+                amountToMutate = Population.Count / 2;
+            }
+            penaltyStagnationCount++;
+
+            if(penaltyStagnationCount % 250 == 0)
+            {
+                mutationModifier += 0.25;
+            }
+            
+            if(penaltyStagnationCount % 1000 == 0)
+            {
+                amountToMutate = Population.Count / 4;
             }
 
-            if (lowestPenalty <= 1)
+            if (penaltyStagnationCount % 4000 == 0)
+            {
+                Population[0] = (IPolygonGenesContainer)bestRoom.Clone();
+            }
+
+            if (penaltyStagnationCount % 6000 == 0)
+            {
+                Console.WriteLine("Population is being nuked for prolonged stagnation!");
+
+                Nuke();
+
+                penaltyStagnationCount = 0;
+                mutationModifier = 1;
+                amountToMutate = Population.Count / 2;
+            }
+
+            if (lowestPenalty <= 0)
                 break;
 
             if (count % 1000 == 0)
@@ -61,8 +97,13 @@ public class GeneticAlgoritm
                 Console.WriteLine(count + "\nPenalty: " + Population[0].Penalty + "\nLowest penalty yet: " + lowestPenalty + "\n");
             }
 
+
             if (count % 10000 == 0)
             {
+                if(penaltyStagnationCount % 6000 == 0)
+                {
+                    Console.WriteLine("Evolution is too stagnant, the next cycle will start with the randomization of the population (basically starting over)!");
+                }    
                 Console.Write("Continue?\n\n1 - Yes;\nAny other symbol - No.\n\nEnter corresponding number: ");
                 string? choice = Console.ReadLine();
                 if (choice != null)
@@ -107,7 +148,7 @@ public class GeneticAlgoritm
                 newContainersSet[i].PenaltyEvaluation();
             }
 
-            var newPoluation = MutatePopulations(newContainersSet);
+            var newPoluation = MutatePopulations(newContainersSet, newContainersSet.Count / 2, mutationModifier);
 
             Population = newPoluation;
             for (int i = 0; i < Population.Count; i++)
@@ -124,8 +165,6 @@ public class GeneticAlgoritm
 
     public List<double> FromPenaltyToFitness()
     {
-        double maxPenalty = Population.Last().Penalty;
-
         List<double> fitnessOfPopulation = new();
 
         foreach (var population in Population)
@@ -168,19 +207,28 @@ public class GeneticAlgoritm
         { }
     }
 
-    private List<IPolygonGenesContainer> MutatePopulations(List<IPolygonGenesContainer> newContainersSet)
+    private static List<IPolygonGenesContainer> MutatePopulations(List<IPolygonGenesContainer> newContainersSet, int amountToMutate, double mutationModifier = 1)
     {
-        Task[] tasks = new Task[newContainersSet.Count / 2];
+        Task[] tasks = new Task[amountToMutate];
         int index = 0;
+        List<IPolygonGenesContainer> mutatedItems = new();
 
-        for (int i = new Random().Next(2); i < newContainersSet.Count; i += 2)
+        while (mutatedItems.Count < amountToMutate)
         {
-            var item = newContainersSet[i];
-            tasks[index] = new Task(item.Mutate);
-            tasks[index].Start();
-            index++;
+            for (int i = 0; i < newContainersSet.Count; i++)
+            {
+                if (mutatedItems.Count == amountToMutate)
+                    break;
+                if (new Random().Next(0, 100) > 49 && !mutatedItems.Contains(newContainersSet[i]))
+                {
+                    mutatedItems.Add(newContainersSet[i]);
+                    var item = newContainersSet[i];
+                    tasks[index] = new Task(() => item.Mutate(mutationModifier));
+                    tasks[index].Start();
+                    index++;
+                }
+            }
         }
-
         Task.WaitAll(tasks);
         return newContainersSet;
     }

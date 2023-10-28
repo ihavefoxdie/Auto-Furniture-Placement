@@ -7,7 +7,7 @@ public interface IPolygonGenesContainer: ICloneable
     public int ContainerHeight { get; }
     public int ContainerWidth { get; }
     public List<IPolygon> Polygons { get; }
-    public void Mutate();
+    public void Mutate(double modifier);
     public IPolygonGenesContainer Crossover(IPolygonGenesContainer parent);
     public void Randomize();
 }
