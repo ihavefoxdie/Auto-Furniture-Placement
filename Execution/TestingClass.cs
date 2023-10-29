@@ -80,7 +80,7 @@ namespace Execution
                 window.GetFurniture()
             };
 
-            Room = new(90, 90, doors, furnitures, windows)
+            Room = new(-90, 90, doors, furnitures, windows)
             {
                 RotateVertex = VertexManipulator.VertexRotation,
                 DetermineCollision = VertexManipulator.DetermineCollision

@@ -1,6 +1,6 @@
 ﻿using Furniture;
 using Interfaces;
-
+using RoomProject;
 
 namespace Rooms
 {
@@ -61,8 +61,18 @@ namespace Rooms
         #region Constructor
         public Room(int height, int width, List<GeneralFurniture> doors, List<GeneralFurniture> items, List<GeneralFurniture>? windows = null)
         {
-            ContainerHeight = height;
-            ContainerWidth = width;
+            try
+            {
+                ContainerHeight = height;
+                ContainerWidth = width;
+                if (height <= 0 || width <= 0)
+                    throw new RoomSizeException($"Wrong room dimension [{width},{height}]", width, height);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message + " Check your input and launch the program again");
+                Environment.Exit(0);
+            }
             FurnitureArray = new GeneralFurniture[items.Count];
             for (int i = 0; i < items.Count; i++)
             {
